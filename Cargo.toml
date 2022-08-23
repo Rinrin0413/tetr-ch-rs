@@ -1,0 +1,29 @@
+[package]
+name = "tetr_ch"
+description = "A library for the TETRA CHANNEL API."
+version = "0.1.0"
+authors = ["Rinrin.rs <rinrin0413.valley@gmail.com>"]
+license-file = "LICENSE.md"
+repository = "https://github.com/Rinrin0413/tetr-ch-rs.git"
+readme = "README.md"
+keywords = ["tetrio", "tetr-io", "tetr_io", "tetra-channel-api", "tetra_channel_api"]
+edition = "2021"
+
+[dependencies]
+http = "0.2.8"
+
+[dependencies.reqwest]
+version = "0.11.11"
+features = ["json"]
+
+[dependencies.serde]
+version = "1.0.137"
+features = ["derive"]
+
+[dependencies.chrono]
+version = "0.4.19"
+default-features = false
+features = ["clock"]
+
+[dev-dependencies]
+tokio-test = "0.4.2"
