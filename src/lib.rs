@@ -29,7 +29,7 @@
 //!
 //! The following example is a template for getting user details.
 //!
-//! ```rust
+//! ```ignore
 //! use tetr_ch::client::Client;
 //!
 //! #[tokio::main]
@@ -53,7 +53,7 @@
 //! }
 //! ```
 //!
-//! See [full examples](./examples/).
+//! See [full examples](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/).
 //!
 //! [![GPL-3.0](https://img.shields.io/github/license/Rinrin0413/tetr-ch-rs?color=%23BD0102&style=for-the-badge)](./LICENSE.md)
 
