@@ -43,7 +43,7 @@ impl SinglePlayRecord {
 
     /// Returns the PPS(Pieces Per Second) of this replay.
     ///
-    /// Read the [warning](#Warning) before using this method.
+    /// Read the [warning](#warning) before using this method.
     ///
     /// # Panics
     ///
@@ -56,7 +56,7 @@ impl SinglePlayRecord {
 
     /// Returns the KPP(Keys Per Piece) of this replay.
     ///
-    /// Read the [warning](#Warning) before using this method.
+    /// Read the [warning](#warning) before using this method.
     ///
     /// # Panics
     ///
@@ -69,7 +69,7 @@ impl SinglePlayRecord {
 
     /// Returns the KPS(Keys Per Second) of this replay.
     ///
-    /// Read the [warning](#Warning) before using this method.
+    /// Read the [warning](#warning) before using this method.
     ///
     /// # Panics
     ///
@@ -82,7 +82,7 @@ impl SinglePlayRecord {
 
     /// Returns the LPM(Lines Per Minute) of this replay.
     ///
-    /// Read the [warning](#Warning) before using this method.
+    /// Read the [warning](#warning) before using this method.
     ///
     /// # Panics
     ///
@@ -95,7 +95,7 @@ impl SinglePlayRecord {
 
     /// Returns the SPP(Score Per Piece) of this replay.
     ///
-    /// Read the [warning](#Warning) before using this method.
+    /// Read the [warning](#warning) before using this method.
     ///
     /// # Panics
     ///
@@ -108,7 +108,7 @@ impl SinglePlayRecord {
 
     /// Returns the finesse rate of this replay.
     ///
-    /// Read the [warning](#Warning) before using this method.
+    /// Read the [warning](#warning) before using this method.
     ///
     /// # Panics
     ///
