@@ -56,3 +56,18 @@ pub enum Status {
     /// If the status code less than 100 or greater than 599.
     Invalid(InvalidStatusCode),
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn response_errors_to_string() {
+        let de_err = ResponseError::DeserializeErr("Deserialize error".to_string());
+        let req_err = ResponseError::RequestErr("Request error".to_string());
+        let http_err = ResponseError::HttpErr(Status::Valid(http::StatusCode::SERVICE_UNAVAILABLE));
+        assert_eq!(de_err.to_string(), "Deserialize error");
+        assert_eq!(req_err.to_string(), "Request error");
+        assert_eq!(http_err.to_string(), "HTTP error 503 Service Unavailable");
+    }
+}
