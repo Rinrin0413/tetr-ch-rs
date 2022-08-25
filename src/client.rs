@@ -1380,3 +1380,13 @@ pub mod stream {
         User(String),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_a_new_client() {
+        let _client = Client::new();
+    }
+}
