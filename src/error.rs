@@ -36,7 +36,7 @@ impl ToString for ResponseError {
     ///         }
     ///     )
     /// );
-    /// 
+    ///
     /// assert_eq!(de_err.to_string(), "Deserialize error");
     /// assert_eq!(req_err.to_string(), "Request error");
     /// assert_eq!(http_err.to_string(), "HTTP error 503 Service Unavailable");
