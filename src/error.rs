@@ -95,20 +95,4 @@ mod tests {
             "HTTP error (Invalid HTTP status code)"
         );
     }
-
-    #[test]
-    fn status_code_from_0u16() {
-        if let Err(_) = StatusCode::from_u16(0) {
-            assert!(true);
-        } else {
-            assert!(false);
-        };
-    }
-
-    #[test]
-    fn convert_to_stdioerr() {
-        let _ = ResponseError::from(ResponseError::DeserializeErr(
-            "Deserialize error".to_string(),
-        ));
-    }
 }
