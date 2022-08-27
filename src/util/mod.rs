@@ -1,5 +1,5 @@
 //! Utilities for the tetr-ch-rs.
-//!
+
 use chrono::DateTime;
 
 /// Parses an RFC 3339 and ISO 8601 date to UNIX timestamp as `i64`.
