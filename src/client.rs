@@ -128,7 +128,7 @@ impl Client {
     ///
     /// # Examples
     ///
-    /// Getting the records object:
+    /// Getting the server activity object:
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
@@ -136,8 +136,8 @@ impl Client {
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
-    /// // Get the records for user `RINRIN-RS`.
-    /// let user = client.get_user_records("621db46d1d638ea850be2aa0").await?;
+    /// // Get the server activity.
+    /// let user = client.get_server_activity().await?;
     /// # Ok(())
     /// # }
     /// ```
