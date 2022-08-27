@@ -81,18 +81,34 @@ mod tests {
         let de_err = ResponseError::DeserializeErr("Deserialize error".to_string());
         let req_err = ResponseError::RequestErr("Request error".to_string());
         let http_err = ResponseError::HttpErr(Status::Valid(http::StatusCode::SERVICE_UNAVAILABLE));
-        #[rustfmt::skip]
-        let invalid_http_err = ResponseError::HttpErr(Status::Invalid(
-            if let Err(isc) = StatusCode::from_u16(0) {
+        let invalid_http_err =
+            ResponseError::HttpErr(Status::Invalid(if let Err(isc) = StatusCode::from_u16(0) {
                 isc
             } else {
                 unreachable!()
-            }
-        ));
+            }));
         assert_eq!(de_err.to_string(), "Deserialize error");
         assert_eq!(req_err.to_string(), "Request error");
         assert_eq!(http_err.to_string(), "HTTP error 503 Service Unavailable");
-        #[rustfmt::skip]
-        assert_eq!(invalid_http_err.to_string(), "HTTP error (Invalid HTTP status code)");
+        assert_eq!(
+            invalid_http_err.to_string(),
+            "HTTP error (Invalid HTTP status code)"
+        );
+    }
+
+    #[test]
+    fn status_code_from_0u16() {
+        if let Err(_) = StatusCode::from_u16(0) {
+            assert!(true);
+        } else {
+            assert!(false);
+        };
+    }
+
+    #[test]
+    fn convert_to_stdioerr() {
+        let _ = ResponseError::from(ResponseError::DeserializeErr(
+            "Deserialize error".to_string(),
+        ));
     }
 }

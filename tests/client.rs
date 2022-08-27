@@ -31,10 +31,10 @@ fn get_league_leaderboard_data() {
 
 #[test]
 fn get_league_leaderboard_data_with_two_queries() {
-    let _ =
-        tokio_test::block_on(Client::new().get_league_leaderboard(
-            query::LeagueLeaderboardQuery::new().limit(2).before(23000.),
-        ));
+    let _ = tokio_test::block_on(
+        Client::new()
+            .get_league_leaderboard(query::LeagueLeaderboardQuery::new().limit(2).before(23000.)),
+    );
 }
 
 #[test]
@@ -68,9 +68,8 @@ fn panic_if_invalid_limit_range_exhaustivegetting_league_leaderboard() {
 
 #[test]
 fn get_xp_leaderboard_data() {
-    let _ = tokio_test::block_on(
-        Client::new().get_xp_leaderboard(query::XPLeaderboardQuery::new()),
-    );
+    let _ =
+        tokio_test::block_on(Client::new().get_xp_leaderboard(query::XPLeaderboardQuery::new()));
 }
 
 #[test]
@@ -83,8 +82,7 @@ fn get_xp_leaderboard_data_with_a_query() {
 #[test]
 fn get_xp_leaderboard_data_with_two_queries() {
     let _ = tokio_test::block_on(
-        Client::new()
-            .get_xp_leaderboard(query::XPLeaderboardQuery::new().limit(2).before(23000.)),
+        Client::new().get_xp_leaderboard(query::XPLeaderboardQuery::new().limit(2).before(23000.)),
     );
 }
 
@@ -144,4 +142,10 @@ fn get_latest_user_scale_news_data() {
         stream::NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
         3,
     ));
+}
+
+#[test]
+#[should_panic]
+fn panic_if_invalid_limit_range_in_getting_latest_news() {
+    let _ = tokio_test::block_on(Client::new().get_latest_news(stream::NewsSubject::Any, 0));
 }
