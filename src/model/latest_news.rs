@@ -101,14 +101,18 @@ pub struct News {
 }
 
 impl News {
-    /// Returns an icon URL of the TETRA LEAGUE rank.
-    /// If the user is unranked, returns ?-rank(z) icon URL.
+    /// ~~Returns an icon URL of the TETRA LEAGUE rank.~~
+    /// ~~If the user is unranked, returns ?-rank(z) icon URL.~~
     ///
-    /// # Panics
+    /// ~~# Panics~~
     ///
-    /// Panics if the stream is not type([`Self::_type`]) `rankup`.
-    pub fn rank_icon_url(&self) -> String {
-        if let Some(rank) = self.data.rank.as_ref() {
+    /// ~~Panics if the stream is not type([`Self::_type`]) `rankup`.~~
+    /// 
+    /// This function does not currently work.
+    /// See [here](`NewsData::rank`) for the reason.
+    #[deprecated]
+    pub fn rank_icon_url(&self) /*-> String*/ {
+        /*if let Some(rank) = self.data.rank.as_ref() {
             if let Ok(_) = rank.parse::<u32>() {
                 panic!("This stream is not type `rankup`")
             } else {
@@ -116,7 +120,7 @@ impl News {
             }
         } else {
             panic!("This stream is not type `rankup`")
-        }
+        }*/
     }
 
     /// Returns an badge URL.
@@ -170,13 +174,17 @@ pub struct NewsData {
     /// Valid for types:
     /// `leaderboard`, `personalbest`
     pub gametype: Option<String>,
-    /// - The global rank achieved. (leaderboard)
-    /// - The new rank. (rankup)
+    /// - ~~The global rank achieved. (leaderboard)~~
+    /// - ~~The new rank. (rankup)~~
     ///
-    /// Valid for types:
-    /// `leaderboard`,
-    /// `rankup`
-    pub rank: Option<String>,
+    /// ~~Valid for types:~~
+    /// ~~`leaderboard`,~~
+    /// ~~`rankup`~~
+    /// 
+    /// This field is currently(August 2022) too dynamic.
+    /// So the developer(Rinrin.rs) was not able to deal it.
+    #[serde(default = "none")]
+    pub rank: Option<()>,
     /// The result (score or time) achieved.
     ///
     /// Valid for types:
@@ -205,4 +213,8 @@ impl AsRef<NewsData> for NewsData {
     fn as_ref(&self) -> &NewsData {
         self
     }
+}
+
+fn none() -> Option<()> {
+    None
 }
