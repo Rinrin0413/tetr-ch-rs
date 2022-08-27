@@ -1390,4 +1390,67 @@ mod tests {
     fn create_a_new_client() {
         let _ = Client::new();
     }
+
+    #[test]
+    fn init_league_query() {
+        let mut _query = query::LeagueLeaderboardQuery::new();
+        _query.init();
+    }
+
+    #[test]
+    #[should_panic]
+    fn panic_invalid_limit_range_in_league_query() {
+        let mut _query = query::LeagueLeaderboardQuery::new();
+        _query.limit(101);
+    }
+
+    #[test]
+    fn init_xp_query() {
+        let mut _query = query::XPLeaderboardQuery::new();
+        _query.init();
+    }
+
+    #[test]
+    #[should_panic]
+    fn panic_invalid_limit_range_in_xp_query_with101() {
+        let mut _query = query::XPLeaderboardQuery::new();
+        _query.limit(101);
+    }
+
+    #[test]
+    #[should_panic]
+    fn panic_invalid_limit_range_in_xp_query_with0() {
+        let mut _query = query::XPLeaderboardQuery::new();
+        _query.limit(101);
+    }
+
+    #[test]
+    fn fortylines_as_str() {
+        assert_eq!(stream::StreamType::FortyLines.as_str(), "40l");
+    }
+
+    #[test]
+    fn blitz_as_str() {
+        assert_eq!(stream::StreamType::Blitz.as_str(), "blitz");
+    }
+
+    #[test]
+    fn any_as_str() {
+        assert_eq!(stream::StreamType::Any.as_str(), "any");
+    }
+
+    #[test]
+    fn global_as_str() {
+        assert_eq!(stream::StreamContext::Global.as_str(), "global");
+    }
+
+    #[test]
+    fn userbest_as_str() {
+        assert_eq!(stream::StreamContext::UserBest.as_str(), "userbest");
+    }
+
+    #[test]
+    fn userrecent_as_str() {
+        assert_eq!(stream::StreamContext::UserRecent.as_str(), "userrecent");
+    }
 }
