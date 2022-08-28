@@ -20,6 +20,7 @@ fn main() {
     dbg!(rank_col::U);
     dbg!(rank_col::X);
     dbg!(rank_col::XX);
+    dbg!(rank_col::Z);
 
     // You can see each rank color visually in the doc below:
     // https://docs.rs/tetr_ch/latest/tetr_ch/constants/rank_col/
