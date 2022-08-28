@@ -15,7 +15,7 @@ async fn main() {
 
     // Print the server statics (some examples).
     println!("Total users: {}", stats.data.as_ref().unwrap().usercount);
-    println!("Registed users: {}", stats.registered_players());
+    println!("Registerd users: {}", stats.registered_players());
     println!("Anonymous users: {}", stats.data.as_ref().unwrap().anoncount);
     println!("Ranked users: {}", stats.data.as_ref().unwrap().rankedcount);
 

@@ -107,11 +107,12 @@ impl News {
     /// ~~# Panics~~
     ///
     /// ~~Panics if the stream is not type([`Self::_type`]) `rankup`.~~
-    /// 
+    ///
     /// This function does not currently work.
     /// See [here](`NewsData::rank`) for the reason.
     #[deprecated]
-    pub fn rank_icon_url(&self) /*-> String*/ {
+    pub fn rank_icon_url(&self) /*-> String*/
+    {
         /*if let Some(rank) = self.data.rank.as_ref() {
             if let Ok(_) = rank.parse::<u32>() {
                 panic!("This stream is not type `rankup`")
@@ -180,7 +181,7 @@ pub struct NewsData {
     /// ~~Valid for types:~~
     /// ~~`leaderboard`,~~
     /// ~~`rankup`~~
-    /// 
+    ///
     /// This field is currently(August 2022) too dynamic.
     /// So the developer(Rinrin.rs) was not able to deal it.
     #[serde(default = "none")]
