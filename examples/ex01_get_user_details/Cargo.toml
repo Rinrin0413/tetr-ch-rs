@@ -1,0 +1,9 @@
+[package]
+name = "ex01_get_user_details"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dependencies.tetr_ch]
+path = "../../"

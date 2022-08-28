@@ -10,3 +10,4 @@ These are examples for using this library.
 1. [Get the XP leaderboard](./ex06_get_xp_leaderboard/)
 1. [Get streams](./ex07_get_streams/)
 1. [Get latest news](./ex08_get_latest_news/)
+1. [Constants](./ex09_constants/)

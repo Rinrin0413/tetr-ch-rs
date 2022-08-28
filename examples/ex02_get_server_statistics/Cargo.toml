@@ -1,0 +1,13 @@
+[package]
+name = "ex02_get_server_statistics"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dependencies.tetr_ch]
+path = "../../"
+
+[dependencies.tokio]
+version = "1.20"
+features = ["full"]
