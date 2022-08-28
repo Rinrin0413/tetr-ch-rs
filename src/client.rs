@@ -556,7 +556,7 @@ impl Client {
     /// let user = client.get_latest_news(
     ///     // News of the user `621db46d1d638ea850be2aa0`.
     ///     NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
-    ///     // 3 news.
+    ///     // three news.
     ///     3,
     /// ).await?;
     /// # Ok(())
@@ -688,7 +688,7 @@ pub mod query {
     /// ```
     /// use tetr_ch::client::query::LeagueLeaderboardQuery;
     ///
-    /// // Default query.
+    /// // Default(25000TR or less, 50 entries) query.
     /// let q1 = LeagueLeaderboardQuery::new();
     ///
     /// // 15200TR or less, three entries, filter by Japan.
@@ -1033,10 +1033,10 @@ pub mod query {
     /// ```
     /// use tetr_ch::client::query::XPLeaderboardQuery;
     ///
-    /// // Default query.
+    /// // Default(descending, fifty entries) query.
     /// let q1 = XPLeaderboardQuery::new();
     ///
-    /// // 50,000,000,000,000xp or less, 30 entries, filter by Japan.
+    /// // 50,000,000,000,000xp or less, thirty entries, filter by Japan.
     /// let q2 = XPLeaderboardQuery::new()
     ///     .after(50_000_000_000_000.)
     ///     .limit(3)
@@ -1048,8 +1048,8 @@ pub mod query {
     ///     .before(50_000_000_000_000.);
     ///
     /// // You can restore the query parameters to default as follows:
-    /// let mut q5 = XPLeaderboardQuery::new().country("us");
-    /// q5.init();
+    /// let mut q4 = XPLeaderboardQuery::new().country("us");
+    /// q4.init();
     /// ```
     #[derive(Clone, Debug)]
     pub struct XPLeaderboardQuery {
