@@ -1,7 +1,7 @@
 [package]
 name = "tetr_ch"
 description = "A library for the TETRA CHANNEL API."
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Rinrin.rs <rinrin0413.valley@gmail.com>"]
 license-file = "LICENSE.md"
 repository = "https://github.com/Rinrin0413/tetr-ch-rs.git"
