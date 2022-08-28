@@ -264,6 +264,32 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn panic_if_no_cache_1() {
+        use super::*;
+        let news = LatestNewsResponse {
+            success: false,
+            error: None,
+            cache: None,
+            data: None,
+        };
+        news.cached_at();
+    }
+
+    #[test]
+    #[should_panic]
+    fn panic_if_no_cache_2() {
+        use super::*;
+        let news = LatestNewsResponse {
+            success: false,
+            error: None,
+            cache: None,
+            data: None,
+        };
+        news.cached_until();
+    }
+
+    #[test]
     fn latest_news_response_as_ref() {
         let latest_news_response = LatestNewsResponse {
             success: true,
