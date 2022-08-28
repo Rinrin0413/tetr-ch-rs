@@ -184,7 +184,7 @@ pub struct NewsData {
     /// This field is currently(August 2022) too dynamic.
     /// So the developer(Rinrin.rs) was not able to deal it.
     #[serde(default = "none")]
-    pub rank: Option<()>,
+    pub _rank: Option<()>,
     /// The result (score or time) achieved.
     ///
     /// Valid for types:
