@@ -30,9 +30,23 @@ mod tests {
     }
 
     #[test]
-    fn compare_and_return_maximum_of_two_f64() {
+    #[should_panic]
+    fn panics_invalid_rfc3339() {
+        let invalid_ts = "qawsedrftgyhujikolp";
+        to_unix_ts(invalid_ts);
+    }
+
+    #[test]
+    fn compare_and_return_maximum_of_two_f64_v1() {
         let v1 = -2.;
         let v2 = 2.;
         assert_eq!(max_f64(v1, v2), 2.0);
+    }
+
+    #[test]
+    fn compare_and_return_maximum_of_two_f64_v2() {
+        let v1 = 16.2;
+        let v2 = 8.;
+        assert_eq!(max_f64(v1, v2), 16.2);
     }
 }
