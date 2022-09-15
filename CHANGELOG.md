@@ -1,4 +1,10 @@
-# v0.2.0
+# v0.2.1 (hotfix)  2022-09-16
+
+- Fixed the inverse inequality sign.
+
+---
+
+# v0.2.0  2022-09-16
 
 - Added some useful methods.
 - Many elements to appropriate names.
@@ -12,7 +18,7 @@
 
 ---
 
-# v0.1.1
+# v0.1.1  2022-08-28
 
 - Added some examples.
 - Added some tests.
@@ -22,5 +28,6 @@
 
 ---
 
-# v0.1.0
+# v0.1.0  2022-08-23
+
 Initial release
