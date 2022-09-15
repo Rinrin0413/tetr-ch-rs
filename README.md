@@ -24,7 +24,7 @@ Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-tetr_ch = "0.1.1"
+tetr_ch = "0.2.0"
 ```
 
 # Examples
