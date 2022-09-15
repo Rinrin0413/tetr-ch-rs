@@ -432,7 +432,7 @@ mod tests {
         };
         assert_eq!(
             league_data_ranked.rank_icon_url(),
-            Some("https://tetr.io/res/league-ranks/D.png".to_string())
+            Some("https://tetr.io/res/league-ranks/d.png".to_string())
         );
         assert_eq!(league_data_unranked.rank_icon_url(), None);
     }
