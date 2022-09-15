@@ -59,7 +59,7 @@ impl LatestNewsResponse {
 }
 
 impl AsRef<LatestNewsResponse> for LatestNewsResponse {
-    fn as_ref(&self) -> &LatestNewsResponse {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -73,7 +73,7 @@ pub struct LatestNews {
 }
 
 impl AsRef<LatestNews> for LatestNews {
-    fn as_ref(&self) -> &LatestNews {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -168,7 +168,7 @@ impl News {
 }
 
 impl AsRef<News> for News {
-    fn as_ref(&self) -> &News {
+    fn as_ref(&self) -> &Self {
         self
     }
 }

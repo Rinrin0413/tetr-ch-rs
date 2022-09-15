@@ -83,7 +83,7 @@ impl LeagueLeaderboardResponse {
 }
 
 impl AsRef<LeagueLeaderboardResponse> for LeagueLeaderboardResponse {
-    fn as_ref(&self) -> &LeagueLeaderboardResponse {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -135,7 +135,7 @@ impl QueryCache {
 }
 
 impl AsRef<QueryCache> for QueryCache {
-    fn as_ref(&self) -> &QueryCache {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -149,7 +149,7 @@ pub struct LeagueLeaderboardData {
 }
 
 impl AsRef<LeagueLeaderboardData> for LeagueLeaderboardData {
-    fn as_ref(&self) -> &LeagueLeaderboardData {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -248,7 +248,7 @@ impl User {
 }
 
 impl AsRef<User> for User {
-    fn as_ref(&self) -> &User {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -300,7 +300,7 @@ impl LeagueDataMini {
 }
 
 impl AsRef<LeagueDataMini> for LeagueDataMini {
-    fn as_ref(&self) -> &LeagueDataMini {
+    fn as_ref(&self) -> &Self {
         self
     }
 }

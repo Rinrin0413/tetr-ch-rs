@@ -44,7 +44,7 @@ impl StreamResponse {
 }
 
 impl AsRef<StreamResponse> for StreamResponse {
-    fn as_ref(&self) -> &StreamResponse {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -57,7 +57,7 @@ pub struct StreamData {
 }
 
 impl AsRef<StreamData> for StreamData {
-    fn as_ref(&self) -> &StreamData {
+    fn as_ref(&self) -> &Self {
         self
     }
 }

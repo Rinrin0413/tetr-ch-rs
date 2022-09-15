@@ -73,7 +73,7 @@ impl XPLeaderboardResponse {
 }
 
 impl AsRef<XPLeaderboardResponse> for XPLeaderboardResponse {
-    fn as_ref(&self) -> &XPLeaderboardResponse {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -124,7 +124,7 @@ pub struct XPLeaderboardData {
 }
 
 impl AsRef<XPLeaderboardData> for XPLeaderboardData {
-    fn as_ref(&self) -> &XPLeaderboardData {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -231,7 +231,7 @@ impl User {
 }
 
 impl AsRef<User> for User {
-    fn as_ref(&self) -> &User {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
