@@ -22,7 +22,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tetr_ch = "0.2.0"
+//! tetr_ch = "0.2.1"
 //! ```
 //!
 //! # Examples

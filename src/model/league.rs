@@ -58,7 +58,7 @@ impl LeagueData {
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if self.play_count < 10 {
+        if 10 <= self.play_count {
             Some(self.rank.icon_url())
         } else {
             None
@@ -411,6 +411,215 @@ impl Display for Rank {
             Rank::U => write!(f, "u"),
             Rank::X => write!(f, "x"),
             Rank::Z => write!(f, "z"),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_rank_icon_url_from_league_data() {
+        let league_data_ranked = LeagueData {
+            rank: Rank::D,
+            play_count: 10,
+            ..default_league_data()
+        };
+        let league_data_unranked = LeagueData {
+            play_count: 9,
+            ..default_league_data()
+        };
+        assert_eq!(
+            league_data_ranked.rank_icon_url(),
+            Some("https://tetr.io/res/league-ranks/D.png".to_string())
+        );
+        assert_eq!(league_data_unranked.rank_icon_url(), None);
+    }
+
+    #[test]
+    fn get_rank_color_from_league_data() {
+        let league_data = LeagueData {
+            rank: Rank::A,
+            ..default_league_data()
+        };
+        assert_eq!(league_data.rank_color(), 0x46ad51);
+    }
+
+    #[test]
+    fn get_percentile_rank_icon_url_from_league_data() {
+        let league_data_ranked = LeagueData {
+            percentile_rank: Rank::X,
+            ..default_league_data()
+        };
+        let league_data_unranked = LeagueData {
+            percentile_rank: Rank::Z,
+            ..default_league_data()
+        };
+        assert_eq!(
+            league_data_ranked.percentile_rank_icon_url(),
+            Some("https://tetr.io/res/league-ranks/x.png".to_string())
+        );
+        assert_eq!(league_data_unranked.percentile_rank_icon_url(), None);
+    }
+
+    #[test]
+    fn get_percentile_rank_color_from_league_data() {
+        let league_data = LeagueData {
+            percentile_rank: Rank::DPlus,
+            ..default_league_data()
+        };
+        assert_eq!(league_data.percentile_rank_color(), 0x8e6091);
+    }
+
+    #[test]
+    fn get_rank_progress() {
+        let league_data_unranked = LeagueData {
+            prev_at: -1,
+            next_at: -1,
+            ..default_league_data()
+        };
+        let league_data_ranked = LeagueData {
+            standing: 600,
+            prev_at: 2000,
+            next_at: 400,
+            ..default_league_data()
+        };
+        assert_eq!(league_data_unranked.rank_progress(), None);
+        assert_eq!(league_data_ranked.rank_progress(), Some(87.5));
+    }
+
+    #[test]
+    fn league_data_as_ref() {
+        let league_data = default_league_data();
+        let _a = league_data.as_ref();
+        let _b = league_data;
+    }
+
+    #[test]
+    fn ranks_as_str() {
+        let rank_d = Rank::D;
+        let rank_d_plus = Rank::DPlus;
+        let rank_c_minus = Rank::CMinus;
+        let rank_c = Rank::C;
+        let rank_c_plus = Rank::CPlus;
+        let rank_b_minus = Rank::BMinus;
+        let rank_b = Rank::B;
+        let rank_b_plus = Rank::BPlus;
+        let rank_a_minus = Rank::AMinus;
+        let rank_a = Rank::A;
+        let rank_a_plus = Rank::APlus;
+        let rank_s_minus = Rank::SMinus;
+        let rank_s = Rank::S;
+        let rank_s_plus = Rank::SPlus;
+        let rank_ss = Rank::SS;
+        let rank_u = Rank::U;
+        let rank_x = Rank::X;
+        let rank_z = Rank::Z;
+        assert_eq!(rank_d.as_str(), "D");
+        assert_eq!(rank_d_plus.as_str(), "D+");
+        assert_eq!(rank_c_minus.as_str(), "C-");
+        assert_eq!(rank_c.as_str(), "C");
+        assert_eq!(rank_c_plus.as_str(), "C+");
+        assert_eq!(rank_b_minus.as_str(), "B-");
+        assert_eq!(rank_b.as_str(), "B");
+        assert_eq!(rank_b_plus.as_str(), "B+");
+        assert_eq!(rank_a_minus.as_str(), "A-");
+        assert_eq!(rank_a.as_str(), "A");
+        assert_eq!(rank_a_plus.as_str(), "A+");
+        assert_eq!(rank_s_minus.as_str(), "S-");
+        assert_eq!(rank_s.as_str(), "S");
+        assert_eq!(rank_s_plus.as_str(), "S+");
+        assert_eq!(rank_ss.as_str(), "SS");
+        assert_eq!(rank_u.as_str(), "U");
+        assert_eq!(rank_x.as_str(), "X");
+        assert_eq!(rank_z.as_str(), "Unranked");
+    }
+
+    #[test]
+    fn whether_rank_is_unranked() {
+        let ranked_rank = Rank::CMinus;
+        let unranked_rank = Rank::Z;
+        assert!(!ranked_rank.is_unranked());
+        assert!(unranked_rank.is_unranked());
+    }
+
+    #[test]
+    fn get_rank_icon_url() {
+        let rank = Rank::SS;
+        assert_eq!(
+            rank.icon_url(),
+            "https://tetr.io/res/league-ranks/ss.png".to_string()
+        );
+    }
+
+    #[test]
+    fn get_ranks_color() {
+        let rank_d = Rank::D;
+        let rank_d_plus = Rank::DPlus;
+        let rank_c_minus = Rank::CMinus;
+        let rank_c = Rank::C;
+        let rank_c_plus = Rank::CPlus;
+        let rank_b_minus = Rank::BMinus;
+        let rank_b = Rank::B;
+        let rank_b_plus = Rank::BPlus;
+        let rank_a_minus = Rank::AMinus;
+        let rank_a = Rank::A;
+        let rank_a_plus = Rank::APlus;
+        let rank_s_minus = Rank::SMinus;
+        let rank_s = Rank::S;
+        let rank_s_plus = Rank::SPlus;
+        let rank_ss = Rank::SS;
+        let rank_u = Rank::U;
+        let rank_x = Rank::X;
+        let rank_z = Rank::Z;
+        assert_eq!(rank_d.color(), 0x907591);
+        assert_eq!(rank_d_plus.color(), 0x8e6091);
+        assert_eq!(rank_c_minus.color(), 0x79558c);
+        assert_eq!(rank_c.color(), 0x733e8f);
+        assert_eq!(rank_c_plus.color(), 0x552883);
+        assert_eq!(rank_b_minus.color(), 0x5650c7);
+        assert_eq!(rank_b.color(), 0x4f64c9);
+        assert_eq!(rank_b_plus.color(), 0x4f99c0);
+        assert_eq!(rank_a_minus.color(), 0x3bb687);
+        assert_eq!(rank_a.color(), 0x46ad51);
+        assert_eq!(rank_a_plus.color(), 0x46ad51);
+        assert_eq!(rank_s_minus.color(), 0xb2972b);
+        assert_eq!(rank_s.color(), 0xe0a71b);
+        assert_eq!(rank_s_plus.color(), 0xd8af0e);
+        assert_eq!(rank_ss.color(), 0xdb8b1f);
+        assert_eq!(rank_u.color(), 0xff3813);
+        assert_eq!(rank_x.color(), 0xff45ff);
+        assert_eq!(rank_z.color(), 0x767671);
+    }
+
+    #[test]
+    fn rank_as_ref() {
+        let rank = Rank::C;
+        let _a = rank.as_ref();
+        let _b = rank;
+    }
+
+    fn default_league_data() -> LeagueData {
+        LeagueData {
+            play_count: 0,
+            win_count: 0,
+            rating: 0.,
+            rank: Rank::Z,
+            standing: 0,
+            standing_local: 0,
+            next_rank: Some(Rank::Z),
+            prev_rank: Some(Rank::Z),
+            next_at: 0,
+            prev_at: 0,
+            percentile: 0.,
+            percentile_rank: Rank::Z,
+            glicko: Some(0.),
+            rd: Some(0.),
+            apm: Some(0.),
+            pps: Some(0.),
+            vs: Some(0.),
+            is_decaying: false,
         }
     }
 }

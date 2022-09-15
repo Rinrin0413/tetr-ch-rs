@@ -191,7 +191,7 @@ impl UserResponse {
     ///
     /// Panics if the request was not successful.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if self.get_user().league.play_count < 10 {
+        if 10 <= self.get_user().league.play_count {
             Some(self.get_user().league.rank.icon_url())
         } else {
             None
@@ -506,7 +506,7 @@ impl User {
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if self.league.play_count < 10 {
+        if 10 <= self.league.play_count {
             Some(self.league.rank.icon_url())
         } else {
             None

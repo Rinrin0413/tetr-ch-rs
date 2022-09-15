@@ -193,7 +193,7 @@ impl User {
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if self.league.play_count < 10 {
+        if 10 <= self.league.play_count {
             Some(self.league.rank.icon_url())
         } else {
             None
@@ -288,11 +288,8 @@ impl LeagueDataMini {
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if self.play_count < 10 {
-            Some(format!(
-                "https://tetr.io/res/league-ranks/{}.png",
-                self.rank
-            ))
+        if 10 <= self.play_count {
+            Some(self.rank.icon_url())
         } else {
             None
         }
