@@ -19,8 +19,10 @@ async fn main() {
     // Print the user details (some examples).
     println!("Level: {}", usr.level());
     println!("XP: {}", usr.data.as_ref().unwrap().user.xp);
-    println!("Role: {}", usr.data.as_ref().unwrap().user.role);
-    println!("Rank: {}", usr.data.as_ref().unwrap().user.league.rank);
+    println!("Role: {}", usr.data.as_ref().unwrap().user.role.to_string());
+    println!("Rank: {}", usr.data.as_ref().unwrap().user.league.rank.as_str());
+    println!("Rank icon: {}", usr.data.as_ref().unwrap().user.league.rank.icon_url());
+    println!("Rank color: {}", usr.data.as_ref().unwrap().user.league.rank.color());
     println!("Reached {:.2}%", usr.rank_progress().unwrap());
     println!("№{}", usr.data.as_ref().unwrap().user.league.standing);
     println!("№{} (local)", usr.data.as_ref().unwrap().user.league.standing_local);
