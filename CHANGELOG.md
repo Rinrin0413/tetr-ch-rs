@@ -1,3 +1,17 @@
+# v0.2.0
+
+- Added some useful methods.
+- Many elements to appropriate names.
+- Made the module [`rank_col`](https://docs.rs/tetr_ch/0.2.0/tetr_ch/constants/rank_col/) deprecated.
+- Improved performance.
+- Improved the documentation.
+- Moved [`LeagueData`](https://docs.rs/tetr_ch/0.1.1/tetr_ch/model/user/struct.LeagueData.html) to new module [`league`](https://docs.rs/tetr_ch/0.2.0/tetr_ch/model/league/).
+- Prepared a league rank exclusive type at new module [`league`](https://docs.rs/tetr_ch/0.2.0/tetr_ch/model/league/).
+- Implemented trait `Default` to implementable types.
+- Fixed missing dependencies `tokio` in [ex01](./examples/ex01_get_user_details/).
+
+---
+
 # v0.1.1
 
 - Added some examples.
