@@ -1,7 +1,10 @@
 //! The XP leaderboard data.
 
 use crate::{
-    model::cache::CacheData,
+    model::{
+        cache::CacheData,
+        user::{Role, UserId},
+    },
     util::{max_f64, to_unix_ts},
 };
 use serde::Deserialize;
@@ -11,7 +14,8 @@ use serde::Deserialize;
 #[non_exhaustive]
 pub struct XPLeaderboardResponse {
     /// Whether the request was successful.
-    pub success: bool,
+    #[serde(rename = "success")]
+    pub is_success: bool,
     /// The reason the request failed.
     pub error: Option<String>,
     /// Data about how this request was cached.
@@ -130,33 +134,39 @@ impl AsRef<XPLeaderboardData> for XPLeaderboardData {
 #[non_exhaustive]
 pub struct User {
     /// The user's internal ID.
-    pub _id: String,
+    #[serde(rename = "_id")]
+    pub id: UserId,
     /// The user's username.
-    pub username: String,
-    /// The user's role (one of `"anon"`, `"user"`, `"bot"`, `"mod"`, `"admin"`, *`"banned"`).  
-    ///
-    /// ***`"banned"` is not specified in TETRA CHANNEL API docs.**
-    pub role: String,
+    #[serde(rename = "username")]
+    pub name: String,
+    /// The user's role.
+    pub role: Role,
     /// When the user account was created.
     /// If not set, this account was created before join dates were recorded.
-    pub ts: Option<String>,
+    #[serde(rename = "ts")]
+    pub created_at: Option<String>,
     /// The user's ISO 3166-1 country code, or `None` if hidden/unknown. Some vanity flags exist.
     pub country: Option<String>,
     /// Whether this user is currently supporting TETR.IO <3
-    pub supporter: Option<bool>, // EXCEPTION
+    #[serde(rename = "supporter")]
+    pub is_supporter: Option<bool>, // EXCEPTION
     /// Whether this user is a verified account.
-    pub verified: bool,
+    #[serde(rename = "verified")]
+    pub is_verified: bool,
     /// The user's XP in points.
     pub xp: f64,
     /// The amount of online games played by this user.
     /// If the user has chosen to hide this statistic, it will be -1.
-    pub gamesplayed: i32,
+    #[serde(rename = "gamesplayed")]
+    pub play_count: i32,
     /// The amount of online games won by this user.
     /// If the user has chosen to hide this statistic, it will be -1.
-    pub gameswon: i32,
+    #[serde(rename = "gameswon")]
+    pub win_count: i32,
     /// The amount of seconds this user spent playing, both on- and offline.
     /// If the user has chosen to hide this statistic, it will be -1.
-    pub gametime: f64,
+    #[serde(rename = "gametime")]
+    pub play_time: f64,
 }
 
 impl User {
@@ -164,18 +174,13 @@ impl User {
     pub fn level(&self) -> u32 {
         let xp = self.xp;
         // (xp/500)^0.6 + (xp / (5000 + max(0, xp-4000000) / 5000)) + 1
-        let level =
-            ((xp / 500.).powf(0.6) + (xp / (5000. + max_f64(0., xp - 4000000.) / 5000.)) + 1.)
-                .floor() as u32;
-        level
+        ((xp / 500.).powf(0.6) + (xp / (5000. + max_f64(0., xp - 4000000.) / 5000.)) + 1.).floor()
+            as u32
     }
 
     /// Returns UNIX timestamp when the user's account created, if one exists.
     pub fn account_created_at(&self) -> Option<i64> {
-        match &self.ts {
-            Some(ts) => Some(to_unix_ts(ts)),
-            None => None,
-        }
+        self.created_at.as_ref().map(|ts| to_unix_ts(ts))
     }
 
     /// Returns an `Option<String>`.
@@ -184,14 +189,44 @@ impl User {
     /// returns `Some(String)` with an image URL of the national flag based on the user's ISO 3166-1 country code.
     /// If the user is not displaying the country, returns `None`.
     pub fn national_flag_url(&self) -> Option<String> {
-        if let Some(cc) = self.country.as_ref() {
-            Some(format!(
-                "https://tetr.io/res/flags/{}.png",
-                cc.to_lowercase()
-            ))
-        } else {
-            None
-        }
+        self.country
+            .as_ref()
+            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
+    }
+
+    /// Whether the user is an anonymous.
+    pub fn is_anonymous(&self) -> bool {
+        self.role.is_anon()
+    }
+
+    /// Whether the user is a bot.
+    pub fn is_bot(&self) -> bool {
+        self.role.is_bot()
+    }
+
+    /// Whether the user is a moderator.
+    pub fn is_moderator(&self) -> bool {
+        self.role.is_mod()
+    }
+
+    /// Whether the user is an administrator.
+    pub fn is_administrator(&self) -> bool {
+        self.role.is_admin()
+    }
+
+    /// Whether the user is banned.
+    pub fn is_banned(&self) -> bool {
+        self.role.is_banned()
+    }
+
+    /// Whether the user is a supporter.
+    pub fn is_supporter(&self) -> bool {
+        self.is_supporter.unwrap_or(false)
+    }
+
+    /// Whether the user is verified.
+    pub fn is_verified(&self) -> bool {
+        self.is_verified
     }
 }
 

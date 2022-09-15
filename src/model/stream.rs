@@ -8,7 +8,8 @@ use serde::Deserialize;
 #[non_exhaustive]
 pub struct StreamResponse {
     /// Whether the request was successful.
-    pub success: bool,
+    #[serde(rename = "success")]
+    pub is_success: bool,
     /// The reason the request failed.
     pub error: Option<String>,
     /// Data about how this request was cached.

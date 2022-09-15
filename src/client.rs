@@ -13,7 +13,7 @@ use crate::{
     },
 };
 use http::status::StatusCode;
-use reqwest::{Client as RqwClient, Error, Response};
+use reqwest::{self, Error, Response};
 use serde::Deserialize;
 
 const API_URL: &str = "https://ch.tetr.io/api/";
@@ -38,8 +38,9 @@ const API_URL: &str = "https://ch.tetr.io/api/";
 ///
 /// [See more examples](https://github.com/Rinrin0413/tetr-ch-rs/examples/)
 #[non_exhaustive]
+#[derive(Default)]
 pub struct Client {
-    client: RqwClient,
+    client: reqwest::Client,
 }
 
 impl Client {
@@ -56,7 +57,7 @@ impl Client {
     /// ```
     pub fn new() -> Self {
         Self {
-            client: RqwClient::new(),
+            client: reqwest::Client::new(),
         }
     }
 
@@ -302,11 +303,7 @@ impl Client {
                 } else {
                     (None, None)
                 };
-                let limit = if let Some(l) = query.limit {
-                    Some(l.to_string())
-                } else {
-                    None
-                };
+                let limit = query.limit.map(|l| l.to_string());
                 let country = query.country;
                 m.query = Some(league_leaderboard::QueryCache {
                     before,
@@ -423,11 +420,7 @@ impl Client {
                 } else {
                     (None, None)
                 };
-                let limit = if let Some(l) = query.limit {
-                    Some(l.to_string())
-                } else {
-                    None
-                };
+                let limit = query.limit.map(|l| l.to_string());
                 let country = query.country;
                 m.query = Some(xp_leaderboard::QueryCache {
                     before,
@@ -600,7 +593,8 @@ impl Client {
         subject: stream::NewsSubject,
         limit: u8,
     ) -> Result<LatestNewsResponse, ResponseError> {
-        if !(1 <= limit && limit <= 100) {
+        if !(1..=100).contains(&limit) {
+            // !(1 <= limit && limit <= 100)
             panic!(
                 "The query parameter`limit` must be between 1 and 100.\n\
                 Received: {}",
@@ -710,7 +704,7 @@ pub mod query {
     /// let mut q5 = LeagueLeaderboardQuery::new().country("us");
     /// q5.init();
     /// ```
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Default)]
     pub struct LeagueLeaderboardQuery {
         /// The bound in TR.
         ///
@@ -878,6 +872,7 @@ pub mod query {
         /// };
         /// assert!(invalid_query.is_invalid_limit_range());
         /// ```
+        #[allow(clippy::nonminimal_bool)]
         pub fn is_invalid_limit_range(&self) -> bool {
             if let Some(l) = self.limit.clone() {
                 match l {
@@ -1051,7 +1046,7 @@ pub mod query {
     /// let mut q4 = XPLeaderboardQuery::new().country("us");
     /// q4.init();
     /// ```
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Default)]
     pub struct XPLeaderboardQuery {
         /// The bound in XP.
         ///
@@ -1172,7 +1167,8 @@ pub mod query {
         /// let mut query = XPLeaderboardQuery::new().limit(101);
         /// ```
         pub fn limit(self, limit: u8) -> Self {
-            if 1 <= limit && limit <= 100 {
+            if (1..=100).contains(&limit) {
+                // 1 <= limit && limit <= 100
                 Self {
                     limit: Some(NonZeroU8::new(limit).unwrap()),
                     ..self
@@ -1217,8 +1213,9 @@ pub mod query {
         /// };
         /// assert!(invalid_query.is_invalid_limit_range());
         /// ```
+        #[allow(clippy::nonminimal_bool)]
         pub fn is_invalid_limit_range(&self) -> bool {
-            if let Some(l) = self.limit.clone() {
+            if let Some(l) = self.limit {
                 !(l <= NonZeroU8::new(100).unwrap())
             } else {
                 false
@@ -1236,11 +1233,9 @@ pub mod query {
         /// ```
         pub(crate) fn build(mut self) -> Vec<(String, String)> {
             // For not pass "inf" to puery parameters.
-            if let Some(b_a) = self.before_or_after.clone() {
-                if let BeforeAfter::After(b) = b_a {
-                    if b.is_infinite() {
-                        self.before_or_after = None;
-                    }
+            if let Some(BeforeAfter::After(b)) = self.before_or_after {
+                if b.is_infinite() {
+                    self.before_or_after = None;
                 }
             }
             let mut result = Vec::new();
@@ -1250,7 +1245,7 @@ pub mod query {
                     BeforeAfter::After(b) => result.push(("after".to_string(), b.to_string())),
                 }
             }
-            if let Some(l) = self.limit.clone() {
+            if let Some(l) = self.limit {
                 result.push(("limit".to_string(), l.to_string()));
             }
             if let Some(c) = self.country {
@@ -1359,18 +1354,6 @@ pub mod stream {
     }
 
     /// The news subject.
-    ///
-    /// # Variants
-    ///
-    /// - `Any`:
-    /// News of all users
-    ///
-    /// - `Global`:
-    /// Global news.
-    ///
-    /// - `User(String)`:
-    /// News of each user.
-    /// Enter the user's **ID** to `String`.
     pub enum NewsSubject {
         /// News of all users
         Any,

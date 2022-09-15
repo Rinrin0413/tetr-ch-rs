@@ -8,7 +8,8 @@ use serde::Deserialize;
 #[non_exhaustive]
 pub struct LatestNewsResponse {
     /// Whether the request was successful.
-    pub success: bool,
+    #[serde(rename = "success")]
+    pub is_success: bool,
     /// The reason the request failed.
     pub error: Option<String>,
     /// Data about how this request was cached.
@@ -30,7 +31,6 @@ impl LatestNewsResponse {
     /// # Panics
     ///
     /// Panics if there is no cache data.
-    /// ```
     pub fn cached_at(&self) -> i64 {
         match self.cache.as_ref() {
             Some(c) => c.cached_at(),
@@ -83,7 +83,8 @@ impl AsRef<LatestNews> for LatestNews {
 #[non_exhaustive]
 pub struct News {
     /// The item's internal ID.
-    pub _id: String,
+    #[serde(rename = "_id")]
+    pub id: String,
     /// The item's stream.
     pub stream: String,
     /// The item's type.
@@ -112,7 +113,8 @@ pub struct News {
     /// The item's records.
     pub data: NewsData,
     /// The item's creation date.
-    pub ts: String,
+    #[serde(rename = "ts")]
+    pub creation_at: String,
 }
 
 impl News {
@@ -161,7 +163,7 @@ impl News {
     /// assert_eq!(news.creation_at(), 1658856923);
     /// ```
     pub fn creation_at(&self) -> i64 {
-        to_unix_ts(&self.ts)
+        to_unix_ts(&self.creation_at)
     }
 }
 
@@ -196,7 +198,8 @@ pub struct NewsData {
     ///
     /// Valid for types:
     /// `leaderboard`, `personalbest`
-    pub gametype: Option<String>,
+    #[serde(rename = "gametype")]
+    pub game_type: Option<String>,
     /// - ~~The global rank achieved. (leaderboard)~~
     /// - ~~The new rank. (rankup)~~
     ///
@@ -206,8 +209,8 @@ pub struct NewsData {
     ///
     /// This field is currently(August 2022) too dynamic.
     /// So the developer(Rinrin.rs) was not able to deal it.
-    #[serde(default = "none")]
-    pub _rank: Option<()>,
+    #[serde(default = "none", rename = "_")]
+    pub rank: Option<()>,
     /// The result (score or time) achieved.
     ///
     /// Valid for types:
@@ -217,7 +220,8 @@ pub struct NewsData {
     ///
     /// Valid for types:
     /// `leaderboard`, `personalbest`
-    pub replayid: Option<String>,
+    #[serde(rename = "replayid")]
+    pub replay_id: Option<String>,
     /// The badge's internal ID,
     /// and the filename of the badge icon (all PNGs within /res/badges/)
     ///
@@ -233,7 +237,7 @@ pub struct NewsData {
 }
 
 impl AsRef<NewsData> for NewsData {
-    fn as_ref(&self) -> &NewsData {
+    fn as_ref(&self) -> &Self {
         self
     }
 }
@@ -250,7 +254,7 @@ mod tests {
     fn get_cached_at_and_cached_until() {
         use super::*;
         let news = LatestNewsResponse {
-            success: true,
+            is_success: true,
             error: None,
             cache: Some(crate::model::cache::CacheData {
                 status: "hit".to_string(),
@@ -268,7 +272,7 @@ mod tests {
     fn panic_if_no_cache_1() {
         use super::*;
         let news = LatestNewsResponse {
-            success: false,
+            is_success: false,
             error: None,
             cache: None,
             data: None,
@@ -281,7 +285,7 @@ mod tests {
     fn panic_if_no_cache_2() {
         use super::*;
         let news = LatestNewsResponse {
-            success: false,
+            is_success: false,
             error: None,
             cache: None,
             data: None,
@@ -292,7 +296,7 @@ mod tests {
     #[test]
     fn latest_news_response_as_ref() {
         let latest_news_response = LatestNewsResponse {
-            success: true,
+            is_success: true,
             error: None,
             cache: Some(crate::model::cache::CacheData {
                 status: "hit".to_string(),
@@ -333,19 +337,19 @@ mod tests {
         };
         assert_eq!(news.rank_icon_url(), "https://tetr.io/res/league-ranks/SS.png");*/
         let news = News {
-            _id: "-".to_string(),
+            id: "-".to_string(),
             stream: "-".to_string(),
             _type: "-".to_string(),
             data: NewsData {
-                _rank: None,
+                rank: None,
                 username: None,
-                gametype: None,
+                game_type: None,
                 result: None,
-                replayid: None,
+                replay_id: None,
                 badge_id: None,
                 badge_label: None,
             },
-            ts: "-".to_string(),
+            creation_at: "-".to_string(),
         };
         news.rank_icon_url();
     }
@@ -353,19 +357,19 @@ mod tests {
     #[test]
     fn get_badge_icon() {
         let news = News {
-            _id: "-".to_string(),
+            id: "-".to_string(),
             stream: "-".to_string(),
             _type: "-".to_string(),
             data: NewsData {
-                _rank: None,
+                rank: None,
                 username: None,
-                gametype: None,
+                game_type: None,
                 result: None,
-                replayid: None,
+                replay_id: None,
                 badge_id: Some("secretgrade".to_string()),
                 badge_label: Some("Achieved the full Secret Grade".to_string()),
             },
-            ts: "-".to_string(),
+            creation_at: "-".to_string(),
         };
         assert_eq!(
             news.badge_icon_url(),
@@ -377,19 +381,19 @@ mod tests {
     #[should_panic]
     fn panic_if_no_badge_id() {
         let news = News {
-            _id: "-".to_string(),
+            id: "-".to_string(),
             stream: "-".to_string(),
             _type: "-".to_string(),
             data: NewsData {
-                _rank: None,
+                rank: None,
                 username: None,
-                gametype: None,
+                game_type: None,
                 result: None,
-                replayid: None,
+                replay_id: None,
                 badge_id: None,
                 badge_label: None,
             },
-            ts: "-".to_string(),
+            creation_at: "-".to_string(),
         };
         news.badge_icon_url();
     }
@@ -397,19 +401,19 @@ mod tests {
     #[test]
     fn get_creation_at() {
         let news = News {
-            _id: "-".to_string(),
+            id: "-".to_string(),
             stream: "-".to_string(),
             _type: "-".to_string(),
             data: NewsData {
-                _rank: None,
+                rank: None,
                 username: None,
-                gametype: None,
+                game_type: None,
                 result: None,
-                replayid: None,
+                replay_id: None,
                 badge_id: None,
                 badge_label: None,
             },
-            ts: "2022-07-26T17:35:23.988Z".to_string(),
+            creation_at: "2022-07-26T17:35:23.988Z".to_string(),
         };
         assert_eq!(news.creation_at(), 1658856923);
     }
@@ -417,19 +421,19 @@ mod tests {
     #[test]
     fn news_as_ref() {
         let news = News {
-            _id: "-".to_string(),
+            id: "-".to_string(),
             stream: "-".to_string(),
             _type: "-".to_string(),
             data: NewsData {
-                _rank: None,
+                rank: None,
                 username: None,
-                gametype: None,
+                game_type: None,
                 result: None,
-                replayid: None,
+                replay_id: None,
                 badge_id: None,
                 badge_label: None,
             },
-            ts: "-".to_string(),
+            creation_at: "-".to_string(),
         };
         let _news2 = news.as_ref();
         let _news3 = news;
@@ -438,11 +442,11 @@ mod tests {
     #[test]
     fn news_data_as_ref() {
         let news_data = NewsData {
-            _rank: None,
+            rank: None,
             username: None,
-            gametype: None,
+            game_type: None,
             result: None,
-            replayid: None,
+            replay_id: None,
             badge_id: None,
             badge_label: None,
         };

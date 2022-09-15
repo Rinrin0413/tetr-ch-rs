@@ -1,6 +1,13 @@
 //! The TETRA LEAGUE leaderboard data.
 
-use crate::{model::cache::CacheData, util::max_f64};
+use crate::{
+    model::{
+        cache::CacheData,
+        league::Rank,
+        user::{Role, UserId},
+    },
+    util::max_f64,
+};
 use serde::Deserialize;
 
 /// The response for the TETRA LEAGUE leaderboard.
@@ -8,7 +15,8 @@ use serde::Deserialize;
 #[non_exhaustive]
 pub struct LeagueLeaderboardResponse {
     /// Whether the request was successful.
-    pub success: bool,
+    #[serde(rename = "success")]
+    pub is_success: bool,
     /// The reason the request failed.
     pub error: Option<String>,
     /// Data about how this request was cached.
@@ -151,23 +159,25 @@ impl AsRef<LeagueLeaderboardData> for LeagueLeaderboardData {
 #[non_exhaustive]
 pub struct User {
     /// The user's internal ID.
-    pub _id: String,
+    #[serde(rename = "_id")]
+    pub id: UserId,
     /// The user's username.
-    pub username: String,
-    /// The user's role (one of `"anon"`, `"user"`, `"bot"`, `"mod"`, `"admin"`, *`"banned"`).  
-    ///
-    /// ***`"banned"` is not specified in TETRA CHANNEL API docs.**
-    pub role: String,
+    #[serde(rename = "username")]
+    pub name: String,
+    /// The user's role.
+    pub role: Role,
     /// The user's XP in points.
     pub xp: f64,
     /// The user's ISO 3166-1 country code, or `None` if hidden/unknown. Some vanity flags exist.
     pub country: Option<String>,
     /// Whether this user is currently supporting TETR.IO <3
-    pub supporter: Option<bool>, // EXCEPTION
+    #[serde(rename = "supporter")]
+    pub is_supporter: Option<bool>, // EXCEPTION
     /// Whether this user is a verified account.
-    pub verified: bool,
+    #[serde(rename = "verified")]
+    pub is_verified: bool,
     /// This user's current TETRA LEAGUE standing.
-    pub league: LeagueData,
+    pub league: LeagueDataMini,
 }
 
 impl User {
@@ -175,21 +185,16 @@ impl User {
     pub fn level(&self) -> u32 {
         let xp = self.xp;
         // (xp/500)^0.6 + (xp / (5000 + max(0, xp-4000000) / 5000)) + 1
-        let level =
-            ((xp / 500.).powf(0.6) + (xp / (5000. + max_f64(0., xp - 4000000.) / 5000.)) + 1.)
-                .floor() as u32;
-        level
+        ((xp / 500.).powf(0.6) + (xp / (5000. + max_f64(0., xp - 4000000.) / 5000.)) + 1.).floor()
+            as u32
     }
 
     /// Returns an icon URL of the user's rank.
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if self.league.gamesplayed < 10 {
-            Some(format!(
-                "https://tetr.io/res/league-ranks/{}.png",
-                self.league.rank
-            ))
+        if self.league.play_count < 10 {
+            Some(self.league.rank.icon_url())
         } else {
             None
         }
@@ -201,14 +206,44 @@ impl User {
     /// returns `Some(String)` with an image URL of the national flag based on the user's ISO 3166-1 country code.
     /// If the user is not displaying the country, returns `None`.
     pub fn national_flag_url(&self) -> Option<String> {
-        if let Some(cc) = self.country.as_ref() {
-            Some(format!(
-                "https://tetr.io/res/flags/{}.png",
-                cc.to_lowercase()
-            ))
-        } else {
-            None
-        }
+        self.country
+            .as_ref()
+            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
+    }
+
+    /// Whether the user is an anonymous.
+    pub fn is_anon(&self) -> bool {
+        self.role.is_anon()
+    }
+
+    /// Whether the user is a bot.
+    pub fn is_bot(&self) -> bool {
+        self.role.is_bot()
+    }
+
+    /// Whether the user is a moderator.
+    pub fn is_mod(&self) -> bool {
+        self.role.is_mod()
+    }
+
+    /// Whether the user is an administrator.
+    pub fn is_admin(&self) -> bool {
+        self.role.is_admin()
+    }
+
+    /// Whether the user is banned.
+    pub fn is_banned(&self) -> bool {
+        self.role.is_banned()
+    }
+
+    /// Whether the user is a supporter.
+    pub fn is_supporter(&self) -> bool {
+        self.is_supporter.unwrap_or(false)
+    }
+
+    /// Whether the user is verified.
+    pub fn is_verified(&self) -> bool {
+        self.is_verified
     }
 }
 
@@ -221,15 +256,17 @@ impl AsRef<User> for User {
 /// The user's current TETRA LEAGUE standing.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct LeagueData {
+pub struct LeagueDataMini {
     /// The amount of TETRA LEAGUE games played by this user.
-    pub gamesplayed: u32,
+    #[serde(rename = "gamesplayed")]
+    pub play_count: u32,
     /// The amount of TETRA LEAGUE games won by this user.
-    pub gameswon: u32,
+    #[serde(rename = "gameswon")]
+    pub win_count: u32,
     /// This user's TR (Tetra Rating), or -1 if less than 10 games were played.
     pub rating: f64,
     /// This user's letter rank. Z is unranked.
-    pub rank: String,
+    pub rank: Rank,
     /// This user's Glicko-2 rating.
     pub glicko: Option<f64>,
     /// This user's Glicko-2 Rating Deviation.
@@ -242,15 +279,16 @@ pub struct LeagueData {
     /// This user's average VS (versus score) over the last 10 games.
     pub vs: Option<f64>,
     /// Whether this user's RD is rising (has not played in the last week).
-    pub decaying: bool,
+    #[serde(rename = "decaying")]
+    pub is_decaying: bool,
 }
 
-impl LeagueData {
+impl LeagueDataMini {
     /// Returns an icon URL of the user's rank.
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if self.gamesplayed < 10 {
+        if self.play_count < 10 {
             Some(format!(
                 "https://tetr.io/res/league-ranks/{}.png",
                 self.rank
@@ -261,8 +299,8 @@ impl LeagueData {
     }
 }
 
-impl AsRef<LeagueData> for LeagueData {
-    fn as_ref(&self) -> &LeagueData {
+impl AsRef<LeagueDataMini> for LeagueDataMini {
+    fn as_ref(&self) -> &LeagueDataMini {
         self
     }
 }

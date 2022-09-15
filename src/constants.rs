@@ -1,5 +1,9 @@
 //! Constant values for the TETR.IO.
 
+#[deprecated(
+    since = "0.2.0",
+    note = "use the implemented constants of tetr_ch::model::league::Rank"
+)]
 pub mod rank_col {
     //! The colors for each rank
 
