@@ -13,6 +13,8 @@
 //! - XP Leaderboard.
 //! - The latest news.
 //!
+//! Also you can search for [TETR.IO](https://tetr.io) accounts by Discord account.
+//!
 //! But TETRA CHANNEL API is alpha version.
 //! So this library may not work properly in the future:(
 //!
@@ -22,7 +24,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tetr_ch = "0.2.1"
+//! tetr_ch = "0.3.0"
 //! ```
 //!
 //! # Examples

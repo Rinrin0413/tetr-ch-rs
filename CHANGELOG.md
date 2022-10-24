@@ -1,4 +1,10 @@
-# v0.3.0 (support for TETR.IO v6.3.1) 2022-10-24
+# v0.3.1  2022-10-25
+
+- Fixed forgot to update.
+
+---
+
+# v0.3.0 (support for TETR.IO v6.3.1) 2022-10-25
 
 ## Additions
 
