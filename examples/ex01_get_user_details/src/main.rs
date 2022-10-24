@@ -29,6 +29,11 @@ async fn main() {
     println!("Badges count: {}", usr.badges_count());
     println!("Icon URL: {}", usr.face());
     println!("Country: {:?}", usr.data.as_ref().unwrap().user.country);
+    println!(
+        "Discord: {} ({})",
+        usr.data.as_ref().unwrap().user.connections.discord.as_ref().unwrap().name,
+        usr.data.as_ref().unwrap().user.connections.discord.as_ref().unwrap().id
+    );
 
     // Learn more about what we can get from following docs:
     // https://docs.rs/tetr_ch/latest/tetr_ch/model/user/struct.UserResponse.html

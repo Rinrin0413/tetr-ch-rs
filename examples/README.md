@@ -11,3 +11,4 @@ These are examples for using this library.
 1. [Get streams](./ex07_get_streams/)
 1. [Get latest news](./ex08_get_latest_news/)
 1. [Constants](./ex09_constants/)
+1. [Search TETR.IO accounts](./ex10_search_accounts/)
