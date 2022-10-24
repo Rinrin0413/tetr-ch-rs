@@ -17,6 +17,9 @@ pub struct LeagueData {
     pub rating: f64,
     /// This user's letter rank. Z is unranked.
     pub rank: Rank,
+    /// This user's highest achieved rank this season.
+    #[serde(rename = "bestrank")]
+    pub best_rank: Option<Rank>,
     /// This user's position in global leaderboards, or -1 if not applicable.
     pub standing: i32,
     /// This user's position in local leaderboards, or -1 if not applicable.
@@ -65,9 +68,14 @@ impl LeagueData {
         }
     }
 
-    /// Returns an rank color. (Hex color codes)
-    pub fn rank_color(&self) -> u32 {
-        self.rank.color()
+    /// Returns a rank color. (Hex color codes)
+    /// If the user has no rank, returns `None`.
+    pub fn rank_color(&self) -> Option<u32> {
+        if 10 <= self.play_count {
+            Some(self.rank.color())
+        } else {
+            None
+        }
     }
 
     /// Returns an icon URL of the user's percentile rank.
@@ -81,9 +89,27 @@ impl LeagueData {
         }
     }
 
-    /// Returns an percentile rank color. (Hex color codes)
-    pub fn percentile_rank_color(&self) -> u32 {
-        self.percentile_rank.color()
+    /// Returns a percentile rank color. (Hex color codes)
+    /// If not applicable, returns `None`.
+    pub fn percentile_rank_color(&self) -> Option<u32> {
+        let pr = &self.percentile_rank;
+        if !pr.is_unranked() {
+            Some(pr.color())
+        } else {
+            None
+        }
+    }
+
+    /// Returns an icon URL of the user's highest achieved rank.
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_icon_url(&self) -> Option<String> {
+        self.best_rank.as_ref().map(|br| br.icon_url())
+    }
+
+    /// Returns a highest achieved rank color. (Hex color codes)
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_color(&self) -> Option<u32> {
+        self.best_rank.as_ref().map(|br| br.color())
     }
 
     /// Returns the user's progress percentage in the rank.
@@ -441,9 +467,10 @@ mod tests {
     fn get_rank_color_from_league_data() {
         let league_data = LeagueData {
             rank: Rank::A,
+            play_count: 10,
             ..default_league_data()
         };
-        assert_eq!(league_data.rank_color(), 0x46ad51);
+        assert_eq!(league_data.rank_color(), Some(0x46ad51));
     }
 
     #[test]
@@ -469,7 +496,7 @@ mod tests {
             percentile_rank: Rank::DPlus,
             ..default_league_data()
         };
-        assert_eq!(league_data.percentile_rank_color(), 0x8e6091);
+        assert_eq!(league_data.percentile_rank_color(), Option::Some(0x8e6091));
     }
 
     #[test]
@@ -606,6 +633,7 @@ mod tests {
             win_count: 0,
             rating: 0.,
             rank: Rank::Z,
+            best_rank: None,
             standing: 0,
             standing_local: 0,
             next_rank: Some(Rank::Z),

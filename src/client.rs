@@ -5,6 +5,7 @@ use crate::{
     model::{
         latest_news::LatestNewsResponse,
         league_leaderboard::{self, LeagueLeaderboardResponse},
+        searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
         server_stats::ServerStatsResponse,
         stream::StreamResponse,
@@ -614,6 +615,50 @@ impl Client {
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
         response(res).await
     }
+
+    /// Search a TETR.IO user account by Discord account.
+    ///
+    /// # Arguments
+    ///
+    /// - `discord_user`:
+    ///
+    /// The Discord username or Discord ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// Search a user by Discord account:
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Search a user by Discord ID.
+    /// let user = client.search_user("724976600873041940").await?;
+    /// # Ok(())
+    /// # }
+    ///
+    /// # tokio_test::block_on(run());
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn search_user(
+        self,
+        discord_user: &str,
+    ) -> Result<SearchedUserResponse, ResponseError> {
+        let url = format!("{}/users/search/{}", API_URL, discord_user);
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
 }
 
 /// Receives `Result<Response, Error>` and returns `Result<T, ResponseError>`.
@@ -779,7 +824,7 @@ pub mod query {
         /// 25000 by default.
         ///
         /// The `before` and `after` parameters may not be combined,
-        /// so even if there is an `before` parameter, the `after` parameter takes precedence and overrides it.
+        /// so even if there is a `before` parameter, the `after` parameter takes precedence and overrides it.
         ///
         /// This parameter is ignored if specified to get the full leaderboard.
         ///
@@ -1121,7 +1166,7 @@ pub mod query {
         /// Set the query parameter`after`.
         ///
         /// The `before` and `after` parameters may not be combined,
-        /// so even if there is an `before` parameter, the `after` parameter takes precedence and overrides it.
+        /// so even if there is a `before` parameter, the `after` parameter takes precedence and overrides it.
         /// Infinite([`f64::INFINITY`]) by default.
         ///
         /// # Examples

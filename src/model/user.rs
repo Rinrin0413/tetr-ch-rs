@@ -191,20 +191,17 @@ impl UserResponse {
     ///
     /// Panics if the request was not successful.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if 10 <= self.get_user().league.play_count {
-            Some(self.get_user().league.rank.icon_url())
-        } else {
-            None
-        }
+        self.get_user().rank_icon_url()
     }
 
     /// Returns a rank color. (Hex color codes)
+    /// If the user has no rank, returns `None`.
     ///
     /// # Panics
     ///
     /// Panics if the request was not successful.
-    pub fn rank_color(&self) -> u32 {
-        self.get_user().league.rank.color()
+    pub fn rank_color(&self) -> Option<u32> {
+        self.get_user().rank_color()
     }
 
     /// Returns an icon URL of the user's percentile rank.
@@ -214,21 +211,29 @@ impl UserResponse {
     ///
     /// Panics if the request was not successful.
     pub fn percentile_rank_icon_url(&self) -> Option<String> {
-        let pr = &self.get_user().league.percentile_rank;
-        if !pr.is_unranked() {
-            Some(pr.icon_url())
-        } else {
-            None
-        }
+        self.get_user().percentile_rank_icon_url()
     }
 
     /// Returns a percentile rank color. (Hex color codes)
+    /// If not applicable, returns `None`.
     ///
     /// # Panics
     ///
     /// Panics if the request was not successful.
-    pub fn percentile_rank_color(&self) -> u32 {
-        self.get_user().league.percentile_rank.color()
+    pub fn percentile_rank_color(&self) -> Option<u32> {
+        self.get_user().percentile_rank_color()
+    }
+
+    /// Returns an icon URL of the user's highest achieved rank.
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_icon_url(&self) -> Option<String> {
+        self.get_user().best_rank_icon_url()
+    }
+
+    /// Returns a color of the user's highest achieved rank.
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_color(&self) -> Option<u32> {
+        self.get_user().best_rank_color()
     }
 
     /// Returns an `Option<String>`.
@@ -400,6 +405,10 @@ pub struct User {
     pub bio: Option<String>,
     /// The amount of players who have added this user to their friends list.
     pub friend_count: Option<u32>, // EXCEPTION
+    /// This user's third party connections.
+    pub connections: Connections,
+    // This user's distinguishment banner.
+    pub distinguishment: Option<Distinguishment>,
 }
 
 impl User {
@@ -506,33 +515,40 @@ impl User {
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if 10 <= self.league.play_count {
-            Some(self.league.rank.icon_url())
-        } else {
-            None
-        }
+        self.league.rank_icon_url()
     }
 
-    /// Returns an rank color. (Hex color codes)
-    pub fn rank_color(&self) -> u32 {
-        self.league.rank.color()
+    /// Returns a rank color. (Hex color codes)
+    /// If the user has no rank, returns `None`.
+    pub fn rank_color(&self) -> Option<u32> {
+        self.league.rank_color()
     }
 
     /// Returns an icon URL of the user's percentile rank.
-    /// If not applicable, returns `None`.
+    /// f not applicable, returns `None`.
     pub fn percentile_rank_icon_url(&self) -> Option<String> {
-        let pr = &self.league.percentile_rank;
-        if !pr.is_unranked() {
-            Some(pr.icon_url())
-        } else {
-            None
-        }
+        self.league.percentile_rank_icon_url()
     }
 
-    /// Returns an percentile rank color. (Hex color codes)
-    pub fn percentile_rank_color(&self) -> u32 {
-        self.league.percentile_rank.color()
+    /// Returns a percentile rank color. (Hex color codes)
+    /// If not applicable, returns `None`.
+    pub fn percentile_rank_color(&self) -> Option<u32> {
+        self.league.percentile_rank_color()
     }
+
+    /// Returns a URL of the user's highest achieved rank.
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_icon_url(&self) -> Option<String> {
+        self.league.best_rank_icon_url()
+    }
+
+    /// Returns a color of the user's highest achieved rank.
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_color(&self) -> Option<u32> {
+        self.league.best_rank_color()
+    }
+
+    /// Returns an i
 
     /// Returns an `Option<String>`.
     ///
@@ -683,6 +699,58 @@ impl Badge {
 }
 
 impl AsRef<Badge> for Badge {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// This user's third party connections.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct Connections {
+    /// This user's connection to Discord.
+    pub discord: Option<DiscordUser>,
+}
+
+impl AsRef<Connections> for Connections {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// This user's connection to Discord.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct DiscordUser {
+    /// This user's Discord ID.
+    pub id: String,
+    /// This user's Discord Tag.
+    #[serde(rename = "username")]
+    pub name: String,
+}
+
+impl AsRef<DiscordUser> for DiscordUser {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// This user's distinguishment banner.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct Distinguishment {
+    // The type of distinguishment banner.
+    #[serde(rename = "type")]
+    pub _type: String,
+    /// The detail of distinguishment banner.
+    pub detail: Option<String>,
+    /// The header of distinguishment banner.
+    pub header: Option<String>,
+    /// the footer of distinguishment banner.
+    pub footer: Option<String>,
+}
+
+impl AsRef<Distinguishment> for Distinguishment {
     fn as_ref(&self) -> &Self {
         self
     }

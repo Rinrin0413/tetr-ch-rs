@@ -193,11 +193,25 @@ impl User {
     /// If the user is unranked, returns ?-rank(z) icon URL.
     /// If the user has no rank, returns `None`.
     pub fn rank_icon_url(&self) -> Option<String> {
-        if 10 <= self.league.play_count {
-            Some(self.league.rank.icon_url())
-        } else {
-            None
-        }
+        self.league.rank_icon_url()
+    }
+
+    /// Returns a rank color. (Hex color codes)
+    /// If the user has no rank, returns `None`.
+    pub fn rank_color(&self) -> Option<u32> {
+        self.league.rank_color()
+    }
+
+    /// Returns an icon URL of the user's highest achieved rank.
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_icon_url(&self) -> Option<String> {
+        self.league.best_rank_icon_url()
+    }
+
+    /// Returns a color of the user's highest achieved rank. (Hex color codes)
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_color(&self) -> Option<u32> {
+        self.league.best_rank_color()
     }
 
     /// Returns an `Option<String>`.
@@ -267,6 +281,9 @@ pub struct LeagueDataMini {
     pub rating: f64,
     /// This user's letter rank. Z is unranked.
     pub rank: Rank,
+    /// This user's highest achieved rank this season.
+    #[serde(rename = "bestrank")]
+    pub best_rank: Option<Rank>,
     /// This user's Glicko-2 rating.
     pub glicko: Option<f64>,
     /// This user's Glicko-2 Rating Deviation.
@@ -293,6 +310,28 @@ impl LeagueDataMini {
         } else {
             None
         }
+    }
+
+    /// Returns a rank color. (Hex color codes)
+    /// If the user has no rank, returns `None`.
+    pub fn rank_color(&self) -> Option<u32> {
+        if 10 <= self.play_count {
+            Some(self.rank.color())
+        } else {
+            None
+        }
+    }
+
+    /// Returns an icon URL of the user's highest achieved rank.
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_icon_url(&self) -> Option<String> {
+        self.best_rank.as_ref().map(|r| r.icon_url())
+    }
+
+    /// Returns a highest achieved rank color. (Hex color codes)
+    /// If the user has no highest achieved rank, returns `None`.
+    pub fn best_rank_color(&self) -> Option<u32> {
+        self.best_rank.as_ref().map(|r| r.color())
     }
 }
 

@@ -2,7 +2,7 @@
 
 use chrono::DateTime;
 
-/// Parses an RFC 3339 and ISO 8601 date to UNIX timestamp as `i64`.
+/// Parses a RFC 3339 and ISO 8601 date to UNIX timestamp as `i64`.
 pub(crate) fn to_unix_ts(ts: &str) -> i64 {
     match DateTime::parse_from_rfc3339(ts) {
         Ok(dt) => dt.timestamp(),
