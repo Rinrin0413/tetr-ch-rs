@@ -26,7 +26,7 @@ Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-tetr_ch = "0.3.0"
+tetr_ch = "0.3.2"
 ```
 
 # Examples
@@ -59,6 +59,6 @@ async fn main() {
 
 See [full examples](./examples/).
 
-And see the [docs](https://docs.rs/tetr_ch/).
+And see the [docs](https://docs.rs/tetr_ch).
 
 [![GPL-3.0](https://img.shields.io/github/license/Rinrin0413/tetr-ch-rs?color=%23BD0102&style=for-the-badge)](./LICENSE.md)

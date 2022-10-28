@@ -65,6 +65,35 @@ impl SearchedUserResponse {
             None
         }
     }
+
+    /// Returns the user's profile URL or `None` if the user was not found.
+    pub fn profile_url(&self) -> Option<String> {
+        self.data.as_ref().map(|u| u.profile_url())
+    }
+
+    /// Returns a UNIX timestamp when this resource was cached.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no cache data.
+    pub fn cached_at(&self) -> i64 {
+        match self.cache.as_ref() {
+            Some(c) => c.cached_at(),
+            None => panic!("There is no cache data."),
+        }
+    }
+
+    /// Returns a UNIX timestamp when this resource's cache expires.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no cache data.
+    pub fn cached_until(&self) -> i64 {
+        match self.cache.as_ref() {
+            Some(c) => c.cached_at(),
+            None => panic!("There is no cache data."),
+        }
+    }
 }
 
 impl AsRef<SearchedUserResponse> for SearchedUserResponse {
@@ -108,6 +137,11 @@ impl UserData {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_records(&self) -> Result<UserRecordsResponse, ResponseError> {
         Client::new().get_user_records(self.user.id.id()).await
+    }
+
+    /// Returns the user's profile URL.
+    pub fn profile_url(&self) -> String {
+        self.user.profile_url()
     }
 }
 
@@ -156,6 +190,11 @@ impl UserInfo {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_records(&self) -> Result<UserRecordsResponse, ResponseError> {
         Client::new().get_user_records(self.id.id()).await
+    }
+
+    /// Returns the user's profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.name)
     }
 }
 

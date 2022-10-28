@@ -24,7 +24,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tetr_ch = "0.3.0"
+//! tetr_ch = "0.3.2"
 //! ```
 //!
 //! # Examples
@@ -60,10 +60,10 @@
 //! [![GPL-3.0](https://img.shields.io/github/license/Rinrin0413/tetr-ch-rs?color=%23BD0102&style=for-the-badge)](https://docs.rs/crate/tetr_ch/latest/source/LICENSE.md)
 
 #![doc(
-    html_favicon_url = "https://raw.githubusercontent.com/Rinrin0413/tetr-ch-rs/dev/assets/tetr-ch-rs.png"
+    html_favicon_url = "https://raw.githubusercontent.com/Rinrin0413/tetr-ch-rs/master/assets/tetr-ch-rs.png"
 )]
 #![doc(
-    html_logo_url = "https://raw.githubusercontent.com/Rinrin0413/tetr-ch-rs/dev/assets/tetr-ch-rs.png"
+    html_logo_url = "https://raw.githubusercontent.com/Rinrin0413/tetr-ch-rs/master/assets/tetr-ch-rs.png"
 )]
 
 pub mod client;

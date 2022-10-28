@@ -1,3 +1,14 @@
+# v0.3.2 2022-10-28
+
+## Additions
+
+- Added a module [`profile_url`](https://docs.rs/tetr_ch/0.3.2/tetr_ch/model/searched_user/struct.UserInfo.html#method.profile_url) to [`UserInfo`](https://docs.rs/tetr_ch/0.3.2/tetr_ch/model/searched_user/struct.UserInfo.html) and parent structs.
+- Added modules [`cached_at`](https://docs.rs/tetr_ch/0.3.2/tetr_ch/model/searched_user/struct.SearchedUserResponse.html#method.cached_at) and [`cached_until`](https://docs.rs/tetr_ch/0.3.2/tetr_ch/model/searched_user/struct.SearchedUserResponse.html#method.cached_until) to [`SearchedUserResponse`](https://docs.rs/tetr_ch/0.3.2/tetr_ch/model/searched_user/struct.SearchedUserResponse.html).
+
+## Improvements
+
+- Improved the documentation.
+
 # v0.3.1  2022-10-25
 
 - Fixed forgot to update.
