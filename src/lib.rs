@@ -17,6 +17,8 @@
 //!
 //! But TETRA CHANNEL API is alpha version.
 //! So this library may not work properly in the future:(
+//! 
+//! **\* This library is NOT official.**
 //!
 //! # Installation
 //!
