@@ -1,6 +1,4 @@
-# tetr-ch-rs ![Latest release version](https://img.shields.io/github/v/release/Rinrin0413/tetr-ch-rs?color=007722&label=Latest%20release&style=flat-square) [![Codecov](https://img.shields.io/codecov/c/github/Rinrin0413/tetr-ch-rs?color=%23651a00&logo=Codecov&style=flat-square)](https://app.codecov.io/gh/Rinrin0413/tetr-ch-rs)
-
-<img src="./assets/tetr-ch-rs.png" alt="tetr-ch-rs" width="256px">
+# tetr-ch-rs ![Latest release version](https://img.shields.io/github/v/release/Rinrin0413/tetr-ch-rs?color=007722&label=Latest%20release&style=flat-square) [![Codecov](https://img.shields.io/codecov/c/github/Rinrin0413/tetr-ch-rs?color=%23ff0077&logo=Codecov&style=flat-square)](https://app.codecov.io/gh/Rinrin0413/tetr-ch-rs)
 
 tetr-ch-rs is a Rust library for the [TETRA CHANNEL API](https://tetr.io/about/api/).
 
@@ -20,13 +18,15 @@ Also you can search for [TETR.IO](https://tetr.io) accounts by Discord account.
 But TETRA CHANNEL API is alpha version.
 So this library may not work properly in the future:(
 
+**\* This library is NOT official.**
+
 # Installation
 
 Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-tetr_ch = "0.3.2"
+tetr_ch = "0.3.3"
 ```
 
 # Examples
