@@ -44,6 +44,8 @@ pub struct Client {
     client: reqwest::Client,
 }
 
+type RspErr<T> = Result<T, ResponseError>;
+
 impl Client {
     /// Create a new [`Client`].
     ///
@@ -88,7 +90,7 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user(self, user: &str) -> Result<UserResponse, ResponseError> {
+    pub async fn get_user(self, user: &str) -> RspErr<UserResponse> {
         let url = format!("{}/users/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -120,7 +122,7 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_server_stats(self) -> Result<ServerStatsResponse, ResponseError> {
+    pub async fn get_server_stats(self) -> RspErr<ServerStatsResponse> {
         let url = format!("{}general/stats", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -152,7 +154,7 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_server_activity(self) -> Result<ServerActivityResponse, ResponseError> {
+    pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
         let url = format!("{}general/activity", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -184,7 +186,7 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user_records(self, user: &str) -> Result<UserRecordsResponse, ResponseError> {
+    pub async fn get_user_records(self, user: &str) -> RspErr<UserRecordsResponse> {
         let url = format!("{}/users/{}/records", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -265,7 +267,7 @@ impl Client {
     pub async fn get_league_leaderboard(
         self,
         query: query::LeagueLeaderboardQuery,
-    ) -> Result<LeagueLeaderboardResponse, ResponseError> {
+    ) -> RspErr<LeagueLeaderboardResponse> {
         if query.is_invalid_limit_range() {
             panic!(
                 "The query parameter`limit` must be between 0 and 100.\n\
@@ -391,7 +393,7 @@ impl Client {
     pub async fn get_xp_leaderboard(
         self,
         query: query::XPLeaderboardQuery,
-    ) -> Result<XPLeaderboardResponse, ResponseError> {
+    ) -> RspErr<XPLeaderboardResponse> {
         if query.is_invalid_limit_range() {
             panic!(
                 "The query parameter`limit` must be between 1 and 100.\n\
@@ -504,7 +506,7 @@ impl Client {
         stream_type: stream::StreamType,
         stream_context: stream::StreamContext,
         stream_identifier: Option<&str>,
-    ) -> Result<StreamResponse, ResponseError> {
+    ) -> RspErr<StreamResponse> {
         let stream_id = format!(
             "{}_{}{}",
             stream_type.as_str(),
@@ -593,7 +595,7 @@ impl Client {
         self,
         subject: stream::NewsSubject,
         limit: u8,
-    ) -> Result<LatestNewsResponse, ResponseError> {
+    ) -> RspErr<LatestNewsResponse> {
         if !(1..=100).contains(&limit) {
             // !(1 <= limit && limit <= 100)
             panic!(
@@ -651,10 +653,7 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn search_user(
-        self,
-        discord_user: &str,
-    ) -> Result<SearchedUserResponse, ResponseError> {
+    pub async fn search_user(self, discord_user: &str) -> RspErr<SearchedUserResponse> {
         let url = format!("{}/users/search/{}", API_URL, discord_user);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -669,7 +668,7 @@ impl Client {
 /// let res = self.client.get(url).send().await;
 /// response(res).await
 /// ```
-async fn response<T>(response: Result<Response, Error>) -> Result<T, ResponseError>
+async fn response<T>(response: Result<Response, Error>) -> RspErr<T>
 where
     for<'de> T: Deserialize<'de>,
 {

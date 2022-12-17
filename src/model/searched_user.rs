@@ -27,6 +27,8 @@ pub struct SearchedUserResponse {
     pub data: Option<UserData>,
 }
 
+type RspErr<T> = Result<T, ResponseError>;
+
 impl SearchedUserResponse {
     /// Gets the user's data.
     /// Returns `None` if the user was not found.
@@ -39,7 +41,7 @@ impl SearchedUserResponse {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user(&self) -> Option<Result<UserResponse, ResponseError>> {
+    pub async fn get_user(&self) -> Option<RspErr<UserResponse>> {
         if let Some(u) = &self.data {
             Some(Client::new().get_user(u.user.id.id()).await)
         } else {
@@ -58,7 +60,7 @@ impl SearchedUserResponse {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> Option<Result<UserRecordsResponse, ResponseError>> {
+    pub async fn get_records(&self) -> Option<RspErr<UserRecordsResponse>> {
         if let Some(u) = &self.data {
             Some(Client::new().get_user_records(u.user.id.id()).await)
         } else {
@@ -121,7 +123,7 @@ impl UserData {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user(&self) -> Result<UserResponse, ResponseError> {
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(self.user.id.id()).await
     }
 
@@ -135,7 +137,7 @@ impl UserData {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> Result<UserRecordsResponse, ResponseError> {
+    pub async fn get_records(&self) -> RspErr<UserRecordsResponse> {
         Client::new().get_user_records(self.user.id.id()).await
     }
 
@@ -174,7 +176,7 @@ impl UserInfo {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user(&self) -> Result<UserResponse, ResponseError> {
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(self.id.id()).await
     }
 
@@ -188,7 +190,7 @@ impl UserInfo {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> Result<UserRecordsResponse, ResponseError> {
+    pub async fn get_records(&self) -> RspErr<UserRecordsResponse> {
         Client::new().get_user_records(self.id.id()).await
     }
 

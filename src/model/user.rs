@@ -1662,6 +1662,8 @@ pub struct Zen {
 #[derive(Clone, Debug, Deserialize)]
 pub struct UserId(pub String);
 
+type RspErr<T> = Result<T, ResponseError>;
+
 impl UserId {
     /// Returns the user's internal ID.
     pub fn id(&self) -> &str {
@@ -1678,7 +1680,7 @@ impl UserId {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user(&self) -> Result<UserResponse, ResponseError> {
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(self.id()).await
     }
 
@@ -1692,7 +1694,7 @@ impl UserId {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> Result<UserRecordsResponse, ResponseError> {
+    pub async fn get_records(&self) -> RspErr<UserRecordsResponse> {
         Client::new().get_user_records(self.id()).await
     }
 }

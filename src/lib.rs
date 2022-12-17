@@ -1,4 +1,4 @@
-//! ![Latest release version](https://img.shields.io/github/v/release/Rinrin0413/tetr-ch-rs?color=007722&label=Latest%20release&style=flat-square)
+//! ![Latest release version](https://img.shields.io/github/v/release/Rinrin0413/tetr-ch-rs?color=007722&label=Latest%20release&style=flat-square) [![Codecov](https://img.shields.io/codecov/c/github/Rinrin0413/tetr-ch-rs?color=%23ff0077&logo=Codecov&style=flat-square)](https://app.codecov.io/gh/Rinrin0413/tetr-ch-rs)
 //!
 //! tetr-ch-rs is a library for the [TETRA CHANNEL API](https://tetr.io/about/api/).
 //!
@@ -17,7 +17,7 @@
 //!
 //! But TETRA CHANNEL API is alpha version.
 //! So this library may not work properly in the future:(
-//! 
+//!
 //! **\* This library is NOT official.**
 //!
 //! # Installation
@@ -26,7 +26,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tetr_ch = "0.3.3"
+//! tetr_ch = "0.3.4"
 //! ```
 //!
 //! # Examples
