@@ -1,3 +1,13 @@
+# v0.3.5 2023-05-23
+
+## Improvements
+
+- Supported TETR.IO v6.3.4 ([issue #1](https://github.com/Rinrin0413/tetr-ch-rs/issues/1))
+
+## Fixes
+
+- Fixed redundant and raggedly named functions.
+
 # v0.3.4 2022-12-18
 
 # v0.3.3 2022-12-12
