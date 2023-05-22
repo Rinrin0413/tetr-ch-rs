@@ -612,8 +612,6 @@ pub enum Role {
     #[serde(rename = "halfmod")]
     Halfmod,
     /// The banned user.
-    ///
-    /// ***"banned" is not specified in TETRA CHANNEL API docs.**
     #[serde(rename = "banned")]
     Banned,
 }
