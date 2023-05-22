@@ -121,9 +121,9 @@ impl UserResponse {
     }
 
     /// Whether the user is a SYSOP.
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if the request was not successful.
     pub fn is_sysop(&self) -> bool {
         self.get_user().role.is_sysop()
@@ -148,9 +148,9 @@ impl UserResponse {
     }
 
     /// Whether the user is a community moderator.
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if the request was not successful.
     pub fn is_halfmod(&self) -> bool {
         self.get_user().role.is_halfmod()

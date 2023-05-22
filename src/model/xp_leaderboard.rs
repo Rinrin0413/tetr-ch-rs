@@ -198,7 +198,7 @@ impl User {
     pub fn is_anon(&self) -> bool {
         self.role.is_anon()
     }
-    
+
     /// Whether the user is a bot.
     pub fn is_bot(&self) -> bool {
         self.role.is_bot()
@@ -246,7 +246,10 @@ impl User {
     }
 
     /// Whether the user is an administrator.
-    #[deprecated(since = "0.3.5", note = "typo in function name. use `is_admin` instead")]
+    #[deprecated(
+        since = "0.3.5",
+        note = "typo in function name. use `is_admin` instead"
+    )]
     pub fn is_administrator(&self) -> bool {
         self.role.is_admin()
     }
