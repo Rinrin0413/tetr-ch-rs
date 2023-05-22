@@ -120,13 +120,13 @@ impl UserResponse {
         self.get_user().role.is_bot()
     }
 
-    /// Whether the user is a moderator,
-    ///
+    /// Whether the user is a SYSOP.
+    /// 
     /// # Panics
-    ///
+    /// 
     /// Panics if the request was not successful.
-    pub fn is_mod(&self) -> bool {
-        self.get_user().role.is_mod()
+    pub fn is_sysop(&self) -> bool {
+        self.get_user().role.is_sysop()
     }
 
     /// Whether the user is an administrator.
@@ -136,6 +136,24 @@ impl UserResponse {
     /// Panics if the request was not successful.
     pub fn is_admin(&self) -> bool {
         self.get_user().role.is_admin()
+    }
+
+    /// Whether the user is a moderator,
+    ///
+    /// # Panics
+    ///
+    /// Panics if the request was not successful.
+    pub fn is_mod(&self) -> bool {
+        self.get_user().role.is_mod()
+    }
+
+    /// Whether the user is a community moderator.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if the request was not successful.
+    pub fn is_halfmod(&self) -> bool {
+        self.get_user().role.is_halfmod()
     }
 
     /// Whether the user is banned.
@@ -476,14 +494,24 @@ impl User {
         self.role.is_bot()
     }
 
-    /// Whether this user is a moderator.
-    pub fn is_mod(&self) -> bool {
-        self.role.is_mod()
+    /// Whether this user is a SYSOP.
+    pub fn is_sysop(&self) -> bool {
+        self.role.is_sysop()
     }
 
     /// Whether this user is an administrator.
     pub fn is_admin(&self) -> bool {
         self.role.is_admin()
+    }
+
+    /// Whether this user is a moderator.
+    pub fn is_mod(&self) -> bool {
+        self.role.is_mod()
+    }
+
+    /// Whether this user is a community moderator.
+    pub fn is_halfmod(&self) -> bool {
+        self.role.is_halfmod()
     }
 
     /// Whether this user is banned.

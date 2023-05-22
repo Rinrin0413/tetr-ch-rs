@@ -204,14 +204,24 @@ impl User {
         self.role.is_bot()
     }
 
-    /// Whether the user is a moderator.
-    pub fn is_moderator(&self) -> bool {
-        self.role.is_mod()
+    /// Whether the user is a SYSOP.
+    pub fn is_sysop(&self) -> bool {
+        self.role.is_sysop()
     }
 
     /// Whether the user is an administrator.
     pub fn is_administrator(&self) -> bool {
         self.role.is_admin()
+    }
+
+    /// Whether the user is a moderator.
+    pub fn is_moderator(&self) -> bool {
+        self.role.is_mod()
+    }
+
+    /// Whether the user is a community moderator.
+    pub fn is_halfmod(&self) -> bool {
+        self.role.is_halfmod()
     }
 
     /// Whether the user is banned.
