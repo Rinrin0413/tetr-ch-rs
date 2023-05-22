@@ -195,10 +195,10 @@ impl User {
     }
 
     /// Whether the user is an anonymous.
-    pub fn is_anonymous(&self) -> bool {
+    pub fn is_anon(&self) -> bool {
         self.role.is_anon()
     }
-
+    
     /// Whether the user is a bot.
     pub fn is_bot(&self) -> bool {
         self.role.is_bot()
@@ -210,12 +210,12 @@ impl User {
     }
 
     /// Whether the user is an administrator.
-    pub fn is_administrator(&self) -> bool {
+    pub fn is_admin(&self) -> bool {
         self.role.is_admin()
     }
 
     /// Whether the user is a moderator.
-    pub fn is_moderator(&self) -> bool {
+    pub fn is_mod(&self) -> bool {
         self.role.is_mod()
     }
 
@@ -237,6 +237,24 @@ impl User {
     /// Whether the user is verified.
     pub fn is_verified(&self) -> bool {
         self.is_verified
+    }
+
+    /// Whether the user is an anonymous.
+    #[deprecated(since = "0.3.5", note = "typo in function name. use `is_anon` instead")]
+    pub fn is_anonymous(&self) -> bool {
+        self.role.is_anon()
+    }
+
+    /// Whether the user is an administrator.
+    #[deprecated(since = "0.3.5", note = "typo in function name. use `is_admin` instead")]
+    pub fn is_administrator(&self) -> bool {
+        self.role.is_admin()
+    }
+
+    /// Whether the user is a moderator.
+    #[deprecated(since = "0.3.5", note = "typo in function name. use `is_mod` instead")]
+    pub fn is_moderator(&self) -> bool {
+        self.role.is_mod()
     }
 }
 
