@@ -599,12 +599,18 @@ pub enum Role {
     /// The bot.
     #[serde(rename = "bot")]
     Bot,
-    /// The moderator.
-    #[serde(rename = "mod")]
-    Mod,
+    /// The SYSOP.
+    #[serde(rename = "sysop")]
+    Sysop,
     /// The administrator.
     #[serde(rename = "admin")]
     Admin,
+    /// The moderator.
+    #[serde(rename = "mod")]
+    Mod,
+    /// The community moderator.
+    #[serde(rename = "halfmod")]
+    Halfmod,
     /// The banned user.
     ///
     /// ***"banned" is not specified in TETRA CHANNEL API docs.**
@@ -623,14 +629,24 @@ impl Role {
         matches!(self, Role::Bot)
     }
 
-    /// Whether the user is a moderator.
-    pub fn is_mod(&self) -> bool {
-        matches!(self, Role::Mod)
+    /// Whether the user is a SYSOP.
+    pub fn is_sysop(&self) -> bool {
+        matches!(self, Role::Sysop)
     }
 
     /// Whether the user is an administrator.
     pub fn is_admin(&self) -> bool {
         matches!(self, Role::Admin)
+    }
+
+    /// Whether the user is a moderator.
+    pub fn is_mod(&self) -> bool {
+        matches!(self, Role::Mod)
+    }
+
+    /// Whether the user is a community moderator.
+    pub fn is_halfmod(&self) -> bool {
+        matches!(self, Role::Halfmod)
     }
 
     /// Whether the user is banned.
@@ -655,8 +671,10 @@ impl ToString for Role {
     /// assert_eq!(Role::User.to_string(), "User");
     /// assert_eq!(Role::Anon.to_string(), "Anonymous");
     /// assert_eq!(Role::Bot.to_string(), "Bot");
-    /// assert_eq!(Role::Mod.to_string(), "Moderator");
+    /// assert_eq!(Role::Sysop.to_string(), "SYSOP");
     /// assert_eq!(Role::Admin.to_string(), "Administrator");
+    /// assert_eq!(Role::Mod.to_string(), "Moderator");
+    /// assert_eq!(Role::Halfmod.to_string(), "Community moderator");
     /// assert_eq!(Role::Banned.to_string(), "Banned user");
     /// ```
     fn to_string(&self) -> String {
@@ -664,8 +682,10 @@ impl ToString for Role {
             Role::User => "User",
             Role::Anon => "Anonymous",
             Role::Bot => "Bot",
-            Role::Mod => "Moderator",
+            Role::Sysop => "SYSOP",
             Role::Admin => "Administrator",
+            Role::Mod => "Moderator",
+            Role::Halfmod => "Community moderator",
             Role::Banned => "Banned user",
         }
         .to_string()
