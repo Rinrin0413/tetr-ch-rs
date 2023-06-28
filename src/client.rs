@@ -1343,6 +1343,8 @@ pub mod stream {
         Blitz,
         /// Any
         Any,
+        /// TETRA LEAGUE
+        League,
     }
 
     impl StreamType {
@@ -1355,15 +1357,18 @@ pub mod stream {
         /// let forty_lines = StreamType::FortyLines;
         /// let blitz = StreamType::Blitz;
         /// let any = StreamType::Any;
+        /// let league = StreamType::League;
         /// assert_eq!(forty_lines.as_str(), "40l");
         /// assert_eq!(blitz.as_str(), "blitz");
         /// assert_eq!(any.as_str(), "any");
+        /// assert_eq!(league.as_str(), "league");
         /// ```
         pub(crate) fn as_str(&self) -> &str {
             match self {
                 StreamType::FortyLines => "40l",
                 StreamType::Blitz => "blitz",
                 StreamType::Any => "any",
+                StreamType::League => "league",
             }
         }
     }
