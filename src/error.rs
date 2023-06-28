@@ -1,6 +1,8 @@
 //! Error enum for the tetr-ch-rs.
 
 use http::status::{InvalidStatusCode, StatusCode};
+use std::error::Error;
+use std::fmt;
 
 /// A enum for the response handling errors.
 #[derive(Debug)]
@@ -14,43 +16,18 @@ pub enum ResponseError {
     HttpErr(Status),
 }
 
-impl ToString for ResponseError {
-    /// Converts the [`ResponseError`] to a String.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use tetr_ch::error::ResponseError;
-    ///
-    /// let de_err = ResponseError::DeserializeErr("Deserialize error".to_string());
-    /// let req_err = ResponseError::RequestErr("Request error".to_string());
-    /// let http_err = ResponseError::HttpErr(
-    ///     tetr_ch::error::Status::Valid(http::StatusCode::SERVICE_UNAVAILABLE)
-    /// );
-    /// let invalid_http_err = ResponseError::HttpErr(
-    ///     tetr_ch::error::Status::Invalid(
-    ///         if let Err(isc) = http::StatusCode::from_u16(0) {
-    ///             isc
-    ///         } else {
-    ///             unreachable!()
-    ///         }
-    ///     )
-    /// );
-    ///
-    /// assert_eq!(de_err.to_string(), "Deserialize error");
-    /// assert_eq!(req_err.to_string(), "Request error");
-    /// assert_eq!(http_err.to_string(), "HTTP error 503 Service Unavailable");
-    /// assert_eq!(invalid_http_err.to_string(), "HTTP error (Invalid HTTP status code)");
-    /// ```
-    fn to_string(&self) -> String {
+impl Error for ResponseError {}
+
+impl fmt::Display for ResponseError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ResponseError::DeserializeErr(msg) => msg.to_string(),
-            ResponseError::RequestErr(msg) => msg.to_string(),
+            ResponseError::DeserializeErr(msg) => write!(f, "{}", msg),
+            ResponseError::RequestErr(msg) => write!(f, "{}", msg),
             ResponseError::HttpErr(status) => {
                 if let Status::Valid(sc) = status {
-                    format!("HTTP error {}", sc)
+                    write!(f, "HTTP error {}", sc)
                 } else {
-                    "HTTP error (Invalid HTTP status code)".to_string()
+                    write!(f, "HTTP error (Invalid HTTP status code)")
                 }
             }
         }
