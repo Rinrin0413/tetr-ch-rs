@@ -1472,6 +1472,11 @@ mod tests {
     }
 
     #[test]
+    fn league_as_str() {
+        assert_eq!(stream::StreamType::League.as_str(), "league");
+    }
+
+    #[test]
     fn global_as_str() {
         assert_eq!(stream::StreamContext::Global.as_str(), "global");
     }
