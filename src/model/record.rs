@@ -337,7 +337,7 @@ impl AsRef<EndCtxFinesse> for EndCtxFinesse {
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct MultiPlayEndCtx {
-    /// Who is in this state.
+    /// Who is finished with this state.
     user: User,
     
 }
