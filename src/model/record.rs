@@ -23,9 +23,6 @@ pub struct SinglePlayRecord {
     #[serde(rename = "ts")]
     pub recorded_at: String,
     /// Whether this is a multiplayer replay.
-    ///
-    /// ***This probably never be `true`,
-    /// but if so, please report the developer of this library.**
     #[serde(rename = "ismulti")]
     pub is_multi: Option<bool>,
     /// The state this replay finished with.
