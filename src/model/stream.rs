@@ -1,6 +1,6 @@
 //! Stream model.
 
-use crate::model::{cache::CacheData, record::SinglePlayRecord};
+use crate::model::{cache::CacheData, record::Record};
 use serde::Deserialize;
 
 /// The response for the stream.
@@ -53,7 +53,7 @@ impl AsRef<StreamResponse> for StreamResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct StreamData {
-    pub records: Vec<SinglePlayRecord>,
+    pub records: Vec<Record>,
 }
 
 impl AsRef<StreamData> for StreamData {

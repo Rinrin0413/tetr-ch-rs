@@ -3,7 +3,7 @@
 use crate::{
     client::Client,
     error::ResponseError,
-    model::{cache::CacheData, league::LeagueData, record::SinglePlayRecord},
+    model::{cache::CacheData, league::LeagueData, record::Record},
     util::{max_f64, to_unix_ts},
 };
 use serde::Deserialize;
@@ -1039,15 +1039,15 @@ impl UserRecordsResponse {
         }
     }
 
-    /// Returns the [`&SinglePlayRecord`] for 40 LINES.
+    /// Returns the [`&Record`] for 40 LINES.
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no 40 LINES record,
     /// or the request was not successful.
-    fn get_40l_record(&self) -> &SinglePlayRecord {
+    fn get_40l_record(&self) -> &Record {
         if let Some(d) = self.get_user_records().records.forty_lines.record.as_ref() {
             d
         } else {
@@ -1055,15 +1055,15 @@ impl UserRecordsResponse {
         }
     }
 
-    /// Returns the [`&SinglePlayRecord`] for BLITZ.
+    /// Returns the [`&Record`] for BLITZ.
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no BLITZ record,
     /// or the request was not successful.
-    fn get_blitz_record(&self) -> &SinglePlayRecord {
+    fn get_blitz_record(&self) -> &Record {
         if let Some(d) = self.get_user_records().records.blitz.record.as_ref() {
             d
         } else {
@@ -1242,14 +1242,14 @@ impl RecordsData {
         to_unix_ts(&self.get_blitz_record().recorded_at)
     }
 
-    /// Returns the [`&SinglePlayRecord`] for 40 LINES..
+    /// Returns the [`&Record`] for 40 LINES..
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no 40 LINES record.
-    fn get_40l_record(&self) -> &SinglePlayRecord {
+    fn get_40l_record(&self) -> &Record {
         if let Some(d) = self.records.forty_lines.record.as_ref() {
             d
         } else {
@@ -1257,14 +1257,14 @@ impl RecordsData {
         }
     }
 
-    /// Returns the [`&SinglePlayRecord`] for BLITZ.
+    /// Returns the [`&Record`] for BLITZ.
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no BLITZ record.
-    fn get_blitz_record(&self) -> &SinglePlayRecord {
+    fn get_blitz_record(&self) -> &Record {
         if let Some(d) = self.records.blitz.record.as_ref() {
             d
         } else {
@@ -1445,14 +1445,14 @@ impl Records {
         to_unix_ts(&self.get_blitz_record().recorded_at)
     }
 
-    /// Returns the [`&SinglePlayRecord`] for 40 LINES..
+    /// Returns the [`&Record`] for 40 LINES..
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no 40 LINES record.
-    fn get_40l_record(&self) -> &SinglePlayRecord {
+    fn get_40l_record(&self) -> &Record {
         if let Some(d) = self.forty_lines.record.as_ref() {
             d
         } else {
@@ -1460,14 +1460,14 @@ impl Records {
         }
     }
 
-    /// Returns the [`&SinglePlayRecord`] for BLITZ.
+    /// Returns the [`&Record`] for BLITZ.
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no BLITZ record.
-    fn get_blitz_record(&self) -> &SinglePlayRecord {
+    fn get_blitz_record(&self) -> &Record {
         if let Some(d) = self.blitz.record.as_ref() {
             d
         } else {
@@ -1487,7 +1487,7 @@ impl AsRef<Records> for Records {
 #[non_exhaustive]
 pub struct FortyLines {
     /// The user's 40 LINES record data, or `None` if never played.
-    pub record: Option<SinglePlayRecord>,
+    pub record: Option<Record>,
     /// The user's rank in global leaderboards,
     /// or `None` if not in global leaderboards.
     pub rank: Option<u32>,
@@ -1566,14 +1566,14 @@ impl FortyLines {
         to_unix_ts(&self.get_40l_record().recorded_at)
     }
 
-    /// Returns the [`&SinglePlayRecord`] for 40 LINES..
+    /// Returns the [`&Record`] for 40 LINES..
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no 40 LINES record.
-    fn get_40l_record(&self) -> &SinglePlayRecord {
+    fn get_40l_record(&self) -> &Record {
         if let Some(d) = self.record.as_ref() {
             d
         } else {
@@ -1593,7 +1593,7 @@ impl AsRef<FortyLines> for FortyLines {
 #[non_exhaustive]
 pub struct Blitz {
     /// The user's BLITZ record data, or `None` if never played.
-    pub record: Option<SinglePlayRecord>,
+    pub record: Option<Record>,
     /// The user's rank in global leaderboards,
     /// or `None` if not in global leaderboards.
     pub rank: Option<u32>,
@@ -1672,14 +1672,14 @@ impl Blitz {
         to_unix_ts(&self.get_blitz_record().recorded_at)
     }
 
-    /// Returns the [`&SinglePlayRecord`] for BLITZ.
+    /// Returns the [`&Record`] for BLITZ.
     ///
-    /// [`&SinglePlayRecord`]: crate::model::record::SinglePlayRecord
+    /// [`&Record`]: crate::model::record::Record
     ///
     /// # Panics
     ///
     /// Panics if there is no BLITZ record.
-    fn get_blitz_record(&self) -> &SinglePlayRecord {
+    fn get_blitz_record(&self) -> &Record {
         if let Some(d) = self.record.as_ref() {
             d
         } else {

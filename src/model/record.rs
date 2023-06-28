@@ -3,10 +3,10 @@
 use crate::{model::user::UserId, util::to_unix_ts};
 use serde::Deserialize;
 
-/// The singleplayer record data.
+/// The record data.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct SinglePlayRecord {
+pub struct Record {
     /// The Record's ID.
     /// This is NOT the replay ID.
     #[serde(rename = "_id")]
@@ -29,10 +29,10 @@ pub struct SinglePlayRecord {
     pub endcontext: EndCtx,
 }
 
-impl SinglePlayRecord {
+impl Record {
     //! # Warning
     //!
-    //! Calling these methods from a [`SinglePlayRecord`] retrieved from other than [`.get_user_records()`] is deprecated.  
+    //! Calling these methods from a [`Record`] retrieved from other than [`.get_user_records()`] is deprecated.  
     //! ***Except for two methods:** [`.record_url()`], [`.recorded_at()`]
     //!
     //! [`.record_url()`]: Self::record_url
@@ -134,7 +134,7 @@ impl SinglePlayRecord {
     }
 }
 
-impl AsRef<SinglePlayRecord> for SinglePlayRecord {
+impl AsRef<Record> for Record {
     fn as_ref(&self) -> &Self {
         self
     }
