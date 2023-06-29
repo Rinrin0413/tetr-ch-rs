@@ -53,7 +53,7 @@ impl AsRef<Record> for Record {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 pub enum EndContext {
-    SinglePlay(SinglePlayEndCtx),
+    SinglePlay(Box<SinglePlayEndCtx>),
     MultiPlay(Vec<MultiPlayEndCtx>),
 }
 
@@ -74,7 +74,7 @@ impl EndContext {
     /// otherwise returns `None`.
     pub fn single_play(self) -> Option<SinglePlayEndCtx> {
         match self {
-            EndContext::SinglePlay(s) => Some(s),
+            EndContext::SinglePlay(s) => Some(*s),
             EndContext::MultiPlay(_) => None,
         }
     }
