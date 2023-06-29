@@ -140,7 +140,7 @@ impl AsRef<Record> for Record {
     }
 }
 
-/// If [`is_multi`] is true, this is the multiplayer end contexts.
+/// If [`Record::is_multi`] is true, this is the multiplayer end contexts.
 /// Otherwise, this is the singleplayer end context.
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
