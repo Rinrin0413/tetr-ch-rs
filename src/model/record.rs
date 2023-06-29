@@ -433,7 +433,7 @@ pub mod multi_play_end_ctx {
     
 }
 
-/// The user who set this Record,
+/// The user object.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct User {
