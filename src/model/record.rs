@@ -2,6 +2,7 @@
 
 use crate::{model::user::UserId, util::to_unix_ts};
 use serde::Deserialize;
+use self::{single_play_end_ctx::SinglePlayEndCtx, multi_play_end_ctx::MultiPlayEndCtx};
 
 /// The record data.
 #[derive(Clone, Debug, Deserialize)]
@@ -52,8 +53,43 @@ impl AsRef<Record> for Record {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 pub enum EndContext {
-    SinglePlay(single_play_end_ctx::SinglePlayEndCtx),
-    MultiPlay(Vec<multi_play_end_ctx::MultiPlayEndCtx>),
+    SinglePlay(SinglePlayEndCtx),
+    MultiPlay(Vec<MultiPlayEndCtx>),
+}
+
+impl EndContext {
+    /// Whether the end context is singleplay.
+    pub fn is_single_play(&self) -> bool {
+        matches!(self, EndContext::SinglePlay(_))
+    }
+
+    /// Whether the end context is multiplay.
+    pub fn is_multi_play(&self) -> bool {
+        matches!(self, EndContext::MultiPlay(_))
+    }
+
+    /// Converts from `EndContext` to [`Option<T>`].
+    ///
+    /// Returns `Some` if this is singleplay end context,
+    /// otherwise returns `None`.
+    pub fn single_play(self) -> Option<SinglePlayEndCtx> {
+        match self {
+            EndContext::SinglePlay(s) => Some(s),
+            EndContext::MultiPlay(_) => None,
+        }
+    }
+
+    /// Converts from `EndContext` to [`Option<T>`].
+    /// 
+    /// Returns `Some` if this is multiplay end context,
+    /// otherwise returns `None`.
+    pub fn multi_play(self) -> Option<Vec<MultiPlayEndCtx>> {
+        match self {
+            EndContext::SinglePlay(_) => None,
+            EndContext::MultiPlay(m) => Some(m),
+        }
+    }
+
 }
 
 impl AsRef<EndContext> for EndContext {
