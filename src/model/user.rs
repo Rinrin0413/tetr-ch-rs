@@ -3,7 +3,11 @@
 use crate::{
     client::Client,
     error::ResponseError,
-    model::{cache::CacheData, league::LeagueData, record::{Record, EndContext, single_play_end_ctx::SinglePlayEndCtx}},
+    model::{
+        cache::CacheData,
+        league::LeagueData,
+        record::{single_play_end_ctx::SinglePlayEndCtx, EndContext, Record},
+    },
     util::{max_f64, to_unix_ts},
 };
 use serde::Deserialize;
@@ -1484,11 +1488,11 @@ impl FortyLines {
     }
 
     /// Returns the [`&SinglePlayEndCtx`] for 40 LINES.
-    /// 
+    ///
     /// [`&SinglePlayEndCtx`]: crate::model::record::single_play_end_ctx::SinglePlayEndCtx
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if there is no 40 LINES record.
     fn get_end_ctx(&self) -> &SinglePlayEndCtx {
         if let EndContext::SinglePlay(ctx) = self.get_record().endcontext.as_ref() {
@@ -1605,11 +1609,11 @@ impl Blitz {
     }
 
     /// Returns the [`&SinglePlayEndCtx`] for BLITZ.
-    /// 
+    ///
     /// [`&SinglePlayEndCtx`]: crate::model::record::single_play_end_ctx::SinglePlayEndCtx
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if there is no BLITZ record.
     fn get_end_ctx(&self) -> &SinglePlayEndCtx {
         if let EndContext::SinglePlay(ctx) = self.get_record().endcontext.as_ref() {

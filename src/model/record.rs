@@ -1,8 +1,8 @@
 //! The record data.
 
+use self::{multi_play_end_ctx::MultiPlayEndCtx, single_play_end_ctx::SinglePlayEndCtx};
 use crate::{model::user::UserId, util::to_unix_ts};
 use serde::Deserialize;
-use self::{single_play_end_ctx::SinglePlayEndCtx, multi_play_end_ctx::MultiPlayEndCtx};
 
 /// The record data.
 #[derive(Clone, Debug, Deserialize)]
@@ -80,7 +80,7 @@ impl EndContext {
     }
 
     /// Converts from `EndContext` to [`Option<T>`].
-    /// 
+    ///
     /// Returns `Some` if this is multiplay end context,
     /// otherwise returns `None`.
     pub fn multi_play(self) -> Option<Vec<MultiPlayEndCtx>> {
@@ -89,7 +89,6 @@ impl EndContext {
             EndContext::MultiPlay(m) => Some(m),
         }
     }
-
 }
 
 impl AsRef<EndContext> for EndContext {
@@ -189,7 +188,7 @@ pub mod single_play_end_ctx {
         pub fn pps(&self) -> f64 {
             self.pieces_placed.unwrap() as f64 / (self.final_time.unwrap() / 1000.)
         }
-    
+
         /// Returns the KPP(Keys Per Piece) of this replay.
         ///
         /// Read the [warning](#warning) before using this method.
@@ -201,7 +200,7 @@ pub mod single_play_end_ctx {
         pub fn kpp(&self) -> f64 {
             self.inputs.unwrap() as f64 / self.pieces_placed.unwrap() as f64
         }
-    
+
         /// Returns the KPS(Keys Per Second) of this replay.
         ///
         /// Read the [warning](#warning) before using this method.
@@ -213,7 +212,7 @@ pub mod single_play_end_ctx {
         pub fn kps(&self) -> f64 {
             self.inputs.unwrap() as f64 / (self.final_time.unwrap() / 1000.)
         }
-    
+
         /// Returns the LPM(Lines Per Minute) of this replay.
         ///
         /// Read the [warning](#warning) before using this method.
@@ -225,7 +224,7 @@ pub mod single_play_end_ctx {
         pub fn lpm(&self) -> f64 {
             self.cleared_lines.unwrap() as f64 / (self.final_time.unwrap() / 60000.)
         }
-    
+
         /// Returns the SPP(Score Per Piece) of this replay.
         ///
         /// Read the [warning](#warning) before using this method.
@@ -237,7 +236,7 @@ pub mod single_play_end_ctx {
         pub fn spp(&self) -> f64 {
             self.score.unwrap() as f64 / self.pieces_placed.unwrap() as f64
         }
-    
+
         /// Returns the finesse rate of this replay.
         ///
         /// Read the [warning](#warning) before using this method.
@@ -252,13 +251,13 @@ pub mod single_play_end_ctx {
                 * 100.
         }
     }
-    
+
     impl AsRef<SinglePlayEndCtx> for SinglePlayEndCtx {
         fn as_ref(&self) -> &Self {
             self
         }
     }
-    
+
     ///
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -275,13 +274,13 @@ pub mod single_play_end_ctx {
         #[serde(rename = "frameoffset")]
         pub frame_offset: Option<i32>,
     }
-    
+
     impl AsRef<EndCtxTime> for EndCtxTime {
         fn as_ref(&self) -> &Self {
             self
         }
     }
-    
+
     /// How the lines was cleared.
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -321,13 +320,13 @@ pub mod single_play_end_ctx {
         /// The number of cleared with All Clears
         pub all_clears: Option<u32>,
     }
-    
+
     impl AsRef<EndCtxClears> for EndCtxClears {
         fn as_ref(&self) -> &Self {
             self
         }
     }
-    
+
     /// Garbage-related data.
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -341,13 +340,13 @@ pub mod single_play_end_ctx {
         /// The number of garbage cleared.
         pub cleared: Option<u32>,
     }
-    
+
     impl AsRef<EndCtxGarbage> for EndCtxGarbage {
         fn as_ref(&self) -> &Self {
             self
         }
     }
-    
+
     /// About the finesse data.
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -360,13 +359,12 @@ pub mod single_play_end_ctx {
         #[serde(rename = "perfectpieces")]
         pub perfect_pieces: Option<u32>,
     }
-    
+
     impl AsRef<EndCtxFinesse> for EndCtxFinesse {
         fn as_ref(&self) -> &Self {
             self
         }
     }
-
 }
 
 pub mod multi_play_end_ctx {
@@ -383,7 +381,7 @@ pub mod multi_play_end_ctx {
         pub user: Option<User>,
         /// This user's handling settings.
         pub handling: Option<Handling>,
-        /// 
+        ///
         #[serde(rename = "active")]
         pub is_active: Option<bool>,
         /// Whether this user is winner.
@@ -397,7 +395,7 @@ pub mod multi_play_end_ctx {
         /// This user's natural order in this record.
         #[serde(rename = "naturalorder")]
         pub natural_order: Option<u32>,
-        /// 
+        ///
         pub score: Option<u32>,
         /// The number of wins.
         pub wins: Option<u32>,
@@ -410,7 +408,7 @@ pub mod multi_play_end_ctx {
             self
         }
     }
-    
+
     /// This user's handling settings.
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -436,7 +434,7 @@ pub mod multi_play_end_ctx {
             self
         }
     }
-    
+
     /// The points data.
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -465,7 +463,7 @@ pub mod multi_play_end_ctx {
             self
         }
     }
-    
+
     /// Extra data.
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -479,7 +477,7 @@ pub mod multi_play_end_ctx {
             self
         }
     }
-    
+
     /// Extra data for each game.
     #[derive(Clone, Debug, Deserialize)]
     #[non_exhaustive]
@@ -494,7 +492,6 @@ pub mod multi_play_end_ctx {
             self
         }
     }
-    
 }
 
 /// The user object.
