@@ -1,3 +1,19 @@
+# v0.4.0 2023-06-29
+
+## Changes
+
+- License changed from GPL-3.0 to MIT.
+- Support TETRA LEAGUE streams and multi player records [[#3](https://github.com/Rinrin0413/tetr-ch-rs/issues/3)]  
+This has significantly changed the structure around records.
+
+## Fixes
+
+- Fix some typos.
+
+## Improvements
+
+- Make `ResponseError` a standard error type by [@jlkn]([Title](https://github.com/jlkn)) in [[#2](https://github.com/Rinrin0413/tetr-ch-rs/pull/2)]
+
 # v0.3.5 2023-05-23
 
 ## Improvements
