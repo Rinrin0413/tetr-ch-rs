@@ -22,11 +22,10 @@
 //!
 //! # Installation
 //!
-//! Add the following to your `Cargo.toml` file:
+//! Run the following Cargo command in your project directory:
 //!
-//! ```toml
-//! [dependencies]
-//! tetr_ch = "0.3.5"
+//! ```bash
+//! cargo add tetr_ch
 //! ```
 //!
 //! # Examples
