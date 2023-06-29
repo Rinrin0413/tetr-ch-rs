@@ -17,7 +17,7 @@ pub struct Record {
     /// This is NOT the Record's ID.
     #[serde(rename = "replayid")]
     pub replay_id: String,
-    /// The user who set this Record,
+    /// The user who set this Record.
     pub user: User,
     /// The time this record was set.
     #[serde(rename = "ts")]
@@ -156,7 +156,7 @@ pub enum EndContext {
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct SinglePlayEndCtx {
-    /// A seed for rng(?)
+    /// A seed for RNG.
     pub seed: Option<f64>,
     /// The number of cleared lines.
     #[serde(rename = "lines")]
@@ -171,7 +171,7 @@ pub struct SinglePlayEndCtx {
     pub holds: Option<u32>,
     ///
     pub time: Option<EndCtxTime>,
-    /// The record'S score.
+    /// The record's score.
     pub score: Option<u32>,
     ///
     #[serde(rename = "zenlevel")]
@@ -186,18 +186,18 @@ pub struct SinglePlayEndCtx {
     ///
     #[serde(rename = "currentcombopower")]
     pub current_combo_power: Option<u32>,
-    /// The number of maximum combo - 1 (?)
+    /// The number of maximum combo (zero indexed).
     #[serde(rename = "topcombo")]
     pub top_combo: Option<u32>,
     ///
     pub btb: Option<u32>,
-    /// The number of maximum Back To Back chain -1 (?)
+    /// The number of maximum Back To Back chain (zero indexed).
     #[serde(rename = "topbtb")]
     pub top_btb: Option<u32>,
     /// The number of T-Spins.
     #[serde(rename = "tspins")]
     pub t_spins: Option<u32>,
-    /// The number of PIECES pieces places.
+    /// The number of pieces places.
     #[serde(rename = "piecesplaced")]
     pub pieces_placed: Option<u32>,
     /// How the lines was cleared.
@@ -211,7 +211,7 @@ pub struct SinglePlayEndCtx {
     /// The time at the finished.
     #[serde(rename = "finalTime")]
     pub final_time: Option<f64>,
-    /// The gametype.
+    /// The game type.
     #[serde(rename = "gametype")]
     pub game_type: Option<String>,
 }
@@ -349,7 +349,7 @@ pub struct MultiPlayEndCtx {
     pub is_success: Option<bool>,
     /// The number of keys presses.
     pub inputs: Option<u32>,
-    /// The number of keys presses.
+    /// The number of pieces placed.
     #[serde(rename = "piecesplaced")]
     pub pieces_placed: Option<u32>,
     /// This user's natural order in this record.
