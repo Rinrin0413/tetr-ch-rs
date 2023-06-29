@@ -29,110 +29,17 @@ pub struct Record {
     pub endcontext: EndContext,
 }
 
-// impl Record {
-//     //! # Warning
-//     //!
-//     //! Calling these methods from a [`Record`] retrieved from other than [`.get_user_records()`] is deprecated.  
-//     //! ***Except for two methods:** [`.record_url()`], [`.recorded_at()`]
-//     //!
-//     //! [`.record_url()`]: Self::record_url
-//     //! [`.recorded_at()`]: Self::recorded_at
-//     //!
-//     //! [`.get_user_records()`]: crate::client::Client::get_user_records
-//     //!
-//     //! These are because the docs for the [TETRA CHANNEL API](https://tetr.io/about/api/) are incomplete,
-//     //! so we cannot guarantee which values are passed.
+impl Record {
+    /// Returns the record URL.
+    pub fn record_url(&self) -> String {
+        format!("https://tetr.io/#r:{}", self.replay_id)
+    }
 
-//     /// Returns the PPS(Pieces Per Second) of this replay.
-//     ///
-//     /// Read the [warning](#warning) before using this method.
-//     ///
-//     /// # Panics
-//     ///
-//     /// Panics if necessary things is missing.
-//     /// I can't predict when what will be missing.
-//     pub fn pps(&self) -> f64 {
-//         let ec = &self.endcontext;
-//         ec.pieces_placed.unwrap() as f64 / (ec.final_time.unwrap() / 1000.)
-//     }
-
-//     /// Returns the KPP(Keys Per Piece) of this replay.
-//     ///
-//     /// Read the [warning](#warning) before using this method.
-//     ///
-//     /// # Panics
-//     ///
-//     /// Panics if necessary things is missing.
-//     /// I can't predict when what will be missing.
-//     pub fn kpp(&self) -> f64 {
-//         let ec = &self.endcontext;
-//         ec.inputs.unwrap() as f64 / ec.pieces_placed.unwrap() as f64
-//     }
-
-//     /// Returns the KPS(Keys Per Second) of this replay.
-//     ///
-//     /// Read the [warning](#warning) before using this method.
-//     ///
-//     /// # Panics
-//     ///
-//     /// Panics if necessary things is missing.
-//     /// I can't predict when what will be missing.
-//     pub fn kps(&self) -> f64 {
-//         let ec = &self.endcontext;
-//         ec.inputs.unwrap() as f64 / (ec.final_time.unwrap() / 1000.)
-//     }
-
-//     /// Returns the LPM(Lines Per Minute) of this replay.
-//     ///
-//     /// Read the [warning](#warning) before using this method.
-//     ///
-//     /// # Panics
-//     ///
-//     /// Panics if necessary things is missing.
-//     /// I can't predict when what will be missing.
-//     pub fn lpm(&self) -> f64 {
-//         let ec = &self.endcontext;
-//         ec.cleared_lines.unwrap() as f64 / (ec.final_time.unwrap() / 60000.)
-//     }
-
-//     /// Returns the SPP(Score Per Piece) of this replay.
-//     ///
-//     /// Read the [warning](#warning) before using this method.
-//     ///
-//     /// # Panics
-//     ///
-//     /// Panics if necessary things is missing.
-//     /// I can't predict when what will be missing.
-//     pub fn spp(&self) -> f64 {
-//         let ec = &self.endcontext;
-//         ec.score.unwrap() as f64 / ec.pieces_placed.unwrap() as f64
-//     }
-
-//     /// Returns the finesse rate of this replay.
-//     ///
-//     /// Read the [warning](#warning) before using this method.
-//     ///
-//     /// # Panics
-//     ///
-//     /// Panics if necessary things is missing.
-//     /// I can't predict when what will be missing.
-//     pub fn finesse_rate(&self) -> f64 {
-//         let ec = &self.endcontext;
-//         ec.clone().finesse.unwrap().perfect_pieces.unwrap() as f64
-//             / ec.pieces_placed.unwrap() as f64
-//             * 100.
-//     }
-
-//     /// Returns the record URL.
-//     pub fn record_url(&self) -> String {
-//         format!("https://tetr.io/#r:{}", self.replay_id)
-//     }
-
-//     /// Returns a UNIX timestamp when this record was recorded.
-//     pub fn recorded_at(&self) -> i64 {
-//         to_unix_ts(&self.recorded_at)
-//     }
-// }
+    /// Returns a UNIX timestamp when this record was recorded.
+    pub fn recorded_at(&self) -> i64 {
+        to_unix_ts(&self.recorded_at)
+    }
+}
 
 impl AsRef<Record> for Record {
     fn as_ref(&self) -> &Self {
@@ -217,6 +124,91 @@ pub mod single_play_end_ctx {
         /// The game type.
         #[serde(rename = "gametype")]
         pub game_type: Option<String>,
+    }
+
+    impl SinglePlayEndCtx {
+        //! # Warning
+        //!
+        //! Calling these methods from a [`Record`] retrieved from other than [`.get_user_records()`] is deprecated.
+        //!
+        //! [`.get_user_records()`]: crate::client::Client::get_user_records
+        //!
+        //! These are because the docs for the [TETRA CHANNEL API](https://tetr.io/about/api/) are incomplete,
+        //! so we cannot guarantee which values are passed.
+
+        /// Returns the PPS(Pieces Per Second) of this replay.
+        ///
+        /// Read the [warning](#warning) before using this method.
+        ///
+        /// # Panics
+        ///
+        /// Panics if necessary things is missing.
+        /// I can't predict when what will be missing.
+        pub fn pps(&self) -> f64 {
+            self.pieces_placed.unwrap() as f64 / (self.final_time.unwrap() / 1000.)
+        }
+    
+        /// Returns the KPP(Keys Per Piece) of this replay.
+        ///
+        /// Read the [warning](#warning) before using this method.
+        ///
+        /// # Panics
+        ///
+        /// Panics if necessary things is missing.
+        /// I can't predict when what will be missing.
+        pub fn kpp(&self) -> f64 {
+            self.inputs.unwrap() as f64 / self.pieces_placed.unwrap() as f64
+        }
+    
+        /// Returns the KPS(Keys Per Second) of this replay.
+        ///
+        /// Read the [warning](#warning) before using this method.
+        ///
+        /// # Panics
+        ///
+        /// Panics if necessary things is missing.
+        /// I can't predict when what will be missing.
+        pub fn kps(&self) -> f64 {
+            self.inputs.unwrap() as f64 / (self.final_time.unwrap() / 1000.)
+        }
+    
+        /// Returns the LPM(Lines Per Minute) of this replay.
+        ///
+        /// Read the [warning](#warning) before using this method.
+        ///
+        /// # Panics
+        ///
+        /// Panics if necessary things is missing.
+        /// I can't predict when what will be missing.
+        pub fn lpm(&self) -> f64 {
+            self.cleared_lines.unwrap() as f64 / (self.final_time.unwrap() / 60000.)
+        }
+    
+        /// Returns the SPP(Score Per Piece) of this replay.
+        ///
+        /// Read the [warning](#warning) before using this method.
+        ///
+        /// # Panics
+        ///
+        /// Panics if necessary things is missing.
+        /// I can't predict when what will be missing.
+        pub fn spp(&self) -> f64 {
+            self.score.unwrap() as f64 / self.pieces_placed.unwrap() as f64
+        }
+    
+        /// Returns the finesse rate of this replay.
+        ///
+        /// Read the [warning](#warning) before using this method.
+        ///
+        /// # Panics
+        ///
+        /// Panics if necessary things is missing.
+        /// I can't predict when what will be missing.
+        pub fn finesse_rate(&self) -> f64 {
+            self.clone().finesse.unwrap().perfect_pieces.unwrap() as f64
+                / self.pieces_placed.unwrap() as f64
+                * 100.
+        }
     }
     
     impl AsRef<SinglePlayEndCtx> for SinglePlayEndCtx {
