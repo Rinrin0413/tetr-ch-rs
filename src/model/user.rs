@@ -3,7 +3,7 @@
 use crate::{
     client::Client,
     error::ResponseError,
-    model::{cache::CacheData, league::LeagueData, record::Record},
+    model::{cache::CacheData, league::LeagueData, record::{Record, EndContext, single_play_end_ctx::SinglePlayEndCtx}},
     util::{max_f64, to_unix_ts},
 };
 use serde::Deserialize;
@@ -825,13 +825,7 @@ impl UserRecordsResponse {
     ///
     /// Panics if the request was not successful.
     pub fn has_40l_record(&self) -> bool {
-        self.data
-            .as_ref()
-            .unwrap()
-            .records
-            .forty_lines
-            .record
-            .is_some()
+        self.get_user_records().has_40l_record()
     }
 
     /// Whether the user has a BLITZ record.
@@ -840,147 +834,147 @@ impl UserRecordsResponse {
     ///
     /// Panics if the request was not successful.
     pub fn has_blitz_record(&self) -> bool {
-        self.data.as_ref().unwrap().records.blitz.record.is_some()
+        self.get_user_records().has_blitz_record()
     }
 
-    // /// Returns the PPS(Pieces Per Second) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record,
-    // /// or the request was not successful.
-    // pub fn forty_lines_pps(&self) -> f64 {
-    //     self.get_40l_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record,
+    /// or the request was not successful.
+    pub fn forty_lines_pps(&self) -> f64 {
+        self.get_user_records().forty_lines_pps()
+    }
 
-    // /// Returns the PPS(Pieces Per Second) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record,
-    // /// or the request was not successful.
-    // pub fn blitz_pps(&self) -> f64 {
-    //     self.get_blitz_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record,
+    /// or the request was not successful.
+    pub fn blitz_pps(&self) -> f64 {
+        self.get_user_records().blitz_pps()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record,
-    // /// or the request was not successful.
-    // pub fn forty_lines_kpp(&self) -> f64 {
-    //     self.get_40l_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record,
+    /// or the request was not successful.
+    pub fn forty_lines_kpp(&self) -> f64 {
+        self.get_user_records().forty_lines_kpp()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record,
-    // /// or the request was not successful.
-    // pub fn blitz_kpp(&self) -> f64 {
-    //     self.get_blitz_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record,
+    /// or the request was not successful.
+    pub fn blitz_kpp(&self) -> f64 {
+        self.get_user_records().blitz_kpp()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record,
-    // /// or the request was not successful.
-    // pub fn forty_lines_kps(&self) -> f64 {
-    //     self.get_40l_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record,
+    /// or the request was not successful.
+    pub fn forty_lines_kps(&self) -> f64 {
+        self.get_user_records().forty_lines_kps()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record,
-    // /// or the request was not successful.
-    // pub fn blitz_kps(&self) -> f64 {
-    //     self.get_blitz_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record,
+    /// or the request was not successful.
+    pub fn blitz_kps(&self) -> f64 {
+        self.get_user_records().blitz_kps()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record,
-    // /// or the request was not successful.
-    // pub fn forty_lines_lpm(&self) -> f64 {
-    //     self.get_40l_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record,
+    /// or the request was not successful.
+    pub fn forty_lines_lpm(&self) -> f64 {
+        self.get_user_records().forty_lines_lpm()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record,
-    // /// or the request was not successful.
-    // pub fn blitz_lpm(&self) -> f64 {
-    //     self.get_blitz_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record,
+    /// or the request was not successful.
+    pub fn blitz_lpm(&self) -> f64 {
+        self.get_user_records().blitz_lpm()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record,
-    // /// or the request was not successful.
-    // pub fn forty_lines_spp(&self) -> f64 {
-    //     self.get_40l_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record,
+    /// or the request was not successful.
+    pub fn forty_lines_spp(&self) -> f64 {
+        self.get_user_records().forty_lines_spp()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record,
-    // /// or the request was not successful.
-    // pub fn blitz_spp(&self) -> f64 {
-    //     self.get_blitz_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record,
+    /// or the request was not successful.
+    pub fn blitz_spp(&self) -> f64 {
+        self.get_user_records().blitz_spp()
+    }
 
-    // /// Returns the finesse rate of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record,
-    // /// or the request was not successful.
-    // pub fn forty_lines_finesse_rate(&self) -> f64 {
-    //     self.get_40l_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record,
+    /// or the request was not successful.
+    pub fn forty_lines_finesse_rate(&self) -> f64 {
+        self.get_user_records().forty_lines_finesse_rate()
+    }
 
-    // /// Returns the finesse rate of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record,
-    // /// or the request was not successful.
-    // pub fn blitz_finesse_rate(&self) -> f64 {
-    //     self.get_blitz_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record,
+    /// or the request was not successful.
+    pub fn blitz_finesse_rate(&self) -> f64 {
+        self.get_user_records().blitz_finesse_rate()
+    }
 
-    // /// Returns the 40 LINES record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record,
-    // /// or the request was not successful.
-    // pub fn forty_lines_record_url(&self) -> String {
-    //     self.get_40l_record().record_url()
-    // }
-    // /// Returns the BLITZ record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record,
-    // /// or the request was not successful.
-    // pub fn blitz_record_url(&self) -> String {
-    //     self.get_blitz_record().record_url()
-    // }
+    /// Returns the 40 LINES record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record,
+    /// or the request was not successful.
+    pub fn forty_lines_record_url(&self) -> String {
+        self.get_user_records().forty_lines_record_url()
+    }
+    /// Returns the BLITZ record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record,
+    /// or the request was not successful.
+    pub fn blitz_record_url(&self) -> String {
+        self.get_user_records().blitz_record_url()
+    }
 
     /// Returns a UNIX timestamp when this record was recorded.
     ///
@@ -989,15 +983,15 @@ impl UserRecordsResponse {
     /// Panics if there is no 40 LINES record,
     /// or the request was not successful.
     pub fn forty_lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_40l_record().recorded_at)
+        self.get_user_records().forty_lines_recorded_at()
     }
     /// Returns a UNIX timestamp when this record was recorded.
     ///
     /// # Panics
     ///
     /// Panics if there is no BLITZ record,
-    pub fn blitz_lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_blitz_record().recorded_at)
+    pub fn blitz_recorded_at(&self) -> i64 {
+        self.get_user_records().blitz_recorded_at()
     }
 
     /// Returns a UNIX timestamp when this resource was cached.
@@ -1038,38 +1032,6 @@ impl UserRecordsResponse {
             panic!("There is no user records object because the request was not successful.")
         }
     }
-
-    /// Returns the [`&Record`] for 40 LINES.
-    ///
-    /// [`&Record`]: crate::model::record::Record
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no 40 LINES record,
-    /// or the request was not successful.
-    fn get_40l_record(&self) -> &Record {
-        if let Some(d) = self.get_user_records().records.forty_lines.record.as_ref() {
-            d
-        } else {
-            panic!("There is no 40 LINES record.")
-        }
-    }
-
-    /// Returns the [`&Record`] for BLITZ.
-    ///
-    /// [`&Record`]: crate::model::record::Record
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no BLITZ record,
-    /// or the request was not successful.
-    fn get_blitz_record(&self) -> &Record {
-        if let Some(d) = self.get_user_records().records.blitz.record.as_ref() {
-            d
-        } else {
-            panic!("There is no BLITZ record.")
-        }
-    }
 }
 
 impl AsRef<UserRecordsResponse> for UserRecordsResponse {
@@ -1091,139 +1053,139 @@ pub struct RecordsData {
 impl RecordsData {
     /// Whether the user has a 40 LINES record.
     pub fn has_40l_record(&self) -> bool {
-        self.records.forty_lines.record.is_some()
+        self.records.has_forty_lines()
     }
 
     /// Whether the user has a BLITZ record.
     pub fn has_blitz_record(&self) -> bool {
-        self.records.blitz.record.is_some()
+        self.records.has_blitz()
     }
 
-    // /// Returns the PPS(Pieces Per Second) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn forty_lines_pps(&self) -> f64 {
-    //     self.get_40l_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn forty_lines_pps(&self) -> f64 {
+        self.records.forty_lines_pps()
+    }
 
-    // /// Returns the PPS(Pieces Per Second) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_pps(&self) -> f64 {
-    //     self.get_blitz_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_pps(&self) -> f64 {
+        self.records.blitz_pps()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_kpp(&self) -> f64 {
-    //     self.get_40l_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_kpp(&self) -> f64 {
+        self.records.forty_lines_kpp()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_kpp(&self) -> f64 {
-    //     self.get_blitz_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_kpp(&self) -> f64 {
+        self.records.blitz_kpp()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_kps(&self) -> f64 {
-    //     self.get_40l_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_kps(&self) -> f64 {
+        self.records.forty_lines_kps()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_kps(&self) -> f64 {
-    //     self.get_blitz_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_kps(&self) -> f64 {
+        self.records.blitz_kps()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_lpm(&self) -> f64 {
-    //     self.get_40l_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_lpm(&self) -> f64 {
+        self.records.forty_lines_lpm()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_lpm(&self) -> f64 {
-    //     self.get_blitz_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_lpm(&self) -> f64 {
+        self.records.blitz_lpm()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_spp(&self) -> f64 {
-    //     self.get_40l_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_spp(&self) -> f64 {
+        self.records.forty_lines_spp()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_spp(&self) -> f64 {
-    //     self.get_blitz_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_spp(&self) -> f64 {
+        self.records.blitz_spp()
+    }
 
-    // /// Returns the finesse rate of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_finesse_rate(&self) -> f64 {
-    //     self.get_40l_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_finesse_rate(&self) -> f64 {
+        self.records.forty_lines_finesse_rate()
+    }
 
-    // /// Returns the finesse rate of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_finesse_rate(&self) -> f64 {
-    //     self.get_blitz_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_finesse_rate(&self) -> f64 {
+        self.records.blitz_finesse_rate()
+    }
 
-    // /// Returns the 40 LINES record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn forty_lines_record_url(&self) -> String {
-    //     self.get_40l_record().record_url()
-    // }
+    /// Returns the 40 LINES record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn forty_lines_record_url(&self) -> String {
+        self.records.forty_lines_record_url()
+    }
 
-    // /// Returns the BLITZ record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_record_url(&self) -> String {
-    //     self.get_blitz_record().record_url()
-    // }
+    /// Returns the BLITZ record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_record_url(&self) -> String {
+        self.records.blitz_record_url()
+    }
 
     /// Returns a UNIX timestamp when this record was recorded.
     ///
@@ -1231,45 +1193,15 @@ impl RecordsData {
     ///
     /// Panics if there is no 40 LINES record.
     pub fn forty_lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_40l_record().recorded_at)
+        self.records.forty_lines_recorded_at()
     }
     /// Returns a UNIX timestamp when this record was recorded.
     ///
     /// # Panics
     ///
     /// Panics if there is no BLITZ record.
-    pub fn blitz_lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_blitz_record().recorded_at)
-    }
-
-    /// Returns the [`&Record`] for 40 LINES..
-    ///
-    /// [`&Record`]: crate::model::record::Record
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no 40 LINES record.
-    fn get_40l_record(&self) -> &Record {
-        if let Some(d) = self.records.forty_lines.record.as_ref() {
-            d
-        } else {
-            panic!("There is no 40 LINES record.")
-        }
-    }
-
-    /// Returns the [`&Record`] for BLITZ.
-    ///
-    /// [`&Record`]: crate::model::record::Record
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no BLITZ record.
-    fn get_blitz_record(&self) -> &Record {
-        if let Some(d) = self.records.blitz.record.as_ref() {
-            d
-        } else {
-            panic!("There is no BLITZ record.")
-        }
+    pub fn blitz_recorded_at(&self) -> i64 {
+        self.records.blitz_recorded_at()
     }
 }
 
@@ -1301,131 +1233,131 @@ impl Records {
         self.blitz.record.is_some()
     }
 
-    // /// Returns the PPS(Pieces Per Second) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_pps(&self) -> f64 {
-    //     self.get_40l_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_pps(&self) -> f64 {
+        self.forty_lines.pps()
+    }
 
-    // /// Returns the PPS(Pieces Per Second) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_pps(&self) -> f64 {
-    //     self.get_blitz_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_pps(&self) -> f64 {
+        self.blitz.pps()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_kpp(&self) -> f64 {
-    //     self.get_40l_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_kpp(&self) -> f64 {
+        self.forty_lines.kpp()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_kpp(&self) -> f64 {
-    //     self.get_blitz_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_kpp(&self) -> f64 {
+        self.blitz.kpp()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_kps(&self) -> f64 {
-    //     self.get_40l_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_kps(&self) -> f64 {
+        self.forty_lines.kps()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_kps(&self) -> f64 {
-    //     self.get_blitz_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_kps(&self) -> f64 {
+        self.blitz.kps()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_lpm(&self) -> f64 {
-    //     self.get_40l_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_lpm(&self) -> f64 {
+        self.forty_lines.lpm()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_lpm(&self) -> f64 {
-    //     self.get_blitz_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_lpm(&self) -> f64 {
+        self.blitz.lpm()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_spp(&self) -> f64 {
-    //     self.get_40l_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_spp(&self) -> f64 {
+        self.forty_lines.spp()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_spp(&self) -> f64 {
-    //     self.get_blitz_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_spp(&self) -> f64 {
+        self.blitz.spp()
+    }
 
-    // /// Returns the finesse rate of 40 LINES.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES.
-    // pub fn forty_lines_finesse_rate(&self) -> f64 {
-    //     self.get_40l_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of 40 LINES.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES.
+    pub fn forty_lines_finesse_rate(&self) -> f64 {
+        self.forty_lines.finesse_rate()
+    }
 
-    // /// Returns the finesse rate of BLITZ.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_finesse_rate(&self) -> f64 {
-    //     self.get_blitz_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of BLITZ.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_finesse_rate(&self) -> f64 {
+        self.blitz.finesse_rate()
+    }
 
-    // /// Returns the 40 LINES record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn forty_lines_record_url(&self) -> String {
-    //     self.get_40l_record().record_url()
-    // }
+    /// Returns the 40 LINES record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn forty_lines_record_url(&self) -> String {
+        self.forty_lines.record_url()
+    }
 
-    // /// Returns the BLITZ record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn blitz_record_url(&self) -> String {
-    //     self.get_blitz_record().record_url()
-    // }
+    /// Returns the BLITZ record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn blitz_record_url(&self) -> String {
+        self.blitz.record_url()
+    }
 
     /// Returns a UNIX timestamp when this record was recorded.
     ///
@@ -1433,7 +1365,7 @@ impl Records {
     ///
     /// Panics if there is no 40 LINES record.
     pub fn forty_lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_40l_record().recorded_at)
+        self.forty_lines.recorded_at()
     }
 
     /// Returns a UNIX timestamp when this record was recorded.
@@ -1441,38 +1373,8 @@ impl Records {
     /// # Panics
     ///
     /// Panics if there is no BLITZ record.
-    pub fn blitz_lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_blitz_record().recorded_at)
-    }
-
-    /// Returns the [`&Record`] for 40 LINES..
-    ///
-    /// [`&Record`]: crate::model::record::Record
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no 40 LINES record.
-    fn get_40l_record(&self) -> &Record {
-        if let Some(d) = self.forty_lines.record.as_ref() {
-            d
-        } else {
-            panic!("There is no 40 LINES record.")
-        }
-    }
-
-    /// Returns the [`&Record`] for BLITZ.
-    ///
-    /// [`&Record`]: crate::model::record::Record
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no BLITZ record.
-    fn get_blitz_record(&self) -> &Record {
-        if let Some(d) = self.blitz.record.as_ref() {
-            d
-        } else {
-            panic!("There is no BLITZ record.")
-        }
+    pub fn blitz_recorded_at(&self) -> i64 {
+        self.blitz.recorded_at()
     }
 }
 
@@ -1494,76 +1396,76 @@ pub struct FortyLines {
 }
 
 impl FortyLines {
-    // /// Returns the PPS(Pieces Per Second) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn pps(&self) -> f64 {
-    //     self.get_40l_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn pps(&self) -> f64 {
+        self.get_end_ctx().pps()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn kpp(&self) -> f64 {
-    //     self.get_40l_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn kpp(&self) -> f64 {
+        self.get_end_ctx().kpp()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn kps(&self) -> f64 {
-    //     self.get_40l_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn kps(&self) -> f64 {
+        self.get_end_ctx().kps()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn lpm(&self) -> f64 {
-    //     self.get_40l_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn lpm(&self) -> f64 {
+        self.get_end_ctx().lpm()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn spp(&self) -> f64 {
-    //     self.get_40l_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn spp(&self) -> f64 {
+        self.get_end_ctx().spp()
+    }
 
-    // /// Returns the finesse rate of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn finesse_rate(&self) -> f64 {
-    //     self.get_40l_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn finesse_rate(&self) -> f64 {
+        self.get_end_ctx().finesse_rate()
+    }
 
-    // /// Returns the 40 LINES record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no 40 LINES record.
-    // pub fn forty_lines_record_url(&self) -> String {
-    //     self.get_40l_record().record_url()
-    // }
+    /// Returns the 40 LINES record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no 40 LINES record.
+    pub fn record_url(&self) -> String {
+        self.get_record().record_url()
+    }
 
     /// Returns a UNIX timestamp when this record was recorded.
     ///
     /// # Panics
     ///
     /// Panics if there is no 40 LINES record.
-    pub fn forty_lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_40l_record().recorded_at)
+    pub fn recorded_at(&self) -> i64 {
+        self.get_record().recorded_at()
     }
 
     /// Returns the [`&Record`] for 40 LINES..
@@ -1573,11 +1475,26 @@ impl FortyLines {
     /// # Panics
     ///
     /// Panics if there is no 40 LINES record.
-    fn get_40l_record(&self) -> &Record {
+    fn get_record(&self) -> &Record {
         if let Some(d) = self.record.as_ref() {
             d
         } else {
             panic!("There is no 40 LINES record.")
+        }
+    }
+
+    /// Returns the [`&SinglePlayEndCtx`] for 40 LINES.
+    /// 
+    /// [`&SinglePlayEndCtx`]: crate::model::record::single_play_end_ctx::SinglePlayEndCtx
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if there is no 40 LINES record.
+    fn get_end_ctx(&self) -> &SinglePlayEndCtx {
+        if let EndContext::SinglePlay(ctx) = self.get_record().endcontext.as_ref() {
+            ctx
+        } else {
+            panic!("This 40 LINES record is multiplayer record.")
         }
     }
 }
@@ -1600,76 +1517,76 @@ pub struct Blitz {
 }
 
 impl Blitz {
-    // /// Returns the PPS(Pieces Per Second) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn pps(&self) -> f64 {
-    //     self.get_blitz_record().pps()
-    // }
+    /// Returns the PPS(Pieces Per Second) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn pps(&self) -> f64 {
+        self.get_end_ctx().pps()
+    }
 
-    // /// Returns the KPP(Keys Per Piece) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn kpp(&self) -> f64 {
-    //     self.get_blitz_record().kpp()
-    // }
+    /// Returns the KPP(Keys Per Piece) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn kpp(&self) -> f64 {
+        self.get_end_ctx().kpp()
+    }
 
-    // /// Returns the KPS(Keys Per Second) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn kps(&self) -> f64 {
-    //     self.get_blitz_record().kps()
-    // }
+    /// Returns the KPS(Keys Per Second) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn kps(&self) -> f64 {
+        self.get_end_ctx().kps()
+    }
 
-    // /// Returns the LPM(Lines Per Minute) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn lpm(&self) -> f64 {
-    //     self.get_blitz_record().lpm()
-    // }
+    /// Returns the LPM(Lines Per Minute) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn lpm(&self) -> f64 {
+        self.get_end_ctx().lpm()
+    }
 
-    // /// Returns the SPP(Score Per Piece) of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn spp(&self) -> f64 {
-    //     self.get_blitz_record().spp()
-    // }
+    /// Returns the SPP(Score Per Piece) of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn spp(&self) -> f64 {
+        self.get_end_ctx().spp()
+    }
 
-    // /// Returns the finesse rate of this replay.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn finesse_rate(&self) -> f64 {
-    //     self.get_blitz_record().finesse_rate()
-    // }
+    /// Returns the finesse rate of this replay.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn finesse_rate(&self) -> f64 {
+        self.get_end_ctx().finesse_rate()
+    }
 
-    // /// Returns the BLITZ record URL.
-    // ///
-    // /// # Panics
-    // ///
-    // /// Panics if there is no BLITZ record.
-    // pub fn record_url(&self) -> String {
-    //     self.get_blitz_record().record_url()
-    // }
+    /// Returns the BLITZ record URL.
+    ///
+    /// # Panics
+    ///
+    /// Panics if there is no BLITZ record.
+    pub fn record_url(&self) -> String {
+        self.get_record().record_url()
+    }
 
     /// Returns a UNIX timestamp when this record was recorded.
     ///
     /// # Panics
     ///
     /// Panics if there is no BLITZ record.
-    pub fn lines_recorded_at(&self) -> i64 {
-        to_unix_ts(&self.get_blitz_record().recorded_at)
+    pub fn recorded_at(&self) -> i64 {
+        self.get_record().recorded_at()
     }
 
     /// Returns the [`&Record`] for BLITZ.
@@ -1679,11 +1596,26 @@ impl Blitz {
     /// # Panics
     ///
     /// Panics if there is no BLITZ record.
-    fn get_blitz_record(&self) -> &Record {
+    fn get_record(&self) -> &Record {
         if let Some(d) = self.record.as_ref() {
             d
         } else {
             panic!("There is no BLITZ record.")
+        }
+    }
+
+    /// Returns the [`&SinglePlayEndCtx`] for BLITZ.
+    /// 
+    /// [`&SinglePlayEndCtx`]: crate::model::record::single_play_end_ctx::SinglePlayEndCtx
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if there is no BLITZ record.
+    fn get_end_ctx(&self) -> &SinglePlayEndCtx {
+        if let EndContext::SinglePlay(ctx) = self.get_record().endcontext.as_ref() {
+            ctx
+        } else {
+            panic!("This BLITZ record is multiplayer record.")
         }
     }
 }
