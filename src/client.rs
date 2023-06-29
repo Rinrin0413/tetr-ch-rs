@@ -444,11 +444,11 @@ impl Client {
     /// - `stream_type`:
     ///
     /// The type of Stream.
-    /// Currently [`StreamType::FortyLines`], [`StreamType::Blitz`], or [`StreamType::Any`].
-    ///
+    /// Currently [`StreamType::FortyLines`], [`StreamType::Blitz`], [`StreamType::Any`], or [`StreamType::League`].
     /// [`StreamType::FortyLines`]: stream::StreamType::FortyLines
     /// [`StreamType::Blitz`]: stream::StreamType::Blitz
     /// [`StreamType::Any`]: stream::StreamType::Any
+    /// [`StreamType::League`]: stream::StreamType::League
     ///
     /// - `stream_context`:
     ///
