@@ -61,4 +61,4 @@ See [full examples](./examples/).
 
 And see the [docs](https://docs.rs/tetr_ch).
 
-[![GPL-3.0](https://img.shields.io/github/license/Rinrin0413/tetr-ch-rs?color=%23BD0102&style=for-the-badge)](./LICENSE.md)
+[![MIT](https://img.shields.io/github/license/Rinrin0413/tetr-ch-rs?color=%23A11D32&style=for-the-badge)](./LICENSE)
