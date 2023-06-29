@@ -338,8 +338,89 @@ impl AsRef<EndCtxFinesse> for EndCtxFinesse {
 #[non_exhaustive]
 pub struct MultiPlayEndCtx {
     /// Who is finished with this state.
-    user: User,
-    
+    pub user: Option<User>,
+    /// This user's handling settings.
+    pub handling: Option<Handling>,
+    /// 
+    #[serde(rename = "active")]
+    pub is_active: Option<bool>,
+    /// Whether this user is winner.
+    #[serde(rename = "success")]
+    pub is_success: Option<bool>,
+    /// The number of keys presses.
+    pub inputs: Option<u32>,
+    /// The number of keys presses.
+    #[serde(rename = "piecesplaced")]
+    pub pieces_placed: Option<u32>,
+    /// This user's natural order in this record.
+    #[serde(rename = "naturalorder")]
+    pub natural_order: Option<u32>,
+    /// 
+    pub score: Option<u32>,
+    /// The number of wins.
+    pub wins: Option<u32>,
+    /// The points data.
+    pub points: Option<Points>,
+}
+
+/// This user's handling settings.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct Handling {
+    /// ARR(Automatic Repeat Rate).
+    pub arr: Option<f64>,
+    /// DAS(Delayed Auto Shift).
+    pub das: Option<f64>,
+    /// DCD(DAS Cut Delay).
+    pub dcd: Option<f64>,
+    /// SDF(Soft Drop Factor).
+    pub sdf: Option<u32>,
+    /// Whether "accidental hard drops prevention" is enabled.
+    #[serde(rename = "safelock")]
+    pub enable_safe_lock: Option<bool>,
+    /// Whether "DAS cancellation when changing directions" is enabled.
+    #[serde(rename = "cancel")]
+    pub enable_das_cancel: Option<bool>,
+}
+
+/// The points data.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct Points {
+    /// The number of wins.
+    pub primary: Option<u32>,
+    /// APM(Attacks Per Minute).
+    pub secondary: Option<f64>,
+    /// PPS(Pieces Per Second).
+    pub tertiary: Option<f64>,
+    /// Extra data.
+    pub extra: Extra,
+    /// APM for each game.
+    #[serde(rename = "secondaryAvgTracking")]
+    pub secondary_avg_tracking: Option<Vec<f64>>,
+    /// PPS for each game.
+    #[serde(rename = "tertiaryAvgTracking")]
+    pub tertiary_avg_tracking: Option<Vec<f64>>,
+    /// Extra data for each game.
+    #[serde(rename = "extraAvgTracking")]
+    pub extra_avg_tracking: Option<ExtraAvgTracking>,
+}
+
+/// Extra data.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct Extra {
+    /// VS score.
+    pub vs: Option<f64>,
+}
+
+/// Extra data for each game.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct ExtraAvgTracking {
+    /// VS score for each game.
+    #[serde(rename = "aggregatestats___vsscore")]
+    pub aggregate_stats_vs_score: Option<Vec<f64>>,
 }
 
 /// The user who set this Record,
