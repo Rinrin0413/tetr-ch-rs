@@ -145,282 +145,292 @@ impl AsRef<Record> for Record {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 pub enum EndContext {
-    SinglePlay(SinglePlayEndCtx),
-    MultiPlay(Vec<MultiPlayEndCtx>),
+    SinglePlay(single_play_end_ctx::SinglePlayEndCtx),
+    MultiPlay(Vec<multi_play_end_ctx::MultiPlayEndCtx>),
 }
 
-/// The state this singleplayer replay finished with.
-///
-/// ***No information about the endcontext field is given in the TETRA CHANNEL API docs,
-/// so the explanation of each content is a guess.**
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct SinglePlayEndCtx {
-    /// A seed for RNG.
-    pub seed: Option<f64>,
-    /// The number of cleared lines.
-    #[serde(rename = "lines")]
-    pub cleared_lines: Option<u32>,
+pub mod single_play_end_ctx {
+    use super::*;
+
+    /// The state this singleplayer replay finished with.
     ///
-    pub level_lines: Option<u32>,
+    /// ***No information about the endcontext field is given in the TETRA CHANNEL API docs,
+    /// so the explanation of each content is a guess.**
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct SinglePlayEndCtx {
+        /// A seed for RNG.
+        pub seed: Option<f64>,
+        /// The number of cleared lines.
+        #[serde(rename = "lines")]
+        pub cleared_lines: Option<u32>,
+        ///
+        pub level_lines: Option<u32>,
+        ///
+        pub level_lines_needed: Option<u32>,
+        /// The number of keys presses.
+        pub inputs: Option<u32>,
+        /// The number of holds.
+        pub holds: Option<u32>,
+        ///
+        pub time: Option<EndCtxTime>,
+        /// The record's score.
+        pub score: Option<u32>,
+        ///
+        #[serde(rename = "zenlevel")]
+        pub zen_level: Option<u32>,
+        ///
+        #[serde(rename = "zenprogress")]
+        pub zen_progress: Option<u32>,
+        /// The level of the record.
+        pub level: Option<u32>,
+        ///
+        pub combo: Option<u32>,
+        ///
+        #[serde(rename = "currentcombopower")]
+        pub current_combo_power: Option<u32>,
+        /// The number of maximum combo (zero indexed).
+        #[serde(rename = "topcombo")]
+        pub top_combo: Option<u32>,
+        ///
+        pub btb: Option<u32>,
+        /// The number of maximum Back To Back chain (zero indexed).
+        #[serde(rename = "topbtb")]
+        pub top_btb: Option<u32>,
+        /// The number of T-Spins.
+        #[serde(rename = "tspins")]
+        pub t_spins: Option<u32>,
+        /// The number of pieces places.
+        #[serde(rename = "piecesplaced")]
+        pub pieces_placed: Option<u32>,
+        /// How the lines was cleared.
+        pub clears: Option<EndCtxClears>,
+        /// Garbage-related data.
+        pub garbage: Option<EndCtxGarbage>,
+        /// The number of kills.
+        pub kills: Option<u32>,
+        /// The finesse data.
+        pub finesse: Option<EndCtxFinesse>,
+        /// The time at the finished.
+        #[serde(rename = "finalTime")]
+        pub final_time: Option<f64>,
+        /// The game type.
+        #[serde(rename = "gametype")]
+        pub game_type: Option<String>,
+    }
+    
+    impl AsRef<SinglePlayEndCtx> for SinglePlayEndCtx {
+        fn as_ref(&self) -> &Self {
+            self
+        }
+    }
+    
     ///
-    pub level_lines_needed: Option<u32>,
-    /// The number of keys presses.
-    pub inputs: Option<u32>,
-    /// The number of holds.
-    pub holds: Option<u32>,
-    ///
-    pub time: Option<EndCtxTime>,
-    /// The record's score.
-    pub score: Option<u32>,
-    ///
-    #[serde(rename = "zenlevel")]
-    pub zen_level: Option<u32>,
-    ///
-    #[serde(rename = "zenprogress")]
-    pub zen_progress: Option<u32>,
-    /// The level of the record.
-    pub level: Option<u32>,
-    ///
-    pub combo: Option<u32>,
-    ///
-    #[serde(rename = "currentcombopower")]
-    pub current_combo_power: Option<u32>,
-    /// The number of maximum combo (zero indexed).
-    #[serde(rename = "topcombo")]
-    pub top_combo: Option<u32>,
-    ///
-    pub btb: Option<u32>,
-    /// The number of maximum Back To Back chain (zero indexed).
-    #[serde(rename = "topbtb")]
-    pub top_btb: Option<u32>,
-    /// The number of T-Spins.
-    #[serde(rename = "tspins")]
-    pub t_spins: Option<u32>,
-    /// The number of pieces places.
-    #[serde(rename = "piecesplaced")]
-    pub pieces_placed: Option<u32>,
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct EndCtxTime {
+        ///
+        pub start: Option<u32>,
+        ///
+        pub zero: Option<bool>,
+        ///
+        pub locked: Option<bool>,
+        ///
+        pub prev: Option<u32>,
+        ///
+        #[serde(rename = "frameoffset")]
+        pub frame_offset: Option<i32>,
+    }
+    
+    impl AsRef<EndCtxTime> for EndCtxTime {
+        fn as_ref(&self) -> &Self {
+            self
+        }
+    }
+    
     /// How the lines was cleared.
-    pub clears: Option<EndCtxClears>,
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct EndCtxClears {
+        /// The number of cleared with Singles.
+        pub singles: Option<u32>,
+        /// The number of cleared with Doubles
+        pub doubles: Option<u32>,
+        /// The number of cleared with Triples
+        pub triples: Option<u32>,
+        /// The number of cleared with Quads
+        pub quads: Option<u32>,
+        /// The number of cleared with Realt T-Spins
+        #[serde(rename = "realtspins")]
+        pub realt_spins: Option<u32>,
+        /// The number of cleared with Mini T-Spins
+        #[serde(rename = "minitspins")]
+        pub mini_t_spins: Option<u32>,
+        /// The number of cleared with Mini T-Spin Singles
+        #[serde(rename = "minitspinsingles")]
+        pub mini_tss: Option<u32>,
+        /// The number of cleared with Mini T-Spin Doubles
+        #[serde(rename = "minitspindoubles")]
+        pub mini_tsd: Option<u32>,
+        /// The number of cleared with T-Spin Singles
+        #[serde(rename = "tspinsingles")]
+        pub tss: Option<u32>,
+        /// The number of cleared with T-Spin Doubles
+        #[serde(rename = "tspindoubles")]
+        pub tsd: Option<u32>,
+        /// The number of cleared with T-Spin Triples
+        #[serde(rename = "tspintriples")]
+        pub tst: Option<u32>,
+        /// The number of cleared with T-Spin Quads
+        #[serde(rename = "tspinquads")]
+        pub t_spin_quads: Option<u32>,
+        /// The number of cleared with All Clears
+        pub all_clears: Option<u32>,
+    }
+    
+    impl AsRef<EndCtxClears> for EndCtxClears {
+        fn as_ref(&self) -> &Self {
+            self
+        }
+    }
+    
     /// Garbage-related data.
-    pub garbage: Option<EndCtxGarbage>,
-    /// The number of kills.
-    pub kills: Option<u32>,
-    /// The finesse data.
-    pub finesse: Option<EndCtxFinesse>,
-    /// The time at the finished.
-    #[serde(rename = "finalTime")]
-    pub final_time: Option<f64>,
-    /// The game type.
-    #[serde(rename = "gametype")]
-    pub game_type: Option<String>,
-}
-
-impl AsRef<SinglePlayEndCtx> for SinglePlayEndCtx {
-    fn as_ref(&self) -> &Self {
-        self
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct EndCtxGarbage {
+        /// The number of garbage sent.
+        pub sent: Option<u32>,
+        /// The number of garbage received.
+        pub received: Option<u32>,
+        /// The number of garbage attacks.
+        pub attack: Option<u32>,
+        /// The number of garbage cleared.
+        pub cleared: Option<u32>,
     }
-}
-
-///
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct EndCtxTime {
-    ///
-    pub start: Option<u32>,
-    ///
-    pub zero: Option<bool>,
-    ///
-    pub locked: Option<bool>,
-    ///
-    pub prev: Option<u32>,
-    ///
-    #[serde(rename = "frameoffset")]
-    pub frame_offset: Option<i32>,
-}
-
-impl AsRef<EndCtxTime> for EndCtxTime {
-    fn as_ref(&self) -> &Self {
-        self
+    
+    impl AsRef<EndCtxGarbage> for EndCtxGarbage {
+        fn as_ref(&self) -> &Self {
+            self
+        }
     }
-}
-
-/// How the lines was cleared.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct EndCtxClears {
-    /// The number of cleared with Singles.
-    pub singles: Option<u32>,
-    /// The number of cleared with Doubles
-    pub doubles: Option<u32>,
-    /// The number of cleared with Triples
-    pub triples: Option<u32>,
-    /// The number of cleared with Quads
-    pub quads: Option<u32>,
-    /// The number of cleared with Realt T-Spins
-    #[serde(rename = "realtspins")]
-    pub realt_spins: Option<u32>,
-    /// The number of cleared with Mini T-Spins
-    #[serde(rename = "minitspins")]
-    pub mini_t_spins: Option<u32>,
-    /// The number of cleared with Mini T-Spin Singles
-    #[serde(rename = "minitspinsingles")]
-    pub mini_tss: Option<u32>,
-    /// The number of cleared with Mini T-Spin Doubles
-    #[serde(rename = "minitspindoubles")]
-    pub mini_tsd: Option<u32>,
-    /// The number of cleared with T-Spin Singles
-    #[serde(rename = "tspinsingles")]
-    pub tss: Option<u32>,
-    /// The number of cleared with T-Spin Doubles
-    #[serde(rename = "tspindoubles")]
-    pub tsd: Option<u32>,
-    /// The number of cleared with T-Spin Triples
-    #[serde(rename = "tspintriples")]
-    pub tst: Option<u32>,
-    /// The number of cleared with T-Spin Quads
-    #[serde(rename = "tspinquads")]
-    pub t_spin_quads: Option<u32>,
-    /// The number of cleared with All Clears
-    pub all_clears: Option<u32>,
-}
-
-impl AsRef<EndCtxClears> for EndCtxClears {
-    fn as_ref(&self) -> &Self {
-        self
+    
+    /// About the finesse data.
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct EndCtxFinesse {
+        /// The number of maximum finesse chain (?)
+        pub combo: Option<u32>,
+        /// The num of finesse faults.
+        pub faults: Option<u32>,
+        /// The number of perfect finesses.
+        #[serde(rename = "perfectpieces")]
+        pub perfect_pieces: Option<u32>,
     }
-}
-
-/// Garbage-related data.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct EndCtxGarbage {
-    /// The number of garbage sent.
-    pub sent: Option<u32>,
-    /// The number of garbage received.
-    pub received: Option<u32>,
-    /// The number of garbage attacks.
-    pub attack: Option<u32>,
-    /// The number of garbage cleared.
-    pub cleared: Option<u32>,
-}
-
-impl AsRef<EndCtxGarbage> for EndCtxGarbage {
-    fn as_ref(&self) -> &Self {
-        self
+    
+    impl AsRef<EndCtxFinesse> for EndCtxFinesse {
+        fn as_ref(&self) -> &Self {
+            self
+        }
     }
+
 }
 
-/// About the finesse data.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct EndCtxFinesse {
-    /// The number of maximum finesse chain (?)
-    pub combo: Option<u32>,
-    /// The num of finesse faults.
-    pub faults: Option<u32>,
-    /// The number of perfect finesses.
-    #[serde(rename = "perfectpieces")]
-    pub perfect_pieces: Option<u32>,
-}
+pub mod multi_play_end_ctx {
+    use super::*;
 
-impl AsRef<EndCtxFinesse> for EndCtxFinesse {
-    fn as_ref(&self) -> &Self {
-        self
+    /// The state this multiplayer replay finished with.
+    ///
+    /// ***No information about the endcontext field is given in the TETRA CHANNEL API docs,
+    /// so the explanation of each content is a guess.**
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct MultiPlayEndCtx {
+        /// Who is finished with this state.
+        pub user: Option<User>,
+        /// This user's handling settings.
+        pub handling: Option<Handling>,
+        /// 
+        #[serde(rename = "active")]
+        pub is_active: Option<bool>,
+        /// Whether this user is winner.
+        #[serde(rename = "success")]
+        pub is_success: Option<bool>,
+        /// The number of keys presses.
+        pub inputs: Option<u32>,
+        /// The number of pieces placed.
+        #[serde(rename = "piecesplaced")]
+        pub pieces_placed: Option<u32>,
+        /// This user's natural order in this record.
+        #[serde(rename = "naturalorder")]
+        pub natural_order: Option<u32>,
+        /// 
+        pub score: Option<u32>,
+        /// The number of wins.
+        pub wins: Option<u32>,
+        /// The points data.
+        pub points: Option<Points>,
     }
-}
-
-/// The state this multiplayer replay finished with.
-///
-/// ***No information about the endcontext field is given in the TETRA CHANNEL API docs,
-/// so the explanation of each content is a guess.**
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct MultiPlayEndCtx {
-    /// Who is finished with this state.
-    pub user: Option<User>,
+    
     /// This user's handling settings.
-    pub handling: Option<Handling>,
-    /// 
-    #[serde(rename = "active")]
-    pub is_active: Option<bool>,
-    /// Whether this user is winner.
-    #[serde(rename = "success")]
-    pub is_success: Option<bool>,
-    /// The number of keys presses.
-    pub inputs: Option<u32>,
-    /// The number of pieces placed.
-    #[serde(rename = "piecesplaced")]
-    pub pieces_placed: Option<u32>,
-    /// This user's natural order in this record.
-    #[serde(rename = "naturalorder")]
-    pub natural_order: Option<u32>,
-    /// 
-    pub score: Option<u32>,
-    /// The number of wins.
-    pub wins: Option<u32>,
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct Handling {
+        /// ARR(Automatic Repeat Rate).
+        pub arr: Option<f64>,
+        /// DAS(Delayed Auto Shift).
+        pub das: Option<f64>,
+        /// DCD(DAS Cut Delay).
+        pub dcd: Option<f64>,
+        /// SDF(Soft Drop Factor).
+        pub sdf: Option<u32>,
+        /// Whether "accidental hard drops prevention" is enabled.
+        #[serde(rename = "safelock")]
+        pub enable_safe_lock: Option<bool>,
+        /// Whether "DAS cancellation when changing directions" is enabled.
+        #[serde(rename = "cancel")]
+        pub enable_das_cancel: Option<bool>,
+    }
+    
     /// The points data.
-    pub points: Option<Points>,
-}
-
-/// This user's handling settings.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct Handling {
-    /// ARR(Automatic Repeat Rate).
-    pub arr: Option<f64>,
-    /// DAS(Delayed Auto Shift).
-    pub das: Option<f64>,
-    /// DCD(DAS Cut Delay).
-    pub dcd: Option<f64>,
-    /// SDF(Soft Drop Factor).
-    pub sdf: Option<u32>,
-    /// Whether "accidental hard drops prevention" is enabled.
-    #[serde(rename = "safelock")]
-    pub enable_safe_lock: Option<bool>,
-    /// Whether "DAS cancellation when changing directions" is enabled.
-    #[serde(rename = "cancel")]
-    pub enable_das_cancel: Option<bool>,
-}
-
-/// The points data.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct Points {
-    /// The number of wins.
-    pub primary: Option<u32>,
-    /// APM(Attacks Per Minute).
-    pub secondary: Option<f64>,
-    /// PPS(Pieces Per Second).
-    pub tertiary: Option<f64>,
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct Points {
+        /// The number of wins.
+        pub primary: Option<u32>,
+        /// APM(Attacks Per Minute).
+        pub secondary: Option<f64>,
+        /// PPS(Pieces Per Second).
+        pub tertiary: Option<f64>,
+        /// Extra data.
+        pub extra: Extra,
+        /// APM for each game.
+        #[serde(rename = "secondaryAvgTracking")]
+        pub secondary_avg_tracking: Option<Vec<f64>>,
+        /// PPS for each game.
+        #[serde(rename = "tertiaryAvgTracking")]
+        pub tertiary_avg_tracking: Option<Vec<f64>>,
+        /// Extra data for each game.
+        #[serde(rename = "extraAvgTracking")]
+        pub extra_avg_tracking: Option<ExtraAvgTracking>,
+    }
+    
     /// Extra data.
-    pub extra: Extra,
-    /// APM for each game.
-    #[serde(rename = "secondaryAvgTracking")]
-    pub secondary_avg_tracking: Option<Vec<f64>>,
-    /// PPS for each game.
-    #[serde(rename = "tertiaryAvgTracking")]
-    pub tertiary_avg_tracking: Option<Vec<f64>>,
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct Extra {
+        /// VS score.
+        pub vs: Option<f64>,
+    }
+    
     /// Extra data for each game.
-    #[serde(rename = "extraAvgTracking")]
-    pub extra_avg_tracking: Option<ExtraAvgTracking>,
-}
-
-/// Extra data.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct Extra {
-    /// VS score.
-    pub vs: Option<f64>,
-}
-
-/// Extra data for each game.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct ExtraAvgTracking {
-    /// VS score for each game.
-    #[serde(rename = "aggregatestats___vsscore")]
-    pub aggregate_stats_vs_score: Option<Vec<f64>>,
+    #[derive(Clone, Debug, Deserialize)]
+    #[non_exhaustive]
+    pub struct ExtraAvgTracking {
+        /// VS score for each game.
+        #[serde(rename = "aggregatestats___vsscore")]
+        pub aggregate_stats_vs_score: Option<Vec<f64>>,
+    }
+    
 }
 
 /// The user who set this Record,
