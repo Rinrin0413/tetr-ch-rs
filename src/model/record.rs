@@ -56,6 +56,12 @@ pub enum EndContext {
     MultiPlay(Vec<multi_play_end_ctx::MultiPlayEndCtx>),
 }
 
+impl AsRef<EndContext> for EndContext {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
 pub mod single_play_end_ctx {
     use super::*;
 
@@ -362,6 +368,12 @@ pub mod multi_play_end_ctx {
         /// The points data.
         pub points: Option<Points>,
     }
+
+    impl AsRef<MultiPlayEndCtx> for MultiPlayEndCtx {
+        fn as_ref(&self) -> &Self {
+            self
+        }
+    }
     
     /// This user's handling settings.
     #[derive(Clone, Debug, Deserialize)]
@@ -381,6 +393,12 @@ pub mod multi_play_end_ctx {
         /// Whether "DAS cancellation when changing directions" is enabled.
         #[serde(rename = "cancel")]
         pub enable_das_cancel: Option<bool>,
+    }
+
+    impl AsRef<Handling> for Handling {
+        fn as_ref(&self) -> &Self {
+            self
+        }
     }
     
     /// The points data.
@@ -405,6 +423,12 @@ pub mod multi_play_end_ctx {
         #[serde(rename = "extraAvgTracking")]
         pub extra_avg_tracking: Option<ExtraAvgTracking>,
     }
+
+    impl AsRef<Points> for Points {
+        fn as_ref(&self) -> &Self {
+            self
+        }
+    }
     
     /// Extra data.
     #[derive(Clone, Debug, Deserialize)]
@@ -412,6 +436,12 @@ pub mod multi_play_end_ctx {
     pub struct Extra {
         /// VS score.
         pub vs: Option<f64>,
+    }
+
+    impl AsRef<Extra> for Extra {
+        fn as_ref(&self) -> &Self {
+            self
+        }
     }
     
     /// Extra data for each game.
@@ -421,6 +451,12 @@ pub mod multi_play_end_ctx {
         /// VS score for each game.
         #[serde(rename = "aggregatestats___vsscore")]
         pub aggregate_stats_vs_score: Option<Vec<f64>>,
+    }
+
+    impl AsRef<ExtraAvgTracking> for ExtraAvgTracking {
+        fn as_ref(&self) -> &Self {
+            self
+        }
     }
     
 }
