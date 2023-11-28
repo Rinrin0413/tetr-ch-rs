@@ -12,7 +12,7 @@ This has significantly changed the structure around records.
 
 ## Improvements
 
-- Make `ResponseError` a standard error type by [@jlkn]([Title](https://github.com/jlkn)) in [[#2](https://github.com/Rinrin0413/tetr-ch-rs/pull/2)]
+- Make `ResponseError` a standard error type by [@jlkn](https://github.com/jlkn) in [[#2](https://github.com/Rinrin0413/tetr-ch-rs/pull/2)]
 
 # v0.3.5 2023-05-23
 
