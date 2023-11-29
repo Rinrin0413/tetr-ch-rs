@@ -2,6 +2,6 @@ target/
 Cargo.lock
 
 TODO.md
-merge-dev.sh
 .vscode/
 check_examples.sh
+tetr_ch_bin/

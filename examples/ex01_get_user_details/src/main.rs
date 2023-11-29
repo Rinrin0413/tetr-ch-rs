@@ -23,7 +23,7 @@ async fn main() {
     println!("Rank: {}", usr.data.as_ref().unwrap().user.league.rank.as_str());
     println!("Rank icon: {}", usr.data.as_ref().unwrap().user.league.rank.icon_url());
     println!("Rank color: {}", usr.data.as_ref().unwrap().user.league.rank.color());
-    println!("Reached {:.2}%", usr.rank_progress().unwrap());
+    //println!("Reached {:.2}%", usr.rank_progress().unwrap()); The user "RINRIN-RS" may be unranked.
     println!("№{}", usr.data.as_ref().unwrap().user.league.standing);
     println!("№{} (local)", usr.data.as_ref().unwrap().user.league.standing_local);
     println!("Badges count: {}", usr.badges_count());

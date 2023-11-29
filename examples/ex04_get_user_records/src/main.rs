@@ -29,6 +29,9 @@ async fn main() {
             .as_ref()
             .unwrap()
             .endcontext
+            .clone()
+            .single_play()
+            .unwrap()
             .final_time
             .unwrap()
             / 1000.
@@ -49,6 +52,9 @@ async fn main() {
             .as_ref()
             .unwrap()
             .endcontext
+            .clone()
+            .single_play()
+            .unwrap()
             .score
             .unwrap()
     );

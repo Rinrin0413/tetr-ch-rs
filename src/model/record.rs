@@ -145,6 +145,9 @@ pub mod single_play_end_ctx {
         /// The number of maximum Back To Back chain (zero indexed).
         #[serde(rename = "topbtb")]
         pub top_btb: Option<u32>,
+        ///
+        #[serde(rename = "currentbtbchainpower")]
+        pub current_btb_chain_power: Option<u32>,
         /// The number of T-Spins.
         #[serde(rename = "tspins")]
         pub t_spins: Option<u32>,
@@ -170,9 +173,7 @@ pub mod single_play_end_ctx {
     impl SinglePlayEndCtx {
         //! # Warning
         //!
-        //! Calling these methods from a [`Record`] retrieved from other than [`.get_user_records()`] is deprecated.
-        //!
-        //! [`.get_user_records()`]: crate::client::Client::get_user_records
+        //! Calling these methods from a [`Record`] retrieved from other than method [`get_user_records`](crate::client::Client::get_user_records) is deprecated.
         //!
         //! These are because the docs for the [TETRA CHANNEL API](https://tetr.io/about/api/) are incomplete,
         //! so we cannot guarantee which values are passed.
@@ -293,6 +294,8 @@ pub mod single_play_end_ctx {
         pub triples: Option<u32>,
         /// The number of cleared with Quads
         pub quads: Option<u32>,
+        /// The number of cleared with Pentas
+        pub pentas: Option<u32>,
         /// The number of cleared with Realt T-Spins
         #[serde(rename = "realtspins")]
         pub realt_spins: Option<u32>,
@@ -317,6 +320,9 @@ pub mod single_play_end_ctx {
         /// The number of cleared with T-Spin Quads
         #[serde(rename = "tspinquads")]
         pub t_spin_quads: Option<u32>,
+        /// The number of cleared with T-Spin Pentas
+        #[serde(rename = "tspinpentas")]
+        pub t_spin_pentas: Option<u32>,
         /// The number of cleared with All Clears
         pub all_clears: Option<u32>,
     }
@@ -336,9 +342,16 @@ pub mod single_play_end_ctx {
         /// The number of garbage received.
         pub received: Option<u32>,
         /// The number of garbage attacks.
-        pub attack: Option<u32>,
+        #[serde(rename = "attack")]
+        pub attacks: Option<u32>,
         /// The number of garbage cleared.
         pub cleared: Option<u32>,
+        /// The number of garbage attacks.
+        #[deprecated(
+            since = "0.5.0",
+            note = "This field name is not appropriate. This field cannot be used anymore, so use `attacks` instead"
+        )]
+        pub attack: Option<u32>,
     }
 
     impl AsRef<EndCtxGarbage> for EndCtxGarbage {

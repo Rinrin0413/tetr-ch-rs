@@ -54,9 +54,7 @@ impl ServerStatsResponse {
         }
     }
 
-    /// Returns the reference to the [`&ServerStats`].
-    ///
-    /// [`&ServerStats`]: crate::model::server_stats::ServerStats
+    /// Returns the reference to the [`&ServerStats`](crate::model::server_stats::ServerStats).
     ///
     /// # Panics
     ///

@@ -1,3 +1,30 @@
+# v0.5.0 2023-11-30
+
+## Fixes
+
+- Decoding error caused by the TWC badges [[#4](https://github.com/Rinrin0413/tetr-ch-rs/issues/4)]
+- Missing property `currentbtbchainpower` in struct `SinglePlayEndCtx` [[#6](https://github.com/Rinrin0413/tetr-ch-rs/issues/6)]
+- Some outdated example code (01, 04)
+- Some typos in document and `CHANGELOG.md`
+
+## Additions
+
+- Support new type of line clear "Pentas" and "T-Spin Pentas" [[#7](https://github.com/Rinrin0413/tetr-ch-rs/issues/7)]
+- A field `group` in struct `Badge` [[#5](https://github.com/Rinrin0413/tetr-ch-rs/issues/5)]
+
+## Changes
+
+- Rename a field `attack` to `attacks` of struct `EndCtxGarbage`
+
+## Improvements
+
+- Improve the document
+- Update the library description sentence in  `README.md` and `/src/lib.rs`
+
+## Internal
+
+- Update `.gitignore`
+
 # v0.4.0 2023-06-29
 
 ## Changes
@@ -12,7 +39,7 @@ This has significantly changed the structure around records.
 
 ## Improvements
 
-- Make `ResponseError` a standard error type by [@jlkn]([Title](https://github.com/jlkn)) in [[#2](https://github.com/Rinrin0413/tetr-ch-rs/pull/2)]
+- Make `ResponseError` a standard error type by [@jlkn](https://github.com/jlkn) in [[#2](https://github.com/Rinrin0413/tetr-ch-rs/pull/2)]
 
 # v0.3.5 2023-05-23
 

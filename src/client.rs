@@ -444,20 +444,19 @@ impl Client {
     /// - `stream_type`:
     ///
     /// The type of Stream.
-    /// Currently [`StreamType::FortyLines`], [`StreamType::Blitz`], [`StreamType::Any`], or [`StreamType::League`].
-    /// [`StreamType::FortyLines`]: stream::StreamType::FortyLines
-    /// [`StreamType::Blitz`]: stream::StreamType::Blitz
-    /// [`StreamType::Any`]: stream::StreamType::Any
-    /// [`StreamType::League`]: stream::StreamType::League
+    /// Currently
+    /// [`StreamType::FortyLines`](stream::StreamType::FortyLines),
+    /// [`StreamType::Blitz`](stream::StreamType::Blitz),
+    /// [`StreamType::Any`](stream::StreamType::Any),
+    /// or [`StreamType::League`](stream::StreamType::League).
     ///
     /// - `stream_context`:
     ///
     /// The context of the Stream.
-    /// Currently [`StreamContext::Global`], [`StreamContext::UserBest`], or [`StreamContext::UserRecent`].
-    ///
-    /// [`StreamContext::Global`]: stream::StreamContext::Global
-    /// [`StreamContext::UserBest`]: stream::StreamContext::UserBest
-    /// [`StreamContext::UserRecent`]: stream::StreamContext::UserRecent
+    /// Currently
+    /// [`StreamContext::Global`](stream::StreamContext::Global),
+    /// [`StreamContext::UserBest`](stream::StreamContext::UserBest),
+    /// or [`StreamContext::UserRecent`](stream::StreamContext::UserRecent).
     ///
     /// - `stream_identifier` (Optional):
     ///
