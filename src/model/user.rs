@@ -1475,7 +1475,7 @@ impl FortyLines {
         self.get_record().recorded_at()
     }
 
-    /// Returns the [`&Record`](crate::model::record::Record) for 40 LINES..
+    /// Returns the [`&Record`](crate::model::record::Record) for 40 LINES.
     ///
     /// # Panics
     ///
