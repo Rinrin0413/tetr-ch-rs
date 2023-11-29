@@ -4,3 +4,4 @@ Cargo.lock
 TODO.md
 .vscode/
 check_examples.sh
+tetr_ch_bin/
