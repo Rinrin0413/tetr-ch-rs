@@ -344,9 +344,16 @@ pub mod single_play_end_ctx {
         /// The number of garbage received.
         pub received: Option<u32>,
         /// The number of garbage attacks.
-        pub attack: Option<u32>,
+        #[serde(rename = "attack")]
+        pub attacks: Option<u32>,
         /// The number of garbage cleared.
         pub cleared: Option<u32>,
+        /// The number of garbage attacks.
+        #[deprecated(
+            since = "0.5.0",
+            note = "This field name is not appropriate. This field cannot be used anymore, so use `attacks` instead"
+        )]
+        pub attack: Option<u32>,
     }
 
     impl AsRef<EndCtxGarbage> for EndCtxGarbage {
