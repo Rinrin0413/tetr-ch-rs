@@ -145,6 +145,9 @@ pub mod single_play_end_ctx {
         /// The number of maximum Back To Back chain (zero indexed).
         #[serde(rename = "topbtb")]
         pub top_btb: Option<u32>,
+        ///
+        #[serde(rename = "currentbtbchainpower")]
+        pub current_btb_chain_power: Option<u32>,
         /// The number of T-Spins.
         #[serde(rename = "tspins")]
         pub t_spins: Option<u32>,
