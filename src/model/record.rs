@@ -296,6 +296,8 @@ pub mod single_play_end_ctx {
         pub triples: Option<u32>,
         /// The number of cleared with Quads
         pub quads: Option<u32>,
+        /// The number of cleared with Pentas
+        pub pentas: Option<u32>,
         /// The number of cleared with Realt T-Spins
         #[serde(rename = "realtspins")]
         pub realt_spins: Option<u32>,
@@ -320,6 +322,9 @@ pub mod single_play_end_ctx {
         /// The number of cleared with T-Spin Quads
         #[serde(rename = "tspinquads")]
         pub t_spin_quads: Option<u32>,
+        /// The number of cleared with T-Spin Pentas
+        #[serde(rename = "tspinpentas")]
+        pub t_spin_pentas: Option<u32>,
         /// The number of cleared with All Clears
         pub all_clears: Option<u32>,
     }
