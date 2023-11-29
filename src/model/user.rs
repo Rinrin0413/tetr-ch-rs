@@ -8,7 +8,7 @@ use crate::{
         league::LeagueData,
         record::{single_play_end_ctx::SinglePlayEndCtx, EndContext, Record},
     },
-    util::{max_f64, to_unix_ts},
+    util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
 };
 use serde::Deserialize;
 use std::fmt::{self, Display, Formatter};
@@ -732,7 +732,10 @@ pub struct Badge {
     /// The badge's label, shown when hovered.
     pub label: String,
     /// The badge's timestamp, if shown.
-    #[serde(rename = "ts")]
+    /// 
+    /// Why it uses `deserialize_with` attribute?
+    /// See [this issue](https://github.com/Rinrin0413/tetr-ch-rs/issues/4).
+    #[serde(rename = "ts", deserialize_with = "deserialize_from_non_str_to_none")]
     pub received_at: Option<String>,
 }
 
