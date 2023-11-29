@@ -732,13 +732,13 @@ pub struct Badge {
     /// The badge's label, shown when hovered.
     pub label: String,
     /// The badge's timestamp, if shown.
-    /// 
+    ///
     /// Why it uses `deserialize_with` attribute?
     /// See [this issue](https://github.com/Rinrin0413/tetr-ch-rs/issues/4).
     #[serde(rename = "ts", deserialize_with = "deserialize_from_non_str_to_none")]
     pub received_at: Option<String>,
     /// The badge's group, if specified.
-    /// 
+    ///
     /// ***This property is not said in the [API document](https://tetr.io/about/api).**
     pub group: Option<String>,
 }
