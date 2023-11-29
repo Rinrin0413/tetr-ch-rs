@@ -173,7 +173,7 @@ pub mod single_play_end_ctx {
     impl SinglePlayEndCtx {
         //! # Warning
         //!
-        //! Calling these methods from a [`Record`] retrieved from other than [`.get_user_records()`](crate::client::Client::get_user_records) is deprecated.
+        //! Calling these methods from a [`Record`] retrieved from other than method [`get_user_records`](crate::client::Client::get_user_records) is deprecated.
         //!
         //! These are because the docs for the [TETRA CHANNEL API](https://tetr.io/about/api/) are incomplete,
         //! so we cannot guarantee which values are passed.
