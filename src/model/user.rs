@@ -326,9 +326,7 @@ impl UserResponse {
         }
     }
 
-    /// Returns the [`&User`].
-    ///
-    /// [`&User`]: crate::model::user::User
+    /// Returns the [`&User`](crate::model::user::User).
     ///
     /// # Panics
     ///
@@ -1029,9 +1027,7 @@ impl UserRecordsResponse {
         }
     }
 
-    /// Returns the [`&RecordsData`].
-    ///
-    /// [`&RecordsData`]: crate::model::user::RecordsData
+    /// Returns the [`&RecordsData`](crate::model::user::RecordsData).
     ///
     /// # Panics
     ///
@@ -1479,9 +1475,7 @@ impl FortyLines {
         self.get_record().recorded_at()
     }
 
-    /// Returns the [`&Record`] for 40 LINES..
-    ///
-    /// [`&Record`]: crate::model::record::Record
+    /// Returns the [`&Record`](crate::model::record::Record) for 40 LINES..
     ///
     /// # Panics
     ///
@@ -1494,9 +1488,9 @@ impl FortyLines {
         }
     }
 
-    /// Returns the [`&SinglePlayEndCtx`] for 40 LINES.
-    ///
-    /// [`&SinglePlayEndCtx`]: crate::model::record::single_play_end_ctx::SinglePlayEndCtx
+    /// Returns the
+    /// [`&SinglePlayEndCtx`](crate::model::record::single_play_end_ctx::SinglePlayEndCtx)
+    /// for 40 LINES.
     ///
     /// # Panics
     ///
@@ -1600,9 +1594,7 @@ impl Blitz {
         self.get_record().recorded_at()
     }
 
-    /// Returns the [`&Record`] for BLITZ.
-    ///
-    /// [`&Record`]: crate::model::record::Record
+    /// Returns the [`&Record`](crate::model::record::Record) for BLITZ.
     ///
     /// # Panics
     ///
@@ -1615,9 +1607,9 @@ impl Blitz {
         }
     }
 
-    /// Returns the [`&SinglePlayEndCtx`] for BLITZ.
-    ///
-    /// [`&SinglePlayEndCtx`]: crate::model::record::single_play_end_ctx::SinglePlayEndCtx
+    /// Returns the
+    /// [`&SinglePlayEndCtx`](crate::model::record::single_play_end_ctx::SinglePlayEndCtx)
+    /// for BLITZ.
     ///
     /// # Panics
     ///
