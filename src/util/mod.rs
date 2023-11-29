@@ -1,6 +1,8 @@
 //! Utilities for the tetr-ch-rs.
 
 use chrono::DateTime;
+use serde::Deserialize;
+use serde_json::Value;
 
 /// Parses a RFC 3339 and ISO 8601 date to UNIX timestamp as `i64`.
 pub(crate) fn to_unix_ts(ts: &str) -> i64 {
@@ -16,6 +18,24 @@ pub(crate) fn max_f64(v1: f64, v2: f64) -> f64 {
         v2
     } else {
         v1
+    }
+}
+
+/// Deserialize from the given value to `Option<String>`.
+///
+/// If the given value is string, returns `Some(String)`.
+/// Otherwise, returns `None`.
+pub(crate) fn deserialize_from_non_str_to_none<'de, D>(
+    deserializer: D,
+) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value: Value = Deserialize::deserialize(deserializer)?;
+    if let Some(received_at) = value.as_str() {
+        Ok(Some(received_at.to_owned()))
+    } else {
+        Ok(None)
     }
 }
 
