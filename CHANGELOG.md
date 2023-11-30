@@ -1,3 +1,9 @@
+# v0.5.1 (hotfix) 2023-12-01
+
+## Fixes
+
+- Decoding error when the property `ts` of the object "badges" was not present
+
 # v0.5.0 2023-11-30
 
 ## Fixes
