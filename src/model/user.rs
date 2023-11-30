@@ -733,7 +733,11 @@ pub struct Badge {
     ///
     /// Why it uses `deserialize_with` attribute?
     /// See [this issue](https://github.com/Rinrin0413/tetr-ch-rs/issues/4).
-    #[serde(rename = "ts", deserialize_with = "deserialize_from_non_str_to_none")]
+    #[serde(
+        rename = "ts",
+        deserialize_with = "deserialize_from_non_str_to_none",
+        default
+    )]
     pub received_at: Option<String>,
     /// The badge's group, if specified.
     ///
