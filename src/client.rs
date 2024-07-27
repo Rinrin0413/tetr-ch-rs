@@ -91,7 +91,7 @@ impl Client {
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user(self, user: &str) -> RspErr<UserResponse> {
-        let url = format!("{}/users/{}", API_URL, user.to_lowercase());
+        let url = format!("{}users/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -187,7 +187,7 @@ impl Client {
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_records(self, user: &str) -> RspErr<UserRecordsResponse> {
-        let url = format!("{}/users/{}/records", API_URL, user.to_lowercase());
+        let url = format!("{}users/{}/records", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -403,7 +403,7 @@ impl Client {
         }
         // Cloned the `query` here because the query parameters will be referenced later.
         let q = query.clone().build();
-        let url = format!("{}/users/lists/xp", API_URL);
+        let url = format!("{}users/lists/xp", API_URL);
         let r = self.client.get(url);
         let res = match q.len() {
             1 => r.query(&[&q[0]]),
@@ -516,7 +516,7 @@ impl Client {
                 String::new()
             }
         );
-        let url = format!("{}/streams/{}", API_URL, stream_id.to_lowercase());
+        let url = format!("{}streams/{}", API_URL, stream_id.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -653,7 +653,7 @@ impl Client {
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn search_user(self, discord_user: &str) -> RspErr<SearchedUserResponse> {
-        let url = format!("{}/users/search/{}", API_URL, discord_user);
+        let url = format!("{}users/search/{}", API_URL, discord_user);
         let res = self.client.get(url).send().await;
         response(res).await
     }
