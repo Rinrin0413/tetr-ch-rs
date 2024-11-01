@@ -647,7 +647,10 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn search_user(self, social_connection: search_user::SocialConnection) -> RspErr<SearchedUserResponse> {
+    pub async fn search_user(
+        self,
+        social_connection: search_user::SocialConnection,
+    ) -> RspErr<SearchedUserResponse> {
         let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
         let res = self.client.get(url).send().await;
         response(res).await
