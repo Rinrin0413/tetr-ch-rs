@@ -1,10 +1,10 @@
-//! Server stats model.
+//! The Server Statistics model.
 
 use crate::model::cache::CacheData;
 use serde::Deserialize;
 
-/// The response for the server stats information.
-/// Describes the some statistics about the TETR.IO in detail.
+/// The response for the Server Statistics data.
+/// Some statistics about the TETR.IO.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ServerStatsResponse {
@@ -15,7 +15,7 @@ pub struct ServerStatsResponse {
     pub error: Option<String>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
-    /// The requested user data.
+    /// The requested data.
     pub data: Option<ServerStats>,
 }
 
@@ -26,8 +26,25 @@ impl ServerStatsResponse {
     ///
     /// Panics if the request was not successful.
     pub fn registered_players(&self) -> u64 {
-        let ss = self.get_server_stats();
-        ss.user_count - ss.anon_count
+        self.get_server_stats().registered_players()
+    }
+
+    /// Returns the average amount of pieces placed per second.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the request was not successful.
+    pub fn avg_pieces_per_second(&self) -> f64 {
+        self.get_server_stats().avg_pieces_per_second()
+    }
+
+    /// Returns the average amount of keys pressed per second.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the request was not successful.
+    pub fn avg_keys_per_second(&self) -> f64 {
+        self.get_server_stats().avg_keys_per_second()
     }
 
     /// Returns a UNIX timestamp when this resource was cached.
@@ -74,7 +91,7 @@ impl AsRef<ServerStatsResponse> for ServerStatsResponse {
     }
 }
 
-/// The requested server stats data:
+/// The Server Statistics data.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ServerStats {
@@ -82,43 +99,64 @@ pub struct ServerStats {
     /// including anonymous accounts.
     #[serde(rename = "usercount")]
     pub user_count: u64,
-    /// The amount of users created a second (through the last minute).
+    /// The amount of users created a second
+    /// (through the last minute).
     #[serde(rename = "usercount_delta")]
     pub user_count_delta: f64,
     /// The amount of anonymous accounts on the server.
     #[serde(rename = "anoncount")]
     pub anon_count: u64,
-    /// The amount of ranked (visible in TETRA LEAGUE leaderboard) accounts on the server.
+    /// The total amount of accounts ever created
+    /// (including pruned anons etc.).
+    #[serde(rename = "totalaccounts")]
+    pub total_accounts: u64,
+    /// The amount of ranked
+    /// (visible in TETRA LEAGUE leaderboard) accounts on the server.
     #[serde(rename = "rankedcount")]
     pub ranked_count: u64,
-    /// The amount of replays stored on the server.
-    #[serde(rename = "replaycount")]
-    pub replay_count: u64,
+    /// The amount of game records stored on the server.
+    #[serde(rename = "recordcount")]
+    pub record_count: u64,
     /// The amount of games played across all users,
     /// including both off- and online modes.
     #[serde(rename = "gamesplayed")]
     pub games_play_count: u64,
-    /// The amount of games played a second (through the last minute).
+    /// The amount of games played a second
+    /// (through the last minute).
     #[serde(rename = "gamesplayed_delta")]
     pub games_play_count_delta: f64,
     /// The amount of games played across all users,
-    /// including both off- and online modes, excluding games that were not completed (e.g. retries)
+    /// including both off- and online modes, excluding games that were not completed
+    /// (e.g. retries)
     #[serde(rename = "gamesfinished")]
     pub games_finish_count: u64,
-    /// The amount of seconds spent playing across all users, including both off- and online modes.
+    /// The amount of seconds spent playing across all users,
+    /// including both off- and online modes.
     #[serde(rename = "gametime")]
     pub play_time: f64,
-    /// The amount of keys pressed across all users, including both off- and online modes.
+    /// The amount of keys pressed across all users,
+    /// including both off- and online modes.
     pub inputs: u64,
-    /// The amount of pieces placed across all users, including both off- and online modes.
+    /// The amount of pieces placed across all users,
+    /// including both off- and online modes.
     #[serde(rename = "piecesplaced")]
-    pub pieces_placed: u64,
+    pub pieces_place_count: u64,
 }
 
 impl ServerStats {
     /// Returns the amount of registered players.
     pub fn registered_players(&self) -> u64 {
         self.user_count - self.anon_count
+    }
+
+    /// Returns the average amount of pieces placed per second.
+    pub fn avg_pieces_per_second(&self) -> f64 {
+        self.pieces_place_count as f64 / self.play_time
+    }
+
+    /// Returns the average amount of keys pressed per second.
+    pub fn avg_keys_per_second(&self) -> f64 {
+        self.inputs as f64 / self.play_time
     }
 }
 
