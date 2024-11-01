@@ -1,11 +1,10 @@
-//! User-related models.
+//! The User Info models.
 
 use crate::{
     client::Client,
     error::ResponseError,
     model::{
         cache::CacheData,
-        league::LeagueData,
         record::{single_play_end_ctx::SinglePlayEndCtx, EndContext, Record},
     },
     util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
@@ -13,8 +12,8 @@ use crate::{
 use serde::Deserialize;
 use std::fmt::{self, Display, Formatter};
 
-/// The response for the User information.
-/// Describes the user in detail.
+/// The response for User Info data.
+/// An object describing the user in detail.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserResponse {
@@ -25,12 +24,12 @@ pub struct UserResponse {
     pub error: Option<String>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
-    /// The requested user data.
-    pub data: Option<UserData>,
+    /// The requested data.
+    pub data: Option<User>,
 }
 
 impl UserResponse {
-    /// Returns UNIX timestamp when the user's account created, if one exists.
+    /// Returns the UNIX timestamp when the user's account created, if one exists.
     ///
     /// # Panics
     ///
@@ -169,6 +168,15 @@ impl UserResponse {
         self.get_user().role.is_banned()
     }
 
+    /// Whether the user is hidden.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the request was not successful.
+    pub fn is_hidden(&self) -> bool {
+        self.get_user().role.is_hidden()
+    }
+
     /// Whether the user is bad standing.
     ///
     /// # Panics
@@ -187,75 +195,13 @@ impl UserResponse {
         self.get_user().is_supporter.unwrap_or(false)
     }
 
-    /// Whether the user is verified.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn is_verified(&self) -> bool {
-        self.get_user().is_verified
-    }
-
     /// Returns the user's profile URL.
     ///
     /// # Panics
     ///
     /// Panics if the request was not successful.
     pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.get_user().name)
-    }
-
-    /// Returns an icon URL of the user's rank.
-    /// If the user is unranked, returns ?-rank(z) icon URL.
-    /// If the user has no rank, returns `None`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn rank_icon_url(&self) -> Option<String> {
-        self.get_user().rank_icon_url()
-    }
-
-    /// Returns a rank color. (Hex color codes)
-    /// If the user has no rank, returns `None`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn rank_color(&self) -> Option<u32> {
-        self.get_user().rank_color()
-    }
-
-    /// Returns an icon URL of the user's percentile rank.
-    /// If not applicable, returns `None`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn percentile_rank_icon_url(&self) -> Option<String> {
-        self.get_user().percentile_rank_icon_url()
-    }
-
-    /// Returns a percentile rank color. (Hex color codes)
-    /// If not applicable, returns `None`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn percentile_rank_color(&self) -> Option<u32> {
-        self.get_user().percentile_rank_color()
-    }
-
-    /// Returns an icon URL of the user's highest achieved rank.
-    /// If the user has no highest achieved rank, returns `None`.
-    pub fn best_rank_icon_url(&self) -> Option<String> {
-        self.get_user().best_rank_icon_url()
-    }
-
-    /// Returns a color of the user's highest achieved rank.
-    /// If the user has no highest achieved rank, returns `None`.
-    pub fn best_rank_color(&self) -> Option<u32> {
-        self.get_user().best_rank_color()
+        format!("https://ch.tetr.io/u/{}", self.get_user().username)
     }
 
     /// Returns an `Option<String>`.
@@ -272,25 +218,6 @@ impl UserResponse {
             .country
             .as_ref()
             .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
-
-    /// Returns the user's progress percentage in the rank.
-    /// Returns `None` if there is no user's position in global leaderboards.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn rank_progress(&self) -> Option<f64> {
-        let usr = self.get_user();
-        let current_standing = usr.league.standing as f64;
-        let prev_at = usr.league.prev_at as f64;
-        let next_at = usr.league.next_at as f64;
-
-        if prev_at < 0. || next_at < 0. {
-            return None;
-        }
-
-        Some((current_standing - prev_at) / (next_at - prev_at) * 100.)
     }
 
     /// Returns the badges count.
@@ -332,9 +259,10 @@ impl UserResponse {
     ///
     /// Panics if the request was not successful.
     fn get_user(&self) -> &User {
-        match self.data.as_ref() {
-            Some(d) => d.user.as_ref(),
-            None => panic!("There is no user object because the request was not successful."),
+        if let Some(d) = self.data.as_ref() {
+            d
+        } else {
+            panic!("There is no user object because the request was not successful.")
         }
     }
 }
@@ -345,20 +273,7 @@ impl AsRef<UserResponse> for UserResponse {
     }
 }
 
-/// The requested user data.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct UserData {
-    pub user: User,
-}
-
-impl AsRef<UserData> for UserData {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-/// The requested user.
+/// The User Info data.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct User {
@@ -366,8 +281,7 @@ pub struct User {
     #[serde(rename = "_id")]
     pub id: UserId,
     /// The user's username.
-    #[serde(rename = "username")]
-    pub name: String,
+    pub username: String,
     /// The user's role.
     pub role: Role,
     /// When the user account was created.
@@ -389,11 +303,12 @@ pub struct User {
     /// If the user has chosen to hide this statistic, it will be -1.
     #[serde(rename = "gameswon")]
     pub won_count: i32,
-    /// The amount of seconds this user spent playing, both on- and offline.
+    /// The amount of seconds this user spent playing,both on- and offline.
     /// If the user has chosen to hide this statistic, it will be -1.
     #[serde(rename = "gametime")]
     pub play_time: f64,
-    /// The user's ISO 3166-1 country code, or `None` if hidden/unknown. Some vanity flags exist.
+    /// The user's ISO 3166-1 country code, or `None` if hidden/unknown.
+    /// Some vanity flags exist.
     pub country: Option<String>,
     /// Whether this user currently has a bad standing (recently banned).
     #[serde(rename = "badstanding")]
@@ -401,13 +316,9 @@ pub struct User {
     /// Whether this user is currently supporting TETR.IO <3
     #[serde(rename = "supporter")]
     pub is_supporter: Option<bool>, // EXCEPTION
-    /// An indicator of their total amount supported, between 0 and 4 inclusive.
+    /// An indicator of their total amount supported,
+    /// between 0 and 4 inclusive.
     pub supporter_tier: u8,
-    /// Whether this user is a verified account.
-    #[serde(rename = "verified")]
-    pub is_verified: bool,
-    /// This user's current TETRA LEAGUE standing.
-    pub league: LeagueData,
     /// This user's avatar ID.
     /// We can get their avatar at  
     /// `https://tetr.io/user-content/avatars/{ USERID }.jpg?rv={ AVATAR_REVISION }`.
@@ -419,16 +330,24 @@ pub struct User {
     pub banner_revision: Option<u64>,
     /// This user's "About Me" section.
     /// Ignore this field if the user is not a supporter.
-    ///
-    /// ***Even if the user is not currently a supporter,
-    /// the bio may be exist if the bio was once set.**
     pub bio: Option<String>,
-    /// The amount of players who have added this user to their friends list.
-    pub friend_count: Option<u32>, // EXCEPTION
     /// This user's third party connections.
     pub connections: Connections,
+    /// The amount of players who have added this user to their friends list.
+    ///
+    /// ***This field is optional but the API documentation does not mention it.**
+    pub friend_count: Option<u32>,
     // This user's distinguishment banner.
     pub distinguishment: Option<Distinguishment>,
+    /// This user's featured achievements.
+    /// Up to three integers which correspond to Achievement IDs.
+    pub achievements: Vec<i32>,
+    /// This user's Achievement Rating.
+    #[serde(rename = "ar")]
+    pub achievement_rating: i32,
+    /// The breakdown of the source of this user's Achievement Rating.
+    #[serde(rename = "ar_counts")]
+    pub achievement_rating_counts: AchievementRatingCounts,
 }
 
 impl User {
@@ -521,6 +440,11 @@ impl User {
         self.role.is_banned()
     }
 
+    /// Whether this user is hidden.
+    pub fn is_hidden(&self) -> bool {
+        self.role.is_hidden()
+    }
+
     /// Whether this user is bad standing.
     pub fn is_badstanding(&self) -> bool {
         self.is_badstanding.unwrap_or(false)
@@ -531,51 +455,9 @@ impl User {
         self.is_supporter.unwrap_or(false)
     }
 
-    /// Whether this user is verified.
-    pub fn is_verified(&self) -> bool {
-        self.is_verified
-    }
-
     /// Returns the user's profile URL.
     pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.name)
-    }
-
-    /// Returns an icon URL of the user's rank.
-    /// If the user is unranked, returns ?-rank(z) icon URL.
-    /// If the user has no rank, returns `None`.
-    pub fn rank_icon_url(&self) -> Option<String> {
-        self.league.rank_icon_url()
-    }
-
-    /// Returns a rank color. (Hex color codes)
-    /// If the user has no rank, returns `None`.
-    pub fn rank_color(&self) -> Option<u32> {
-        self.league.rank_color()
-    }
-
-    /// Returns an icon URL of the user's percentile rank.
-    /// f not applicable, returns `None`.
-    pub fn percentile_rank_icon_url(&self) -> Option<String> {
-        self.league.percentile_rank_icon_url()
-    }
-
-    /// Returns a percentile rank color. (Hex color codes)
-    /// If not applicable, returns `None`.
-    pub fn percentile_rank_color(&self) -> Option<u32> {
-        self.league.percentile_rank_color()
-    }
-
-    /// Returns a URL of the user's highest achieved rank.
-    /// If the user has no highest achieved rank, returns `None`.
-    pub fn best_rank_icon_url(&self) -> Option<String> {
-        self.league.best_rank_icon_url()
-    }
-
-    /// Returns a color of the user's highest achieved rank.
-    /// If the user has no highest achieved rank, returns `None`.
-    pub fn best_rank_color(&self) -> Option<u32> {
-        self.league.best_rank_color()
+        format!("https://ch.tetr.io/u/{}", self.username)
     }
 
     /// Returns an i
@@ -589,20 +471,6 @@ impl User {
         self.country
             .as_ref()
             .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
-
-    /// Returns the user's progress percentage in the rank.
-    /// Returns `None` if there is no user's position in global leaderboards.
-    pub fn rank_progress(&self) -> Option<f64> {
-        let current_standing = self.league.standing as f64;
-        let prev_at = self.league.prev_at as f64;
-        let next_at = self.league.next_at as f64;
-
-        if prev_at < 0. || next_at < 0. {
-            return None;
-        }
-
-        Some((current_standing - prev_at) / (next_at - prev_at) * 100.)
     }
 
     /// Returns the badges count.
@@ -644,6 +512,9 @@ pub enum Role {
     /// The banned user.
     #[serde(rename = "banned")]
     Banned,
+    /// The hidden user.
+    #[serde(rename = "hidden")]
+    Hidden,
 }
 
 impl Role {
@@ -681,6 +552,11 @@ impl Role {
     pub fn is_banned(&self) -> bool {
         matches!(self, Role::Banned)
     }
+
+    /// Whether the user is hidden.
+    pub fn is_hidden(&self) -> bool {
+        matches!(self, Role::Hidden)
+    }
 }
 
 impl AsRef<Role> for Role {
@@ -704,6 +580,7 @@ impl ToString for Role {
     /// assert_eq!(Role::Mod.to_string(), "Moderator");
     /// assert_eq!(Role::Halfmod.to_string(), "Community moderator");
     /// assert_eq!(Role::Banned.to_string(), "Banned user");
+    /// assert_eq!(Role::Hidden.to_string(), "Hidden user");
     /// ```
     fn to_string(&self) -> String {
         match self {
@@ -715,6 +592,7 @@ impl ToString for Role {
             Role::Mod => "Moderator",
             Role::Halfmod => "Community moderator",
             Role::Banned => "Banned user",
+            Role::Hidden => "Hidden user",
         }
         .to_string()
     }
@@ -725,10 +603,21 @@ impl ToString for Role {
 #[non_exhaustive]
 pub struct Badge {
     /// The badge's internal ID,
-    /// and the filename of the badge icon (all PNGs within `/res/badges/`)
+    /// and the filename of the badge icon
+    /// (all PNGs within `/res/badges/`).
+    /// Note that badge IDs may include forward slashes.
+    /// Please do not encode them!
+    /// Follow the folder structure.
     pub id: String,
+    /// The badge's group ID.
+    /// If multiple badges have the same group ID, they are rendered together.
+    pub group: Option<String>,
     /// The badge's label, shown when hovered.
     pub label: String,
+    /// Extra flavor text for the badge, shown when hovered.
+    ///
+    /// ***This field is optional but the API documentation does not mention it.**
+    pub desc: Option<String>,
     /// The badge's timestamp, if shown.
     ///
     /// Why it uses `deserialize_with` attribute?
@@ -739,10 +628,6 @@ pub struct Badge {
         default
     )]
     pub received_at: Option<String>,
-    /// The badge's group, if specified.
-    ///
-    /// ***This property is not said in the [API document](https://tetr.io/about/api).**
-    pub group: Option<String>,
 }
 
 impl Badge {
@@ -768,7 +653,42 @@ impl AsRef<Badge> for Badge {
 #[non_exhaustive]
 pub struct Connections {
     /// This user's connection to Discord.
-    pub discord: Option<DiscordUser>,
+    ///
+    /// - `id`: Discord ID.
+    /// - `username`: Discord username.
+    /// - `display_username`: Same as `username`.
+    pub discord: Option<Connection>,
+    /// This user's connection to Twitch.
+    ///
+    /// - `id`: Twitch user ID.
+    /// - `username`: Twitch username (as used in the URL).
+    /// - `display_username`: Twitch display name (may include Unicode).
+    pub twitch: Option<Connection>,
+    /// This user's connection to X
+    /// (kept in the API as twitter for readability).
+    ///
+    /// - `id`: X user ID.
+    /// - `username`: X handle (as used in the URL).
+    /// - `display_username`: X display name (may include Unicode).
+    pub twitter: Option<Connection>,
+    /// This user's connection to Reddit.
+    ///
+    /// - `id`: Reddit user ID.
+    /// - `username`: Reddit username.
+    /// - `display_username`: Same as `username`.
+    pub reddit: Option<Connection>,
+    /// This user's connection to YouTube.
+    ///
+    /// - `id`: YouTube user ID (as used in the URL).
+    /// - `username`: YouTube display name.
+    /// - `display_username`: Same as `username`.
+    pub youtube: Option<Connection>,
+    /// This user's connection to Steam.
+    ///
+    /// - `id`: SteamID.
+    /// - `username`: Steam display name.
+    /// - `display_username`: Same as `username`.
+    pub steam: Option<Connection>,
 }
 
 impl AsRef<Connections> for Connections {
@@ -777,18 +697,19 @@ impl AsRef<Connections> for Connections {
     }
 }
 
-/// This user's connection to Discord.
+/// This user's connection.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct DiscordUser {
-    /// This user's Discord ID.
+pub struct Connection {
+    /// This user's user ID on the service.
     pub id: String,
-    /// This user's Discord Tag.
-    #[serde(rename = "username")]
-    pub name: String,
+    /// This user's username on the service.
+    pub username: String,
+    /// This user's display username on the service.
+    pub display_username: String,
 }
 
-impl AsRef<DiscordUser> for DiscordUser {
+impl AsRef<Connection> for Connection {
     fn as_ref(&self) -> &Self {
         self
     }
@@ -802,14 +723,68 @@ pub struct Distinguishment {
     #[serde(rename = "type")]
     pub _type: String,
     /// The detail of distinguishment banner.
+    ///
+    /// ***This field is not documented in the API documentation.**
     pub detail: Option<String>,
     /// The header of distinguishment banner.
+    ///
+    /// ***This field is not documented in the API documentation.**
     pub header: Option<String>,
     /// the footer of distinguishment banner.
+    ///
+    /// ***This field is not documented in the API documentation.**
     pub footer: Option<String>,
 }
 
 impl AsRef<Distinguishment> for Distinguishment {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// The breakdown of the source of this user's Achievement Rating.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct AchievementRatingCounts {
+    /// The amount of ranked Bronze achievements this user has.
+    #[serde(rename = "1")]
+    pub bronze: Option<u32>,
+    /// The amount of ranked Silver achievements this user has.
+    #[serde(rename = "2")]
+    pub silver: Option<u32>,
+    /// The amount of ranked Gold achievements this user has.
+    #[serde(rename = "3")]
+    pub gold: Option<u32>,
+    /// The amount of ranked Platinum achievements this user has.
+    #[serde(rename = "4")]
+    pub platinum: Option<u32>,
+    /// The amount of ranked Diamond achievements this user has.
+    #[serde(rename = "5")]
+    pub diamond: Option<u32>,
+    /// The amount of ranked Issued achievements this user has.
+    #[serde(rename = "100")]
+    pub issued: Option<u32>,
+    /// The amount of competitive achievements this user has ranked into the top 100 with.
+    #[serde(rename = "t100")]
+    pub top100: Option<u32>,
+    /// The amount of competitive achievements this user has ranked into the top 50 with.
+    #[serde(rename = "t50")]
+    pub top50: Option<u32>,
+    ///  The amount of competitive achievements this user has ranked into the top 25 with.
+    #[serde(rename = "t25")]
+    pub top25: Option<u32>,
+    /// The amount of competitive achievements this user has ranked into the top 10 with.
+    #[serde(rename = "t10")]
+    pub top10: Option<u32>,
+    /// The amount of competitive achievements this user has ranked into the top 5 with.
+    #[serde(rename = "t5")]
+    pub top5: Option<u32>,
+    /// The amount of competitive achievements this user has ranked into the top 3 with.
+    #[serde(rename = "t3")]
+    pub top3: Option<u32>,
+}
+
+impl AsRef<AchievementRatingCounts> for AchievementRatingCounts {
     fn as_ref(&self) -> &Self {
         self
     }
@@ -1655,7 +1630,7 @@ impl UserId {
         &self.0
     }
 
-    /// Gets the user's data.
+    /// Gets the User Info data.
     ///
     /// # Errors
     ///
