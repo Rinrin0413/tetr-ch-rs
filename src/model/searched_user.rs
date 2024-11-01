@@ -1,4 +1,4 @@
-//! Searched user model.
+//! The Searched User model.
 
 use crate::{
     client::Client,
@@ -10,8 +10,8 @@ use crate::{
 };
 use serde::Deserialize;
 
-/// The response for the searched user.
-/// Describes the found userm or `None` if the user was not found.
+/// The response for the Searched User data.
+/// An object describing the user found.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct SearchedUserResponse {
@@ -22,8 +22,7 @@ pub struct SearchedUserResponse {
     pub error: Option<String>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
-    /// The found user.
-    /// If the user was not found, this is `None`.
+    /// The requested data.
     pub data: Option<UserData>,
 }
 
@@ -104,11 +103,15 @@ impl AsRef<SearchedUserResponse> for SearchedUserResponse {
     }
 }
 
-/// The found user.
+/// The Searched User data.
+///
+/// Only one user is contained.
+/// Generally, you won't see two users with the same social linked, though,
+/// as it would be against TETR.IO multiaccounting policies.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserData {
-    /// The user info. (TETRA.IO account)
+    /// The user information (TETRA.IO user account).
     pub user: UserInfo,
 }
 
@@ -153,7 +156,7 @@ impl AsRef<UserData> for UserData {
     }
 }
 
-/// The user info. (TETRA.IO account)
+/// The user information (TETRA.IO user account).
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserInfo {
