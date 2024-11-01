@@ -64,11 +64,9 @@ impl Client {
         }
     }
 
-    /// Returns the user model.
+    /// Returns the object describing the user in detail.
     ///
     /// # Examples
-    ///
-    /// Getting a user object:
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
@@ -76,7 +74,7 @@ impl Client {
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
-    /// // Get information for user `RINRIN-RS`.
+    /// // Get the User Info.
     /// let user = client.get_user("rinrin-rs").await?;
     /// # Ok(())
     /// # }
