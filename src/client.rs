@@ -126,11 +126,9 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the server activity model.
+    /// Returns an array of user activity over the last 2 days.
     ///
     /// # Examples
-    ///
-    /// Getting the server activity object:
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
@@ -138,7 +136,7 @@ impl Client {
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
-    /// // Get the server activity.
+    /// // Get the Server Activity.
     /// let user = client.get_server_activity().await?;
     /// # Ok(())
     /// # }

@@ -1,11 +1,11 @@
-//! Server Activity model.
+//! The Server Activity model.
 
 use crate::model::cache::CacheData;
 use serde::Deserialize;
 
-/// The response for the server activity information.
+/// The response for the Server Activity data.
 ///
-/// A graph of count of active players over the last 2 days.
+/// An array of user activity over the last 2 days.
 /// A user is seen as active if they logged in or received XP within the last 30 minutes.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
@@ -17,7 +17,7 @@ pub struct ServerActivityResponse {
     pub error: Option<String>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
-    /// The requested user data.
+    /// The requested data.
     pub data: Option<ServerActivity>,
 }
 
@@ -66,7 +66,7 @@ impl AsRef<ServerActivityResponse> for ServerActivityResponse {
     }
 }
 
-/// The requested user data.
+/// The Server Activity data.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ServerActivity {
