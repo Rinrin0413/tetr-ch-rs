@@ -15,8 +15,8 @@ You can get the following from the TETRA CHANNEL API with this library:
 
 Also you can search for [TETR.IO](https://tetr.io) accounts by Discord account.
 
-But TETRA CHANNEL API is in alpha.
-So this library may not work properly in the future:(
+But the TETRA CHANNEL API is in beta
+so this library may not work properly in the future :(
 
 **\* This library is NOT official.**
 
