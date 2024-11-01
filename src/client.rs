@@ -96,11 +96,9 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the server stats model.
+    /// Returns some statistics about the TETR.IO.
     ///
     /// # Examples
-    ///
-    /// Getting the server stats object:
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
@@ -108,7 +106,7 @@ impl Client {
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
-    /// // Get the server stats.
+    /// // Get the Server Statistics.
     /// let user = client.get_server_stats().await?;
     /// # Ok(())
     /// # }
