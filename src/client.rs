@@ -611,27 +611,28 @@ impl Client {
         response(res).await
     }
 
-    /// Search a TETR.IO user account by Discord account.
+    /// Searches for a TETR.IO user account by the social account.
     ///
     /// # Arguments
     ///
-    /// - `discord_user`:
+    /// - `social_connection`:
     ///
-    /// The Discord username or Discord ID to look up.
+    /// The social connection to look up.
+    /// This argument requires a [`search_user::SocialConnection`].
     ///
     /// # Examples
     ///
-    /// Search a user by Discord account:
-    ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::client::{Client, search_user::SocialConnection};
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Search a user by Discord ID.
-    /// let user = client.search_user("724976600873041940").await?;
+    /// // Search for a TETR.IO user account.
+    /// let user = client.search_user(
+    ///     SocialConnection::Discord("724976600873041940".to_string())
+    /// ).await?;
     /// # Ok(())
     /// # }
     ///
@@ -646,8 +647,8 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn search_user(self, discord_user: &str) -> RspErr<SearchedUserResponse> {
-        let url = format!("{}users/search/{}", API_URL, discord_user);
+    pub async fn search_user(self, social_connection: search_user::SocialConnection) -> RspErr<SearchedUserResponse> {
+        let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -1404,6 +1405,35 @@ pub mod stream {
         /// The news of the user.
         /// Enter the user's **ID** to `String`.
         User(String),
+    }
+}
+
+pub mod search_user {
+    //! Features for searching users.
+
+    /// The social connection.
+    ///
+    /// The API documentation says searching for the other social links will be added in the near future.
+    pub enum SocialConnection {
+        /// A Discord ID.
+        Discord(String),
+    }
+
+    impl SocialConnection {
+        /// Converts into a parameter.
+        ///
+        /// # Examples
+        ///
+        /// ```ignore
+        /// # use tetr_ch::client::search_user::SocialConnection;
+        /// let discord_id = "724976600873041940".to_string();
+        /// assert_eq!(SocialConnection::Discord(discord_id).to_param(), "discord:724976600873041940");
+        /// ```
+        pub(crate) fn to_param(&self) -> String {
+            match self {
+                SocialConnection::Discord(id) => format!("discord:{}", id),
+            }
+        }
     }
 }
 
