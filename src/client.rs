@@ -9,6 +9,7 @@ use crate::{
         server_activity::ServerActivityResponse,
         server_stats::ServerStatsResponse,
         stream::StreamResponse,
+        summary::forty_lines::FortyLinesResponse,
         user::{UserRecordsResponse, UserResponse},
         xp_leaderboard::{self, XPLeaderboardResponse},
     },
@@ -182,6 +183,40 @@ impl Client {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_records(self, user: &str) -> RspErr<UserRecordsResponse> {
         let url = format!("{}users/{}/records", API_URL, user.to_lowercase());
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Returns the object describing a summary of the user's 40 LINES games.
+    ///
+    /// # Arguments
+    ///
+    /// - `user`: The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the User Summary 40 LINES.
+    /// let user = client.get_user_40l("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user_40l(self, user: &str) -> RspErr<FortyLinesResponse> {
+        let url = format!("{}users/{}/summaries/40l", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
