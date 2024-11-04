@@ -1,9 +1,6 @@
 //! The User Summary 40 LINES models.
 
-use crate::model::{
-    cache::CacheData,
-    summary::record::Record,
-};
+use crate::model::{cache::CacheData, summary::record::Record};
 use serde::Deserialize;
 
 /// The response for the User Summary 40 LINES data.
