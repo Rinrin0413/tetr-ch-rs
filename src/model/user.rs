@@ -1619,7 +1619,7 @@ pub struct Zen {
 }
 
 /// The user's internal ID.
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
 pub struct UserId(pub String);
 
 type RspErr<T> = Result<T, ResponseError>;

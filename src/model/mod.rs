@@ -9,5 +9,6 @@ pub mod searched_user;
 pub mod server_activity;
 pub mod server_stats;
 pub mod stream;
+pub mod summary;
 pub mod user;
 pub mod xp_leaderboard;
