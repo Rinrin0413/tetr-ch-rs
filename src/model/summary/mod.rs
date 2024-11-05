@@ -3,3 +3,4 @@
 pub mod blitz;
 pub mod forty_lines;
 pub mod record;
+pub mod zenith;
