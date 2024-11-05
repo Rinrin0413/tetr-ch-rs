@@ -10,6 +10,7 @@ use crate::{
         server_stats::ServerStatsResponse,
         stream::StreamResponse,
         summary::{
+            achievements::AchievementsResponse,
             blitz::BlitzResponse,
             forty_lines::FortyLinesResponse,
             league::LeagueResponse,
@@ -397,6 +398,44 @@ impl Client {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_zen(self, user: &str) -> RspErr<ZenResponse> {
         let url = format!("{}users/{}/summaries/zen", API_URL, user.to_lowercase());
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Returns the object containing all the user's achievements.
+    ///
+    /// # Arguments
+    ///
+    /// - `user`: The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the User Summary Achievements.
+    /// let user = client.get_user_achievements("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user_achievements(self, user: &str) -> RspErr<AchievementsResponse> {
+        let url = format!(
+            "{}users/{}/summaries/achievements",
+            API_URL,
+            user.to_lowercase()
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }
