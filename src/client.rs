@@ -16,6 +16,7 @@ use crate::{
             league::LeagueResponse,
             zen::ZenResponse,
             zenith::{ZenithExResponse, ZenithResponse},
+            AllSummariesResponse,
         },
         user::{UserRecordsResponse, UserResponse},
         xp_leaderboard::{self, XPLeaderboardResponse},
@@ -190,6 +191,44 @@ impl Client {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_records(self, user: &str) -> RspErr<UserRecordsResponse> {
         let url = format!("{}users/{}/records", API_URL, user.to_lowercase());
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Returns the object containing all the user's summaries in one.
+    ///
+    /// ***consider whether you really need this.
+    /// If you only collect data for one or two game modes,
+    /// use the individual summaries' methods instead.**
+    ///
+    /// # Arguments
+    ///
+    /// - `user`: The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    /// // Get All the User Summaries.
+    /// let user = client.get_user_all_summaries("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user_all_summaries(self, user: &str) -> RspErr<AllSummariesResponse> {
+        let url = format!("{}users/{}/summaries", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
