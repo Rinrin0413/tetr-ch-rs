@@ -4,4 +4,5 @@ pub mod blitz;
 pub mod forty_lines;
 pub mod league;
 pub mod record;
+pub mod zen;
 pub mod zenith;
