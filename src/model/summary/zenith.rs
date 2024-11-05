@@ -1,4 +1,4 @@
-//! The User Summary QUICK PLAY models.
+//! The User Summaries QUICK PLAY, EXPERT QUICK PLAY models.
 
 use crate::model::{cache::CacheData, summary::record::Record};
 use serde::Deserialize;
@@ -69,6 +69,28 @@ pub struct ZenithBest {
 }
 
 impl AsRef<ZenithBest> for ZenithBest {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// The response for the User Summary EXPERT QUICK PLAY data.
+/// An object describing a summary of the user's EXPERT QUICK PLAY games.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct ZenithExResponse {
+    /// Whether the request was successful.
+    #[serde(rename = "success")]
+    pub is_success: bool,
+    /// The reason the request failed.
+    pub error: Option<String>,
+    /// Data about how this request was cached.
+    pub cache: Option<CacheData>,
+    /// The requested data.
+    pub data: Option<Zenith>,
+}
+
+impl AsRef<ZenithExResponse> for ZenithExResponse {
     fn as_ref(&self) -> &Self {
         self
     }
