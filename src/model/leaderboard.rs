@@ -38,7 +38,7 @@ impl AsRef<LeaderboardResponse> for LeaderboardResponse {
 #[non_exhaustive]
 pub struct Leaderboard {
     /// The matched users.
-    pub entries: Vec<Entry>,
+    pub entries: Vec<LeaderboardEntry>,
 }
 
 impl AsRef<Leaderboard> for Leaderboard {
@@ -50,7 +50,7 @@ impl AsRef<Leaderboard> for Leaderboard {
 /// An entry in the User Leaderboard.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct Entry {
+pub struct LeaderboardEntry {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -98,7 +98,7 @@ pub struct Entry {
     pub prisecter: Prisecter,
 }
 
-impl Entry {
+impl LeaderboardEntry {
     /// Whether this user is an anonymous.
     pub fn is_anon(&self) -> bool {
         self.role.is_anon()
@@ -167,7 +167,7 @@ impl Entry {
     }
 }
 
-impl AsRef<Entry> for Entry {
+impl AsRef<LeaderboardEntry> for LeaderboardEntry {
     fn as_ref(&self) -> &Self {
         self
     }
@@ -233,5 +233,105 @@ impl Prisecter {
     /// This array can be used as a bound for the next search.
     pub fn to_array(&self) -> [f64; 3] {
         [self.pri, self.sec, self.ter]
+    }
+}
+
+impl AsRef<Prisecter> for Prisecter {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// The response for the Historical User Leaderboard data.
+///
+/// An array of historical user blobs fulfilling the search criteria.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct HistoricalLeaderboardResponse {
+    /// Whether the request was successful.
+    #[serde(rename = "success")]
+    pub is_success: bool,
+    /// The reason the request failed.
+    pub error: Option<String>,
+    /// Data about how this request was cached.
+    pub cache: Option<CacheData>,
+    /// The requested data.
+    pub data: Option<HistoricalLeaderboard>,
+}
+
+impl AsRef<HistoricalLeaderboardResponse> for HistoricalLeaderboardResponse {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// The Historical User Leaderboard data.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct HistoricalLeaderboard {
+    /// The matched historical user blobs.
+    pub entries: Vec<HistoricalEntry>,
+}
+
+impl AsRef<HistoricalLeaderboard> for HistoricalLeaderboard {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+/// An entry in the Historical User Leaderboard.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct HistoricalEntry {
+    /// The user's internal ID.
+    #[serde(rename = "_id")]
+    pub id: UserId,
+    /// The season ID.
+    pub season: String,
+    /// The username the user had at the time.
+    pub username: String,
+    /// The country the user represented at the time.
+    pub country: Option<String>,
+    /// This user's final position in the season's global leaderboards.
+    pub placement: i32,
+    /// Whether the user was ranked at the time of the season's end.
+    #[serde(rename = "ranked")]
+    pub is_ranked: bool,
+    /// The amount of TETRA LEAGUE games played by this user.
+    #[serde(rename = "gamesplayed")]
+    pub games_played: u32,
+    /// The amount of TETRA LEAGUE games won by this user.
+    #[serde(rename = "gameswon")]
+    pub games_won: u32,
+    /// This user's final Glicko-2 rating.
+    pub glicko: f64,
+    /// This user's final Glicko-2 Rating Deviation.
+    pub rd: f64,
+    /// This user's final TR (Tetra Rating).
+    pub tr: f64,
+    /// This user's final GLIXARE score (a % chance of beating an average player).
+    pub gxe: f64,
+    /// This user's final letter rank. z is unranked.
+    pub rank: Rank,
+    /// This user's highest achieved rank in the season.
+    #[serde(rename = "bestrank")]
+    pub best_rank: Option<Rank>,
+    /// This user's average APM (attack per minute) over the last 10 games in the season.
+    pub apm: f64,
+    /// This user's average PPS (pieces per second) over the last 10 games in the season.
+    pub pps: f64,
+    /// This user's average VS (versus score) over the last 10 games in the season.
+    pub vs: f64,
+    /// The prisecter of this entry.
+    ///
+    /// A **prisecter** is consisting of three floats.
+    /// It allows you to continue paginating.
+    #[serde(rename = "p")]
+    pub prisecter: Prisecter,
+}
+
+impl AsRef<HistoricalEntry> for HistoricalEntry {
+    fn as_ref(&self) -> &Self {
+        self
     }
 }
