@@ -4,7 +4,7 @@ use crate::{
     error::{ResponseError, Status},
     model::{
         latest_news::LatestNewsResponse,
-        leaderboard::LeaderboardResponse,
+        leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
         league_leaderboard::{self, LeagueLeaderboardResponse},
         searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
@@ -541,6 +541,76 @@ impl Client {
             query_params = criteria.build();
         }
         let url = format!("{}users/by/{}", API_URL, leaderboard.to_param());
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
+    /// Returns the array of historical user blobs fulfilling the search criteria.
+    ///
+    /// # Arguments
+    ///
+    /// - `season`: The season to look up. (e.g. `"1"`)
+    /// - `search_criteria`: The search criteria to filter users by.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::{
+    ///     Client,
+    ///     leaderboard::LeaderboardSearchCriteria
+    /// };
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// let criteria = LeaderboardSearchCriteria::new()
+    ///     // Upper bound is `[15200, 0, 0]`
+    ///     .after([15200.,0.,0.])
+    ///     // Three entries
+    ///     .limit(3)
+    ///     // Filter by Japan
+    ///     .country("jp");
+    ///
+    /// // Get the User Leaderboard.
+    /// let user = client.get_historical_league_leaderboard(
+    ///     "1",
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_historical_league_leaderboard(
+        self,
+        season: &str,
+        search_criteria: Option<leaderboard::LeaderboardSearchCriteria>,
+    ) -> RspErr<HistoricalLeaderboardResponse> {
+        let mut query_params = Vec::new();
+        if let Some(criteria) = search_criteria {
+            if criteria.is_invalid_limit_range() {
+                panic!(
+                    "The query parameter`limit` must be between 0 and 100.\n\
+                    Received: {}",
+                    criteria.limit.unwrap()
+                );
+            }
+            query_params = criteria.build();
+        }
+        let url = format!(
+            "{}users/history/{}/{}",
+            API_URL,
+            leaderboard::LeaderboardType::League.to_param(),
+            season
+        );
         let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
     }
