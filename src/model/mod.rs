@@ -4,6 +4,7 @@ pub mod cache;
 pub mod latest_news;
 pub mod league;
 pub mod league_leaderboard;
+pub mod leaderboard;
 pub mod record;
 pub mod searched_user;
 pub mod server_activity;
