@@ -38,7 +38,7 @@ impl AsRef<LeaderboardResponse> for LeaderboardResponse {
 #[non_exhaustive]
 pub struct Leaderboard {
     /// The matched users.
-    pub entries: Vec<Entry>,
+    pub entries: Vec<LeaderboardEntry>,
 }
 
 impl AsRef<Leaderboard> for Leaderboard {
@@ -50,7 +50,7 @@ impl AsRef<Leaderboard> for Leaderboard {
 /// An entry in the User Leaderboard.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct Entry {
+pub struct LeaderboardEntry {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -98,7 +98,7 @@ pub struct Entry {
     pub prisecter: Prisecter,
 }
 
-impl Entry {
+impl LeaderboardEntry {
     /// Whether this user is an anonymous.
     pub fn is_anon(&self) -> bool {
         self.role.is_anon()
@@ -167,7 +167,7 @@ impl Entry {
     }
 }
 
-impl AsRef<Entry> for Entry {
+impl AsRef<LeaderboardEntry> for LeaderboardEntry {
     fn as_ref(&self) -> &Self {
         self
     }
