@@ -1,10 +1,13 @@
 //! The User Leaderboard models.
 
-use crate::{model::{
-    cache::CacheData,
-    league::Rank,
-    user::{AchievementRatingCounts, Role, UserId}
-}, util::{max_f64, to_unix_ts}};
+use crate::{
+    model::{
+        cache::CacheData,
+        league::Rank,
+        user::{AchievementRatingCounts, Role, UserId},
+    },
+    util::{max_f64, to_unix_ts},
+};
 use serde::Deserialize;
 
 /// The response for the User Leaderboard data.

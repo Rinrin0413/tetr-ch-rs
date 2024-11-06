@@ -4,8 +4,8 @@ use crate::{
     error::{ResponseError, Status},
     model::{
         latest_news::LatestNewsResponse,
-        league_leaderboard::{self, LeagueLeaderboardResponse},
         leaderboard::LeaderboardResponse,
+        league_leaderboard::{self, LeagueLeaderboardResponse},
         searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
         server_stats::ServerStatsResponse,
@@ -540,17 +540,8 @@ impl Client {
             }
             query_params = criteria.build();
         }
-        let url = format!(
-            "{}users/by/{}",
-            API_URL,
-            leaderboard.to_param()
-        );
-        let res = self
-            .client
-            .get(url)
-            .query(&query_params)
-            .send()
-            .await;
+        let url = format!("{}users/by/{}", API_URL, leaderboard.to_param());
+        let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
     }
 
@@ -1818,7 +1809,7 @@ pub mod leaderboard {
         /// The XP leaderboard.
         Xp,
         /// The Achievement Rating leaderboard.
-        Ar
+        Ar,
     }
 
     impl LeaderboardType {
