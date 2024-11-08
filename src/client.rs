@@ -1267,11 +1267,7 @@ impl Client {
                 limit
             );
         }
-        let url = format!(
-            "{}news/{}",
-            API_URL,
-            stream.to_param()
-        );
+        let url = format!("{}news/{}", API_URL, stream.to_param());
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
         response(res).await
     }

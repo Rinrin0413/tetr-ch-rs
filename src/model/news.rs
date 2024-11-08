@@ -205,19 +205,19 @@ pub struct SupporterGiftNews {
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct NewsLatestResponse {
-	/// Whether the request was successful.
-	#[serde(rename = "success")]
-	pub is_success: bool,
-	/// The reason the request failed.
-	pub error: Option<String>,
-	/// Data about how this request was cached.
-	pub cache: Option<CacheData>,
-	/// The requested data.
-	pub data: Option<NewsItems>,
+    /// Whether the request was successful.
+    #[serde(rename = "success")]
+    pub is_success: bool,
+    /// The reason the request failed.
+    pub error: Option<String>,
+    /// Data about how this request was cached.
+    pub cache: Option<CacheData>,
+    /// The requested data.
+    pub data: Option<NewsItems>,
 }
 
 impl AsRef<NewsLatestResponse> for NewsLatestResponse {
-	fn as_ref(&self) -> &Self {
-		self
-	}
+    fn as_ref(&self) -> &Self {
+        self
+    }
 }
