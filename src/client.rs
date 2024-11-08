@@ -20,6 +20,7 @@ use crate::{
             AllSummariesResponse,
         },
         user::{UserRecordsOldResponse, UserResponse},
+        user_records::UserRecordsResponse,
         xp_leaderboard::{self, XPLeaderboardResponse},
     },
 };
@@ -610,6 +611,82 @@ impl Client {
             API_URL,
             leaderboard::LeaderboardType::League.to_param(),
             season
+        );
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
+    /// Returns the list of Records fulfilling the search criteria.
+    ///
+    /// # Arguments
+    ///
+    /// - `user`: The username or user ID to look up.
+    /// - `gamemode`: The game mode to look up.
+    /// - `leaderboard`: The personal leaderboard to look up.
+    /// - `search_criteria`: The search criteria to filter records by.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::{
+    ///     Client,
+    ///     user_record::{RecordGamemode, LeaderboardType, RecordSearchCriteria}
+    /// };
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Set the search criteria.
+    /// let criteria = RecordSearchCriteria::new()
+    ///     // Upper bound is `[500000, 0, 0]`
+    ///     .after([500000.,0.,0.])
+    ///     // Three entries
+    ///     .limit(3);
+    ///
+    /// // Get the User Records.
+    /// let user = client.get_user_records(
+    ///     "rinrin-rs",
+    ///     RecordGamemode::FortyLines,
+    ///     LeaderboardType::Top,
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user_records(
+        self,
+        user: &str,
+        gamemode: user_record::RecordGamemode,
+        leaderboard: user_record::LeaderboardType,
+        search_criteria: Option<user_record::RecordSearchCriteria>,
+    ) -> RspErr<UserRecordsResponse> {
+        let mut query_params = Vec::new();
+        if let Some(criteria) = search_criteria {
+            if criteria.is_invalid_limit_range() {
+                panic!(
+                    "The query parameter`limit` must be between 0 and 100.\n\
+                    Received: {}",
+                    criteria.limit.unwrap()
+                );
+            }
+            query_params = criteria.build();
+        }
+        let url = format!(
+            "{}users/{}/records/{}/{}",
+            API_URL,
+            user.to_lowercase(),
+            gamemode.to_param(),
+            leaderboard.to_param()
         );
         let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
@@ -2178,6 +2255,299 @@ pub mod leaderboard {
                 Bound::After(b) => ("after".to_string(), format!("{}:{}:{}", b[0], b[1], b[2])),
                 Bound::Before(b) => ("before".to_string(), format!("{}:{}:{}", b[0], b[1], b[2])),
             }
+        }
+    }
+}
+
+pub mod user_record {
+    //! Features for user records.
+
+    /// The game mode of records.
+    pub enum RecordGamemode {
+        /// 40 LINES records.
+        FortyLines,
+        /// BLITZ records.
+        Blitz,
+        /// QUICK PLAY records.
+        Zenith,
+        /// EXPERT QUICK PLAY records.
+        ZenithEx,
+        /// TETRA LEAGUE history.
+        League,
+    }
+
+    impl RecordGamemode {
+        /// Converts into a parameter.
+        ///
+        /// # Examples
+        ///
+        /// ```ignore
+        /// # use tetr_ch::client::user_record::RecordGamemode;
+        /// let forty_lines = RecordGamemode::FortyLines;
+        /// let blitz = RecordGamemode::Blitz;
+        /// let zenith = RecordGamemode::Zenith;
+        /// let zenith_ex = RecordGamemode::ZenithEx;
+        /// let league = RecordGamemode::League;
+        /// assert_eq!(forty_lines.to_param(), "40l");
+        /// assert_eq!(blitz.to_param(), "blitz");
+        /// assert_eq!(zenith.to_param(), "zenith");
+        /// assert_eq!(zenith_ex.to_param(), "zenithex");
+        /// assert_eq!(league.to_param(), "league");
+        /// ```
+        pub(crate) fn to_param(&self) -> String {
+            match self {
+                RecordGamemode::FortyLines => "40l",
+                RecordGamemode::Blitz => "blitz",
+                RecordGamemode::Zenith => "zenith",
+                RecordGamemode::ZenithEx => "zenithex",
+                RecordGamemode::League => "league",
+            }
+            .to_string()
+        }
+    }
+
+    /// The leaderboard type.
+    pub enum LeaderboardType {
+        /// The top scores.
+        Top,
+        /// The most recently placed records.
+        Recent,
+        /// The top scores (Personal Bests only).
+        Progression,
+    }
+
+    impl LeaderboardType {
+        /// Converts into a parameter.
+        ///
+        /// # Examples
+        ///
+        /// ```ignore
+        /// # use tetr_ch::client::user_record::LeaderboardType;
+        /// let top = LeaderboardType::Top;
+        /// let recent = LeaderboardType::Recent;
+        /// let progression = LeaderboardType::Progression;
+        /// assert_eq!(top.to_param(), "top");
+        /// assert_eq!(recent.to_param(), "recent");
+        /// assert_eq!(progression.to_param(), "progression");
+        /// ```
+        pub(crate) fn to_param(&self) -> String {
+            match self {
+                LeaderboardType::Top => "top",
+                LeaderboardType::Recent => "recent",
+                LeaderboardType::Progression => "progression",
+            }
+            .to_string()
+        }
+    }
+
+    /// The search criteria for the user records.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use tetr_ch::client::user_record::RecordSearchCriteria;
+    ///
+    /// // Default search criteria.
+    /// let c1 = RecordSearchCriteria::new();
+    ///
+    /// // Upper bound is `[500000, 0, 0]`, three entries.
+    /// let c2 = RecordSearchCriteria::new()
+    ///     .after([500000., 0., 0.])
+    ///     .limit(3);
+    ///
+    /// // Lower bound is `[500000, 0, 0]`.
+    /// // Also the search order is reversed.
+    /// let c3 = RecordSearchCriteria::new()
+    ///     .before([500000., 0., 0.]);
+    ///
+    /// // You can initialize the search criteria to default as follows:
+    /// let mut c4 = RecordSearchCriteria::new().limit(10);
+    /// c4.init();
+    /// ```
+    #[derive(Clone, Debug, Default)]
+    pub struct RecordSearchCriteria {
+        /// The bound to paginate.
+        pub bound: Option<super::leaderboard::Bound>,
+        /// The amount of entries to return,
+        /// between 1 and 100. 25 by default.
+        pub limit: Option<u8>,
+    }
+
+    impl RecordSearchCriteria {
+        /// Creates a new [`RecordSearchCriteria`].
+        /// The values are set to default.
+        ///
+        /// # Examples
+        ///
+        /// ```
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let criteria = RecordSearchCriteria::new();
+        /// ```
+        pub fn new() -> Self {
+            Self::default()
+        }
+
+        /// Initializes the search criteria.
+        ///
+        /// # Examples
+        ///
+        /// ```
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let mut criteria = RecordSearchCriteria::new();
+        /// criteria.init();
+        /// ```
+        pub fn init(self) -> Self {
+            Self::default()
+        }
+
+        /// Sets the upper bound.
+        ///
+        /// # Arguments
+        ///
+        /// - `bound`: The upper bound to paginate downwards:
+        /// take the lowest seen prisecter and pass that back through this field to continue scrolling.
+        ///
+        /// A **prisecter** is consisting of three floats.
+        /// The `prisecter` field in a response data allows you to continue paginating.
+        ///
+        /// # Examples
+        ///
+        /// Sets the upper bound to `[500000.0, 0.0, 0.0]`.
+        ///
+        /// ```
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let mut criteria = RecordSearchCriteria::new();
+        /// criteria.after([500000.0, 0.0, 0.0]);
+        /// ```
+        pub fn after(self, bound: [f64; 3]) -> Self {
+            Self {
+                bound: Some(super::leaderboard::Bound::After(bound)),
+                ..self
+            }
+        }
+
+        /// Sets the lower bound.
+        ///
+        /// # Arguments
+        ///
+        /// - `bound`: The lower bound to paginate upwards:
+        /// take the highest seen prisecter and pass that back through this field to continue scrolling.
+        /// If use this, the search order is reversed
+        /// (returning the lowest items that match the query)
+        ///
+        /// A **prisecter** is consisting of three floats.
+        /// The `prisecter` field in a response data allows you to continue paginating.
+        ///
+        /// # Examples
+        ///
+        /// Sets the lower bound to `[500000.0, 0.0, 0.0]`.
+        ///
+        /// ```
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let mut criteria = RecordSearchCriteria::new();
+        /// criteria.before([500000.0, 0.0, 0.0]);
+        /// ```
+        pub fn before(self, bound: [f64; 3]) -> Self {
+            Self {
+                bound: Some(super::leaderboard::Bound::Before(bound)),
+                ..self
+            }
+        }
+
+        /// Limits the amount of entries to return.
+        ///
+        /// # Arguments
+        ///
+        /// - `limit`: The amount of entries to return.
+        /// Between 1 and 100. 25 by default.
+        ///
+        /// # Examples
+        ///
+        /// Limits the amount of entries to return to `10`.
+        ///
+        /// ```
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let mut criteria = RecordSearchCriteria::new();
+        /// criteria.limit(10);
+        /// ```
+        ///
+        /// # Panics
+        ///
+        /// Panics if the argument `limit` is not between `1` and `100`.
+        ///
+        /// ```should_panic
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let mut criteria = RecordSearchCriteria::new();
+        /// criteria.limit(0);
+        /// ```
+        ///
+        /// ```should_panic
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let mut criteria = RecordSearchCriteria::new();
+        /// criteria.limit(101);
+        /// ```
+        pub fn limit(self, limit: u8) -> Self {
+            if (1..=100).contains(&limit) {
+                Self {
+                    limit: Some(limit),
+                    ..self
+                }
+            } else {
+                panic!(
+                    "The argument `limit` must be between 1 and 100.\n\
+                    Received: {}",
+                    limit
+                );
+            }
+        }
+
+        /// Whether the search criteria `limit` is out of bounds.
+        ///
+        /// # Examples
+        ///
+        /// ```
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let invalid_criteria = RecordSearchCriteria {
+        ///     limit: Some(0),
+        ///     ..RecordSearchCriteria::new()
+        /// };
+        /// assert!(invalid_criteria.is_invalid_limit_range());
+        /// ```
+        ///
+        /// ```
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let invalid_criteria = RecordSearchCriteria {
+        ///     limit: Some(101),
+        ///     ..RecordSearchCriteria::new()
+        /// };
+        /// assert!(invalid_criteria.is_invalid_limit_range());
+        /// ```
+        pub fn is_invalid_limit_range(&self) -> bool {
+            if let Some(l) = self.limit {
+                !(1..=100).contains(&l)
+            } else {
+                false
+            }
+        }
+
+        /// Builds the search criteria to `Vec<(String, String)>`.
+        ///
+        /// # Examples
+        ///
+        /// ```ignore
+        /// # use tetr_ch::client::user_record::RecordSearchCriteria;
+        /// let criteria = RecordSearchCriteria::new();
+        /// let query_params = criteria.build();
+        /// ```
+        pub(crate) fn build(self) -> Vec<(String, String)> {
+            let mut result = Vec::new();
+            if let Some(b) = self.bound {
+                result.push(b.to_query_param());
+            }
+            if let Some(l) = self.limit {
+                result.push(("limit".to_string(), l.to_string()));
+            }
+            result
         }
     }
 }
