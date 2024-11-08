@@ -19,7 +19,7 @@ use crate::{
             zenith::{ZenithExResponse, ZenithResponse},
             AllSummariesResponse,
         },
-        user::{UserRecordsResponse, UserResponse},
+        user::{UserRecordsOldResponse, UserResponse},
         xp_leaderboard::{self, XPLeaderboardResponse},
     },
 };
@@ -190,7 +190,7 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user_records_old(self, user: &str) -> RspErr<UserRecordsResponse> {
+    pub async fn get_user_records_old(self, user: &str) -> RspErr<UserRecordsOldResponse> {
         let url = format!("{}users/{}/records", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await

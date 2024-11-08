@@ -794,7 +794,7 @@ impl AsRef<AchievementRatingCounts> for AchievementRatingCounts {
 /// Describes the user records.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct UserRecordsResponse {
+pub struct UserRecordsOldResponse {
     /// Whether the request was successful.
     #[serde(rename = "success")]
     pub is_success: bool,
@@ -806,7 +806,7 @@ pub struct UserRecordsResponse {
     pub data: Option<RecordsData>,
 }
 
-impl UserRecordsResponse {
+impl UserRecordsOldResponse {
     /// Whether the user has a 40 LINES record.
     ///
     /// # Panics
@@ -1020,7 +1020,7 @@ impl UserRecordsResponse {
     }
 }
 
-impl AsRef<UserRecordsResponse> for UserRecordsResponse {
+impl AsRef<UserRecordsOldResponse> for UserRecordsOldResponse {
     fn as_ref(&self) -> &Self {
         self
     }
@@ -1654,7 +1654,7 @@ impl UserId {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> RspErr<UserRecordsResponse> {
+    pub async fn get_records(&self) -> RspErr<UserRecordsOldResponse> {
         Client::new().get_user_records_old(self.id()).await
     }
 }
