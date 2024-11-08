@@ -17,7 +17,7 @@ pub struct NewsAllResponse {
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.
-    pub data: Option<NewsAll>,
+    pub data: Option<NewsItems>,
 }
 
 impl AsRef<NewsAllResponse> for NewsAllResponse {
@@ -29,12 +29,12 @@ impl AsRef<NewsAllResponse> for NewsAllResponse {
 /// The All Latest News data.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct NewsAll {
+pub struct NewsItems {
     /// The latest news items.
     pub news: Vec<News>,
 }
 
-impl AsRef<NewsAll> for NewsAll {
+impl AsRef<NewsItems> for NewsItems {
     fn as_ref(&self) -> &Self {
         self
     }
@@ -197,4 +197,27 @@ impl AsRef<SupporterNews> for SupporterNews {
 pub struct SupporterGiftNews {
     /// The username of the recipient.
     pub username: String,
+}
+
+/// The response for the Latest News data.
+///
+/// The latest news items in the stream.
+#[derive(Clone, Debug, Deserialize)]
+#[non_exhaustive]
+pub struct NewsLatestResponse {
+    /// Whether the request was successful.
+    #[serde(rename = "success")]
+    pub is_success: bool,
+    /// The reason the request failed.
+    pub error: Option<String>,
+    /// Data about how this request was cached.
+    pub cache: Option<CacheData>,
+    /// The requested data.
+    pub data: Option<NewsItems>,
+}
+
+impl AsRef<NewsLatestResponse> for NewsLatestResponse {
+    fn as_ref(&self) -> &Self {
+        self
+    }
 }

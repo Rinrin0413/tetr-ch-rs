@@ -3,10 +3,9 @@
 use crate::{
     error::{ResponseError, Status},
     model::{
-        latest_news::LatestNewsResponse,
         leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
         league_leaderboard::{self, LeagueLeaderboardResponse},
-        news::NewsAllResponse,
+        news::{NewsAllResponse, NewsLatestResponse},
         records_leaderboard::RecordsLeaderboardResponse,
         searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
@@ -1197,44 +1196,33 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the latest news model.
+    /// Returns latest news items in the stream.
     ///
     /// # Arguments
     ///
-    /// - `subject`:
+    /// - `stream`: The news stream to look up.
     ///
-    /// The news subject.
-    /// This argument requires a [`stream::NewsSubject`].
-    ///
-    /// - `limit`:
-    ///
-    /// The amount of entries to return.
-    /// Between 1 and 100.
-    /// 25 by default.
+    /// - `limit`: The amount of entries to return, between 1 and 100.
     ///
     /// # Examples
     ///
-    /// Getting the latest news object:
-    ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, stream::NewsSubject};
+    /// use tetr_ch::client::{Client, stream::NewsStream};
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
     ///
     /// // Get the latest news.
-    /// let user = client.get_latest_news(
+    /// let user = client.get_news_latest(
     ///     // News of the user `621db46d1d638ea850be2aa0`.
-    ///     NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
+    ///     NewsStream::User("621db46d1d638ea850be2aa0".to_string()),
     ///     // three news.
     ///     3,
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// Go to [`stream::StreamType`] | [`stream::StreamContext`].
     ///
     /// # Errors
     ///
@@ -1247,18 +1235,18 @@ impl Client {
     ///
     /// # Panics
     ///
-    /// Panics if the query parameter`limit` is not between 1 and 100.
+    /// Panics if the query parameter `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// use tetr_ch::client::{Client, stream::NewsSubject};
+    /// use tetr_ch::client::{Client, stream::NewsStream};
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
     ///
-    /// let user = client.get_latest_news(
-    ///     NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
-    ///     // 101 news.
+    /// let user = client.get_news_latest(
+    ///     NewsStream::Global,
+    ///     // 101 news. (not allowed)
     ///     101,
     /// ).await?;
     /// # Ok(())
@@ -1266,11 +1254,11 @@ impl Client {
     ///
     /// # tokio_test::block_on(run());
     /// ```
-    pub async fn get_latest_news(
+    pub async fn get_news_latest(
         self,
-        subject: stream::NewsSubject,
+        stream: stream::NewsStream,
         limit: u8,
-    ) -> RspErr<LatestNewsResponse> {
+    ) -> RspErr<NewsLatestResponse> {
         if !(1..=100).contains(&limit) {
             // !(1 <= limit && limit <= 100)
             panic!(
@@ -1279,16 +1267,7 @@ impl Client {
                 limit
             );
         }
-        use stream::NewsSubject;
-        let url = format!(
-            "{}/news/{}",
-            API_URL,
-            match subject {
-                NewsSubject::Any => String::new(),
-                NewsSubject::Global => "global".to_string(),
-                NewsSubject::User(id) => format!("user_{}", id),
-            }
-        );
+        let url = format!("{}news/{}", API_URL, stream.to_param());
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
         response(res).await
     }
@@ -2082,14 +2061,32 @@ pub mod stream {
     }
 
     /// The news subject.
-    pub enum NewsSubject {
-        /// News of all users
-        Any,
+    pub enum NewsStream {
         /// Global news.
         Global,
-        /// The news of the user.
-        /// Enter the user's **ID** to `String`.
+        /// News of the user.
+        /// The user ID is required.
         User(String),
+    }
+
+    impl NewsStream {
+        /// Converts into a parameter.
+        ///
+        /// # Examples
+        ///
+        /// ```ignore
+        /// # use tetr_ch::client::stream::NewsStream;
+        /// let global = NewsStream::Global;
+        /// let user = NewsStream::User("621db46d1d638ea850be2aa0".to_string());
+        /// assert_eq!(global.to_param(), "global");
+        /// assert_eq!(user.to_param(), "user_621db46d1d638ea850be2aa0");
+        /// ```
+        pub(crate) fn to_param(&self) -> String {
+            match self {
+                NewsStream::Global => "global".to_string(),
+                NewsStream::User(id) => format!("user_{}", id),
+            }
+        }
     }
 }
 
