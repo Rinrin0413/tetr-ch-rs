@@ -3,6 +3,7 @@
 use crate::{
     error::{ResponseError, Status},
     model::{
+        labs::scoreflow::LabsScoreflowResponse,
         leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
         league_leaderboard::{self, LeagueLeaderboardResponse},
         news::{NewsAllResponse, NewsLatestResponse},
@@ -1313,6 +1314,55 @@ impl Client {
         social_connection: search_user::SocialConnection,
     ) -> RspErr<SearchedUserResponse> {
         let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Returns the condensed graph of all of the user's records in the gamemode.
+    ///
+    /// # Arguments
+    ///
+    /// - `user`: The username or user ID to look up.
+    /// - `gamemode`: The game mode to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::{Client, user_record::RecordGamemode};
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the Labs Scoreflow.
+    ///
+    /// let user = client.get_labs_scoreflow(
+    ///     "rinrin-rs",
+    ///     RecordGamemode::FortyLines
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_labs_scoreflow(
+        self,
+        user: &str,
+        gamemode: user_record::RecordGamemode,
+    ) -> RspErr<LabsScoreflowResponse> {
+        let url = format!(
+            "{}labs/scoreflow/{}/{}",
+            API_URL,
+            user.to_lowercase(),
+            gamemode.to_param()
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }

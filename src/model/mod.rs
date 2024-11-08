@@ -1,6 +1,7 @@
 //! Easy-to-use models of the various objects returned by the API.
 
 pub mod cache;
+pub mod labs;
 pub mod latest_news;
 pub mod leaderboard;
 pub mod league;
