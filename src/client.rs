@@ -3,7 +3,7 @@
 use crate::{
     error::{ResponseError, Status},
     model::{
-        labs::scoreflow::LabsScoreflowResponse,
+        labs::{leagueflow::LabsLeagueflowResponse, scoreflow::LabsScoreflowResponse},
         leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
         league_leaderboard::{self, LeagueLeaderboardResponse},
         news::{NewsAllResponse, NewsLatestResponse},
@@ -1335,7 +1335,6 @@ impl Client {
     /// let client = Client::new();
     ///
     /// // Get the Labs Scoreflow.
-    ///
     /// let user = client.get_labs_scoreflow(
     ///     "rinrin-rs",
     ///     RecordGamemode::FortyLines
@@ -1363,6 +1362,41 @@ impl Client {
             user.to_lowercase(),
             gamemode.to_param()
         );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Returns the condensed graph of all of the user's matches in TETRA LEAGUE.
+    ///
+    /// # Arguments
+    ///
+    /// - `user`: The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the Labs Leagueflow.
+    /// let user = client.get_labs_leagueflow("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_labs_leagueflow(self, user: &str) -> RspErr<LabsLeagueflowResponse> {
+        let url = format!("{}labs/leagueflow/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
