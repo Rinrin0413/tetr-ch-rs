@@ -1224,7 +1224,7 @@ impl Client {
     /// let client = Client::new();
     ///
     /// // Get the latest news.
-    /// let user = client.get_latest_news(
+    /// let user = client.get_news_latest(
     ///     // News of the user `621db46d1d638ea850be2aa0`.
     ///     NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
     ///     // three news.
@@ -1256,7 +1256,7 @@ impl Client {
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
     ///
-    /// let user = client.get_latest_news(
+    /// let user = client.get_news_latest(
     ///     NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
     ///     // 101 news.
     ///     101,
@@ -1266,7 +1266,7 @@ impl Client {
     ///
     /// # tokio_test::block_on(run());
     /// ```
-    pub async fn get_latest_news(
+    pub async fn get_news_latest(
         self,
         subject: stream::NewsSubject,
         limit: u8,
