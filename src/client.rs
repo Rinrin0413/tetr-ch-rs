@@ -6,6 +6,7 @@ use crate::{
         latest_news::LatestNewsResponse,
         leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
         league_leaderboard::{self, LeagueLeaderboardResponse},
+        records_leaderboard::RecordsLeaderboardResponse,
         searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
         server_stats::ServerStatsResponse,
@@ -688,6 +689,78 @@ impl Client {
             gamemode.to_param(),
             leaderboard.to_param()
         );
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
+    /// Returns the list of Records fulfilling the search criteria.
+    ///
+    /// # Arguments
+    ///
+    /// - `leaderboard`: The leaderboard to look up.
+    /// - `search_criteria`: The search criteria to filter records by.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::{
+    ///     Client,
+    ///     records_leaderboard::{
+    ///         RecordsLeaderboardId,
+    ///         RecordsLeaderboardSearchCriteria,
+    ///         Scope
+    ///     }
+    /// };
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Set the search criteria.
+    /// let criteria = RecordsLeaderboardSearchCriteria::new()
+    ///     // Upper bound is `[500000, 0, 0]`
+    ///     .after([500000.,0.,0.])
+    ///     // Three entries
+    ///     .limit(3);
+    ///
+    /// // Get the Records Leaderboard.
+    /// let user = client.get_records_leaderboard(
+    ///     RecordsLeaderboardId::new(
+    ///         "blitz",
+    ///         Scope::Country("JP".to_string()),
+    ///         Some("@2024w31")
+    ///     ),
+    ///    Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_records_leaderboard(
+        self,
+        leaderboard: records_leaderboard::RecordsLeaderboardId,
+        search_criteria: Option<records_leaderboard::RecordsLeaderboardSearchCriteria>,
+    ) -> RspErr<RecordsLeaderboardResponse> {
+        let mut query_params = Vec::new();
+        if let Some(criteria) = search_criteria {
+            if criteria.is_invalid_limit_range() {
+                panic!(
+                    "The query parameter`limit` must be between 0 and 100.\n\
+                    Received: {}",
+                    criteria.limit.unwrap()
+                );
+            }
+            query_params = criteria.build();
+        }
+        let url = format!("{}records/{}", API_URL, leaderboard.to_param());
         let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
     }
@@ -2537,6 +2610,284 @@ pub mod user_record {
         /// ```ignore
         /// # use tetr_ch::client::user_record::RecordSearchCriteria;
         /// let criteria = RecordSearchCriteria::new();
+        /// let query_params = criteria.build();
+        /// ```
+        pub(crate) fn build(self) -> Vec<(String, String)> {
+            let mut result = Vec::new();
+            if let Some(b) = self.bound {
+                result.push(b.to_query_param());
+            }
+            if let Some(l) = self.limit {
+                result.push(("limit".to_string(), l.to_string()));
+            }
+            result
+        }
+    }
+}
+
+pub mod records_leaderboard {
+    //! Features for records leaderboards.
+
+    /// The records leaderboard ID.
+    pub struct RecordsLeaderboardId {
+        /// The game mode. e.g. `40l`.
+        pub gamemode: String,
+        /// The scope.
+        pub scope: Scope,
+        /// An optional Revolution ID. e.g. `@2024w31`.
+        pub revolution_id: Option<String>,
+    }
+
+    impl RecordsLeaderboardId {
+        /// Creates a new [`RecordsLeaderboardId`].
+        ///
+        /// # Arguments
+        ///
+        /// - `gamemode`: The game mode. e.g. `40l`.
+        /// - `scope`: The scope. ether [`Scope::Global`] or [`Scope::Country`].
+        /// - `revolution_id`: An optional Revolution ID. e.g. `@2024w31`.
+        ///
+        /// # Examples
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::{RecordsLeaderboardId, Scope};
+        /// let id = RecordsLeaderboardId::new("40l", Scope::Global, None);
+        /// ```
+        pub fn new(gamemode: &str, scope: Scope, revolution_id: Option<&str>) -> Self {
+            Self {
+                gamemode: gamemode.to_owned(),
+                scope,
+                revolution_id: revolution_id.map(|s| s.to_owned()),
+            }
+        }
+
+        /// Converts into a parameter.
+        ///
+        /// # Examples
+        ///
+        /// ```ignore
+        /// # use tetr_ch::client::records_leaderboard::{RecordsLeaderboardId, Scope};
+        /// let id1 = RecordsLeaderboardId::new("40l", Scope::Global, None);
+        /// let id2 = RecordsLeaderboardId::new("blitz", Scope::Country("JP".to_string()), None);
+        /// let id3 = RecordsLeaderboardId::new("zenith", Scope::Global, Some("@2024w31"));
+        /// assert_eq!(id1.to_param(), "40l_global");
+        /// assert_eq!(id2.to_param(), "blitz_country_JP");
+        /// assert_eq!(id3.to_param(), "zenith_global@2024w31");
+        /// ```
+        pub(crate) fn to_param(&self) -> String {
+            match &self.scope {
+                Scope::Global => format!("{}_global", self.gamemode),
+                Scope::Country(c) => format!("{}_country_{}", self.gamemode, c.to_uppercase()),
+            }
+        }
+    }
+
+    /// The scope of the records leaderboard.
+    pub enum Scope {
+        /// The global scope.
+        Global,
+        /// The country scope.
+        /// e.g. `JP`.
+        Country(String),
+    }
+
+    /// The search criteria for the records leaderboard.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+    ///
+    /// // Default search criteria.
+    /// let c1 = RecordsLeaderboardSearchCriteria::new();
+    ///
+    /// // Upper bound is `[500000, 0, 0]`, three entries.
+    /// let c2 = RecordsLeaderboardSearchCriteria::new()
+    ///     .after([500000., 0., 0.])
+    ///     .limit(3);
+    ///
+    /// // Lower bound is `[500000, 0, 0]`.
+    /// // Also the search order is reversed.
+    /// let c3 = RecordsLeaderboardSearchCriteria::new()
+    ///     .before([500000., 0., 0.]);
+    ///
+    /// // You can initialize the search criteria to default as follows:
+    /// let mut c4 = RecordsLeaderboardSearchCriteria::new().limit(10);
+    /// c4.init();
+    /// ```
+    #[derive(Clone, Debug, Default)]
+    pub struct RecordsLeaderboardSearchCriteria {
+        /// The bound to paginate.
+        pub bound: Option<super::leaderboard::Bound>,
+        /// The amount of entries to return,
+        /// between 1 and 100. 25 by default.
+        pub limit: Option<u8>,
+    }
+
+    impl RecordsLeaderboardSearchCriteria {
+        /// Creates a new [`RecordsLeaderboardSearchCriteria`].
+        /// The values are set to default.
+        ///
+        /// # Examples
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let criteria = RecordsLeaderboardSearchCriteria::new();
+        /// ```
+        pub fn new() -> Self {
+            Self::default()
+        }
+
+        /// Initializes the search criteria.
+        ///
+        /// # Examples
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let mut criteria = RecordsLeaderboardSearchCriteria::new();
+        /// criteria.init();
+        /// ```
+        pub fn init(self) -> Self {
+            Self::default()
+        }
+
+        /// Sets the upper bound.
+        ///
+        /// # Arguments
+        ///
+        /// - `bound`: The upper bound to paginate downwards:
+        /// take the lowest seen prisecter and pass that back through this field to continue scrolling.
+        ///
+        /// A **prisecter** is consisting of three floats.
+        /// The `prisecter` field in a response data allows you to continue paginating.
+        ///
+        /// # Examples
+        ///
+        /// Sets the upper bound to `[500000.0, 0.0, 0.0]`.
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let mut criteria = RecordsLeaderboardSearchCriteria::new();
+        /// criteria.after([500000.0, 0.0, 0.0]);
+        /// ```
+        pub fn after(self, bound: [f64; 3]) -> Self {
+            Self {
+                bound: Some(super::leaderboard::Bound::After(bound)),
+                ..self
+            }
+        }
+
+        /// Sets the lower bound.
+        ///
+        /// # Arguments
+        ///
+        /// - `bound`: The lower bound to paginate upwards:
+        /// take the highest seen prisecter and pass that back through this field to continue scrolling.
+        /// If use this, the search order is reversed
+        /// (returning the lowest items that match the query)
+        ///
+        /// A **prisecter** is consisting of three floats.
+        /// The `prisecter` field in a response data allows you to continue paginating.
+        ///
+        /// # Examples
+        ///
+        /// Sets the lower bound to `[500000.0, 0.0, 0.0]`.
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let mut criteria = RecordsLeaderboardSearchCriteria::new();
+        /// criteria.before([500000.0, 0.0, 0.0]);
+        /// ```
+        pub fn before(self, bound: [f64; 3]) -> Self {
+            Self {
+                bound: Some(super::leaderboard::Bound::Before(bound)),
+                ..self
+            }
+        }
+
+        /// Limits the amount of entries to return.
+        ///
+        /// # Arguments
+        ///
+        /// - `limit`: The amount of entries to return.
+        /// Between 1 and 100. 25 by default.
+        ///
+        /// # Examples
+        ///
+        /// Limits the amount of entries to return to `10`.
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let mut criteria = RecordsLeaderboardSearchCriteria::new();
+        /// criteria.limit(10);
+        /// ```
+        ///
+        /// # Panics
+        ///
+        /// Panics if the argument `limit` is not between `1` and `100`.
+        ///
+        /// ```should_panic
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let mut criteria = RecordsLeaderboardSearchCriteria::new();
+        /// criteria.limit(0);
+        /// ```
+        ///
+        /// ```should_panic
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let mut criteria = RecordsLeaderboardSearchCriteria::new();
+        /// criteria.limit(101);
+        /// ```
+        pub fn limit(self, limit: u8) -> Self {
+            if (1..=100).contains(&limit) {
+                Self {
+                    limit: Some(limit),
+                    ..self
+                }
+            } else {
+                panic!(
+                    "The argument `limit` must be between 1 and 100.\n\
+                    Received: {}",
+                    limit
+                );
+            }
+        }
+
+        /// Whether the search criteria `limit` is out of bounds.
+        ///
+        /// # Examples
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let invalid_criteria = RecordsLeaderboardSearchCriteria {
+        ///     limit: Some(0),
+        ///     ..RecordsLeaderboardSearchCriteria::new()
+        /// };
+        /// assert!(invalid_criteria.is_invalid_limit_range());
+        /// ```
+        ///
+        /// ```
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let invalid_criteria = RecordsLeaderboardSearchCriteria {
+        ///     limit: Some(101),
+        ///     ..RecordsLeaderboardSearchCriteria::new()
+        /// };
+        /// assert!(invalid_criteria.is_invalid_limit_range());
+        /// ```
+        pub fn is_invalid_limit_range(&self) -> bool {
+            if let Some(l) = self.limit {
+                !(1..=100).contains(&l)
+            } else {
+                false
+            }
+        }
+
+        /// Builds the search criteria to `Vec<(String, String)>`.
+        ///
+        /// # Examples
+        ///
+        /// ```ignore
+        /// # use tetr_ch::client::records_leaderboard::RecordsLeaderboardSearchCriteria;
+        /// let criteria = RecordsLeaderboardSearchCriteria::new();
         /// let query_params = criteria.build();
         /// ```
         pub(crate) fn build(self) -> Vec<(String, String)> {
