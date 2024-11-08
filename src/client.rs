@@ -765,6 +765,60 @@ impl Client {
         response(res).await
     }
 
+    /// Searches for a record.
+    ///
+    /// Only one record is returned.
+    /// It is generally not possible for a player to play the same gamemode twice in a millisecond.
+    ///
+    /// # Arguments
+    ///
+    /// - `user_id`: The user ID to look up.
+    /// - `gamemode`: The game mode to look up.
+    /// - `timestamp`: The timestamp of the record to find.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::{Client, user_record::RecordGamemode};
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the User Record.
+    /// let user = client.search_record(
+    ///     "621db46d1d638ea850be2aa0",
+    ///     RecordGamemode::Blitz,
+    ///     1680053762145
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn search_record(
+        self,
+        user_id: &str,
+        gamemode: user_record::RecordGamemode,
+        timestamp: i64,
+    ) -> RspErr<serde_json::Value> {
+        let query_params = [
+            ("user", user_id.to_string()),
+            ("gamemode", gamemode.to_param()),
+            ("ts", timestamp.to_string()),
+        ];
+        let url = format!("{}records/reverse", API_URL);
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
     /// Returns the TETRA LEAGUE leaderboard model.
     ///
     /// # Arguments
