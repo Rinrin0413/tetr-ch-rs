@@ -6,6 +6,7 @@ use crate::{
         latest_news::LatestNewsResponse,
         leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
         league_leaderboard::{self, LeagueLeaderboardResponse},
+        news::NewsAllResponse,
         records_leaderboard::RecordsLeaderboardResponse,
         searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
@@ -1145,6 +1146,54 @@ impl Client {
         );
         let url = format!("{}streams/{}", API_URL, stream_id.to_lowercase());
         let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Returns the latest news items in any stream.
+    ///
+    /// # Arguments
+    ///
+    /// - `limit`:The amount of entries to return,
+    /// between 1 and 100. 25 by default.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the All Latest News.
+    /// let user = client.get_news_all(Some(3)).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Error
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_news_all(self, limit: Option<u8>) -> RspErr<NewsAllResponse> {
+        let mut query_param = Vec::new();
+        if let Some(l) = limit {
+            if !(1..=100).contains(&l) {
+                // !(1 <= limit && limit <= 100)
+                panic!(
+                    "The query parameter`limit` must be between 1 and 100.\n\
+                    Received: {}",
+                    l
+                );
+            }
+            query_param.push(("limit", l.to_string()));
+        }
+        let url = format!("{}news/", API_URL);
+        let res = self.client.get(url).query(&query_param).send().await;
         response(res).await
     }
 
