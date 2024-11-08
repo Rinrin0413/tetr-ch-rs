@@ -1655,7 +1655,7 @@ impl UserId {
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_records(&self) -> RspErr<UserRecordsResponse> {
-        Client::new().get_user_records(self.id()).await
+        Client::new().get_user_records_old(self.id()).await
     }
 }
 
