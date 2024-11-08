@@ -5,7 +5,7 @@ use crate::{
     error::ResponseError,
     model::{
         cache::CacheData,
-        user::{UserId, UserRecordsResponse, UserResponse},
+        user::{UserId, UserRecordsOldResponse, UserResponse},
     },
 };
 use serde::Deserialize;
@@ -59,9 +59,9 @@ impl SearchedUserResponse {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> Option<RspErr<UserRecordsResponse>> {
+    pub async fn get_records(&self) -> Option<RspErr<UserRecordsOldResponse>> {
         if let Some(u) = &self.data {
-            Some(Client::new().get_user_records(u.user.id.id()).await)
+            Some(Client::new().get_user_records_old(u.user.id.id()).await)
         } else {
             None
         }
@@ -140,8 +140,8 @@ impl UserData {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> RspErr<UserRecordsResponse> {
-        Client::new().get_user_records(self.user.id.id()).await
+    pub async fn get_records(&self) -> RspErr<UserRecordsOldResponse> {
+        Client::new().get_user_records_old(self.user.id.id()).await
     }
 
     /// Returns the user's profile URL.
@@ -193,8 +193,8 @@ impl UserInfo {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> RspErr<UserRecordsResponse> {
-        Client::new().get_user_records(self.id.id()).await
+    pub async fn get_records(&self) -> RspErr<UserRecordsOldResponse> {
+        Client::new().get_user_records_old(self.id.id()).await
     }
 
     /// Returns the user's profile URL.

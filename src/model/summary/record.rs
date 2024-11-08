@@ -1,7 +1,7 @@
 //! The Record Data models.
 
 use crate::{
-    model::{league::Rank, user::UserId},
+    model::{leaderboard::Prisecter, league::Rank, user::UserId},
     util::to_unix_ts,
 };
 use serde::Deserialize;
@@ -39,7 +39,7 @@ pub struct Record {
     /// If revolved away, the revolution it belongs to.
     pub revolution: Option<String>,
     /// The user owning the Record.
-    pub user: User,
+    pub user: Option<User>, // EXCEPTION
     /// Other users mentioned in the Record.
     ///
     /// If not empty, this is a multiplayer game
@@ -57,6 +57,13 @@ pub struct Record {
     pub results: Results,
     /// Extra metadata for this Record:
     pub extras: Extras,
+    /// The prisecter of this entry
+    /// if this record is part of a paginated response.
+    ///
+    /// A **prisecter** is consisting of three floats.
+    /// It allows you to continue paginating.
+    #[serde(rename = "p")]
+    pub prisecter: Option<Prisecter>,
 }
 
 impl Record {
@@ -237,7 +244,7 @@ impl AsRef<PlayerStatsRound> for PlayerStatsRound {
 #[non_exhaustive]
 pub struct Extras {
     /// A mapping of user IDs to before-and-afters, if user is being ranked.
-    pub league: Option<HashMap<UserId, PlayerExtraStats>>,
+    pub league: Option<HashMap<UserId, Vec<PlayerExtraStats>>>,
     /// The result of the game, from the owner's point of view.
     pub result: Option<String>,
     /// Extra data for QUICK PLAY,
