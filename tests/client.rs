@@ -127,11 +127,6 @@ fn get_user_40l_best_stream_data() {
 }
 
 #[test]
-fn get_latest_any_news_data() {
-    let _ = tokio_test::block_on(Client::new().get_news_latest(stream::NewsStream::Any, 3));
-}
-
-#[test]
 fn get_latest_global_news_data() {
     let _ = tokio_test::block_on(Client::new().get_news_latest(stream::NewsStream::Global, 3));
 }
@@ -147,5 +142,5 @@ fn get_latest_user_scale_news_data() {
 #[test]
 #[should_panic]
 fn panic_if_invalid_limit_range_in_getting_latest_news() {
-    let _ = tokio_test::block_on(Client::new().get_news_latest(stream::NewsStream::Any, 0));
+    let _ = tokio_test::block_on(Client::new().get_news_latest(stream::NewsStream::Global, 0));
 }
