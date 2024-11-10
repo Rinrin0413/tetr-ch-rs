@@ -187,6 +187,9 @@ pub enum Rank {
     /// The X rank.
     #[serde(rename = "x")]
     X,
+    /// The X+ rank.
+    #[serde(rename = "x+")]
+    XPlus,
     /// Unranked.
     #[serde(rename = "z")]
     Z,
@@ -216,6 +219,7 @@ impl Rank {
     /// assert_eq!(Rank::SS.as_str(), "SS");
     /// assert_eq!(Rank::U.as_str(), "U");
     /// assert_eq!(Rank::X.as_str(), "X");
+    /// assert_eq!(Rank::XPlus.as_str(), "X+");
     /// assert_eq!(Rank::Z.as_str(), "Unranked");
     /// ```
     pub fn as_str(&self) -> &str {
@@ -237,6 +241,7 @@ impl Rank {
             Rank::SS => "SS",
             Rank::U => "U",
             Rank::X => "X",
+            Rank::XPlus => "X+",
             Rank::Z => "Unranked",
         }
     }
@@ -279,6 +284,7 @@ impl Rank {
     /// assert_eq!(Rank::SS.icon_url(), "https://tetr.io/res/league-ranks/ss.png");
     /// assert_eq!(Rank::U.icon_url(), "https://tetr.io/res/league-ranks/u.png");
     /// assert_eq!(Rank::X.icon_url(), "https://tetr.io/res/league-ranks/x.png");
+    /// assert_eq!(Rank::XPlus.icon_url(), "https://tetr.io/res/league-ranks/x+.png");
     /// assert_eq!(Rank::Z.icon_url(), "https://tetr.io/res/league-ranks/z.png");
     /// ```
     pub fn icon_url(&self) -> String {
@@ -308,6 +314,7 @@ impl Rank {
     /// assert_eq!(Rank::SS.color(), 0xDB8B1F);
     /// assert_eq!(Rank::U.color(), 0xFF3813);
     /// assert_eq!(Rank::X.color(), 0xff45ff);
+    /// assert_eq!(Rank::XPlus.color(), 0xa763ea);
     /// assert_eq!(Rank::Z.color(), 0x767671);
     /// ```
     pub fn color(&self) -> u32 {
@@ -329,6 +336,7 @@ impl Rank {
             Self::SS => Self::SS_COL,
             Self::U => Self::U_COL,
             Self::X => Self::X_COL,
+            Self::XPlus => Self::X_PLUS_COL,
             Self::Z => Self::Z_COL,
         }
     }
@@ -401,6 +409,10 @@ impl Rank {
     /// <span style="background-color:#ff45ff;border-radius:8px;padding:2px;margin:8px;font-size:16px;border:1px solid black;color:black;">#ff45ff</span>
     pub const X_COL: u32 = 0xff45ff;
 
+    /// The X+ rank color.
+    /// <span style="background-color:#a763ea;border-radius:8px;padding:2px;margin:8px;font-size:16px;border:1px solid black;color:black;">#a763ea</span>
+    pub const X_PLUS_COL: u32 = 0xa763ea;
+
     /// The XX rank color.
     /// <span style="background-color:#ff8fff;border-radius:8px;padding:2px;margin:8px;font-size:16px;border:1px solid black;color:black;">#ff8fff</span>
     pub const XX_COL: u32 = 0xff8fff;
@@ -436,6 +448,7 @@ impl Display for Rank {
             Rank::SS => write!(f, "ss"),
             Rank::U => write!(f, "u"),
             Rank::X => write!(f, "x"),
+            Rank::XPlus => write!(f, "x+"),
             Rank::Z => write!(f, "z"),
         }
     }
@@ -542,6 +555,7 @@ mod tests {
         let rank_ss = Rank::SS;
         let rank_u = Rank::U;
         let rank_x = Rank::X;
+        let rank_x_plus = Rank::XPlus;
         let rank_z = Rank::Z;
         assert_eq!(rank_d.as_str(), "D");
         assert_eq!(rank_d_plus.as_str(), "D+");
@@ -560,6 +574,7 @@ mod tests {
         assert_eq!(rank_ss.as_str(), "SS");
         assert_eq!(rank_u.as_str(), "U");
         assert_eq!(rank_x.as_str(), "X");
+        assert_eq!(rank_x_plus.as_str(), "X+");
         assert_eq!(rank_z.as_str(), "Unranked");
     }
 
@@ -599,6 +614,7 @@ mod tests {
         let rank_ss = Rank::SS;
         let rank_u = Rank::U;
         let rank_x = Rank::X;
+        let rank_x_plus = Rank::XPlus;
         let rank_z = Rank::Z;
         assert_eq!(rank_d.color(), 0x907591);
         assert_eq!(rank_d_plus.color(), 0x8e6091);
@@ -617,6 +633,7 @@ mod tests {
         assert_eq!(rank_ss.color(), 0xdb8b1f);
         assert_eq!(rank_u.color(), 0xff3813);
         assert_eq!(rank_x.color(), 0xff45ff);
+        assert_eq!(rank_x_plus.color(), 0xa763ea);
         assert_eq!(rank_z.color(), 0x767671);
     }
 
