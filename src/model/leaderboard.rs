@@ -4,7 +4,8 @@ use crate::{
     model::{
         cache::CacheData,
         league_rank::Rank,
-        user::{AchievementRatingCounts, Role, UserId},
+        role::Role,
+        user::{AchievementRatingCounts, UserId},
     },
     util::{max_f64, to_unix_ts},
 };

@@ -8,6 +8,7 @@ pub mod leaderboard;
 pub mod league_rank;
 pub mod news;
 pub mod records_leaderboard;
+pub mod role;
 pub mod searched_user;
 pub mod server_activity;
 pub mod server_stats;
