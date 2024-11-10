@@ -1,10 +1,6 @@
 //! The Achievement Info models.
 
-use crate::model::{
-    cache::CacheData,
-    summary::achievements::Achievement,
-    user::UserId,
-};
+use crate::model::{cache::CacheData, summary::achievements::Achievement, user::UserId};
 use serde::Deserialize;
 
 use super::user::Role;
@@ -80,7 +76,7 @@ impl AsRef<AchievementLeaderboardEntry> for AchievementLeaderboardEntry {
 pub struct User {
     /// The user's internal ID.
     #[serde(rename = "_id")]
-    pub id : UserId,
+    pub id: UserId,
     /// The user's username.
     pub username: String,
     /// The user's role.

@@ -1466,7 +1466,10 @@ impl Client {
     /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_achievement_info(self, achievement_id: &str) -> RspErr<AchievementInfoResponse> {
+    pub async fn get_achievement_info(
+        self,
+        achievement_id: &str,
+    ) -> RspErr<AchievementInfoResponse> {
         let url = format!("{}achievements/{}", API_URL, achievement_id);
         let res = self.client.get(url).send().await;
         response(res).await
