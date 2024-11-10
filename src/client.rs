@@ -1,7 +1,12 @@
 //! Client for API requests.
 
 use self::{
-    param::{news_stream::NewsStream, pagination::Bound, search_user::SocialConnection, user_leaderboard::{self, LeaderboardType}},
+    param::{
+        news_stream::NewsStream,
+        pagination::Bound,
+        search_user::SocialConnection,
+        user_leaderboard::{self, LeaderboardType},
+    },
     response::response,
 };
 use crate::{
