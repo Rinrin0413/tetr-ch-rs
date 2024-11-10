@@ -42,7 +42,7 @@ pub struct Achievement {
     pub desc: String,
     /// The order of this achievement in its category.
     #[serde(rename = "o")]
-    pub order: u32,
+    pub order: Option<u32>, // EXCEPTION
     /// The rank type of this achievement.
     ///
     /// - 1 = PERCENTILE — ranked by percentile cutoffs (5% Diamond, 10% Platinum, 30% Gold, 50% Silver, 70% Bronze)

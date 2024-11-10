@@ -3,6 +3,7 @@
 use crate::{
     error::{ResponseError, Status},
     model::{
+        achievement_info::AchievementInfoResponse,
         labs::{
             league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
             scoreflow::LabsScoreflowResponse,
@@ -1431,6 +1432,45 @@ impl Client {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_labs_league_ranks(self) -> RspErr<LabsLeagueRanksResponse> {
         let url = format!("{}labs/league_ranks", API_URL);
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Returns the data about the achievement itself, its cutoffs, and its leaderboard.
+    ///
+    /// # Arguments
+    ///
+    /// - `achievement_id`: The achievement ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    /// # use std::io;
+    ///
+    /// # async fn run() -> io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the Achievement Info.
+    /// let user = client.get_achievement_info("15").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_achievement_info(
+        self,
+        achievement_id: &str,
+    ) -> RspErr<AchievementInfoResponse> {
+        let url = format!("{}achievements/{}", API_URL, achievement_id);
         let res = self.client.get(url).send().await;
         response(res).await
     }
