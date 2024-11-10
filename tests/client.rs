@@ -17,12 +17,6 @@ fn get_server_activity_data() {
 }
 
 #[test]
-fn get_usr_records_data() {
-    let usr = "rinrin-rs";
-    let _ = tokio_test::block_on(Client::new().get_user_records_old(usr));
-}
-
-#[test]
 fn get_league_leaderboard_data() {
     let _ = tokio_test::block_on(
         Client::new().get_league_leaderboard(query::LeagueLeaderboardQuery::new()),
