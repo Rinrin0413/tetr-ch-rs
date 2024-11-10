@@ -1,7 +1,7 @@
 //! Client for API requests.
 
+use self::{param::news_stream::NewsStream, response::response};
 use crate::{
-    client::response::response,
     error::ResponseError,
     model::{
         achievement_info::AchievementInfoResponse,
@@ -896,7 +896,7 @@ impl Client {
     /// ```
     pub async fn get_news_latest(
         self,
-        stream: stream::NewsStream,
+        stream: NewsStream,
         limit: u8,
     ) -> RspErr<NewsLatestResponse> {
         if !(1..=100).contains(&limit) {
@@ -1112,39 +1112,7 @@ impl Client {
 }
 
 mod response;
-
-pub mod stream {
-    //! Features for streams.
-
-    /// The news subject.
-    pub enum NewsStream {
-        /// Global news.
-        Global,
-        /// News of the user.
-        /// The user ID is required.
-        User(String),
-    }
-
-    impl NewsStream {
-        /// Converts into a parameter.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::stream::NewsStream;
-        /// let global = NewsStream::Global;
-        /// let user = NewsStream::User("621db46d1d638ea850be2aa0".to_string());
-        /// assert_eq!(global.to_param(), "global");
-        /// assert_eq!(user.to_param(), "user_621db46d1d638ea850be2aa0");
-        /// ```
-        pub(crate) fn to_param(&self) -> String {
-            match self {
-                NewsStream::Global => "global".to_string(),
-                NewsStream::User(id) => format!("user_{}", id),
-            }
-        }
-    }
-}
+pub mod param;
 
 pub mod search_user {
     //! Features for searching users.
