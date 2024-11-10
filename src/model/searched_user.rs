@@ -5,7 +5,7 @@ use crate::{
     error::ResponseError,
     model::{
         cache::CacheData,
-        user::{UserId, UserRecordsOldResponse, UserResponse},
+        user::{UserId, UserResponse},
     },
 };
 use serde::Deserialize;
@@ -43,25 +43,6 @@ impl SearchedUserResponse {
     pub async fn get_user(&self) -> Option<RspErr<UserResponse>> {
         if let Some(u) = &self.data {
             Some(Client::new().get_user(u.user.id.id()).await)
-        } else {
-            None
-        }
-    }
-
-    /// Gets the user's records data.
-    /// Returns `None` if the user was not found.
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> Option<RspErr<UserRecordsOldResponse>> {
-        if let Some(u) = &self.data {
-            Some(Client::new().get_user_records_old(u.user.id.id()).await)
         } else {
             None
         }
@@ -130,20 +111,6 @@ impl UserData {
         Client::new().get_user(self.user.id.id()).await
     }
 
-    /// Gets the user's records data.
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> RspErr<UserRecordsOldResponse> {
-        Client::new().get_user_records_old(self.user.id.id()).await
-    }
-
     /// Returns the user's profile URL.
     pub fn profile_url(&self) -> String {
         self.user.profile_url()
@@ -181,20 +148,6 @@ impl UserInfo {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(self.id.id()).await
-    }
-
-    /// Gets the user's records data.
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> RspErr<UserRecordsOldResponse> {
-        Client::new().get_user_records_old(self.id.id()).await
     }
 
     /// Returns the user's profile URL.
