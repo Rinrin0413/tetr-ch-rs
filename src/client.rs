@@ -1,6 +1,9 @@
 //! Client for API requests.
 
-use self::{param::{news_stream::NewsStream, search_user::SocialConnection}, response::response};
+use self::{
+    param::{news_stream::NewsStream, search_user::SocialConnection},
+    response::response,
+};
 use crate::{
     error::ResponseError,
     model::{
@@ -1111,8 +1114,8 @@ impl Client {
     }
 }
 
-mod response;
 pub mod param;
+mod response;
 
 pub mod leaderboard {
     //! Features for leaderboards.
