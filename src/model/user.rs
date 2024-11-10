@@ -1643,20 +1643,6 @@ impl UserId {
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(self.id()).await
     }
-
-    /// Gets the user's records data.
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_records(&self) -> RspErr<UserRecordsOldResponse> {
-        Client::new().get_user_records_old(self.id()).await
-    }
 }
 
 impl AsRef<UserId> for UserId {
