@@ -1,7 +1,7 @@
 //! Client for API requests.
 
 use self::{
-    param::{news_stream::NewsStream, search_user::SocialConnection, user_leaderboard::{self, LeaderboardType}},
+    param::{news_stream::NewsStream, pagination::Bound, search_user::SocialConnection, user_leaderboard::{self, LeaderboardType}},
     response::response,
 };
 use crate::{
@@ -1120,6 +1120,8 @@ mod response;
 pub mod user_record {
     //! Features for user records.
 
+    use super::*;
+
     /// The game mode of records.
     pub enum RecordGamemode {
         /// 40 LINES records.
@@ -1225,7 +1227,7 @@ pub mod user_record {
     #[derive(Clone, Debug, Default)]
     pub struct RecordSearchCriteria {
         /// The bound to paginate.
-        pub bound: Option<super::param::user_leaderboard::Bound>,
+        pub bound: Option<Bound>,
         /// The amount of entries to return,
         /// between 1 and 100. 25 by default.
         pub limit: Option<u8>,
@@ -1279,7 +1281,7 @@ pub mod user_record {
         /// ```
         pub fn after(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::param::user_leaderboard::Bound::After(bound)),
+                bound: Some(Bound::After(bound)),
                 ..self
             }
         }
@@ -1307,7 +1309,7 @@ pub mod user_record {
         /// ```
         pub fn before(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::param::user_leaderboard::Bound::Before(bound)),
+                bound: Some(Bound::Before(bound)),
                 ..self
             }
         }
@@ -1413,6 +1415,8 @@ pub mod user_record {
 pub mod records_leaderboard {
     //! Features for records leaderboards.
 
+    use super::*;
+
     /// The records leaderboard ID.
     pub struct RecordsLeaderboardId {
         /// The game mode. e.g. `40l`.
@@ -1503,7 +1507,7 @@ pub mod records_leaderboard {
     #[derive(Clone, Debug, Default)]
     pub struct RecordsLeaderboardSearchCriteria {
         /// The bound to paginate.
-        pub bound: Option<super::param::user_leaderboard::Bound>,
+        pub bound: Option<Bound>,
         /// The amount of entries to return,
         /// between 1 and 100. 25 by default.
         pub limit: Option<u8>,
@@ -1557,7 +1561,7 @@ pub mod records_leaderboard {
         /// ```
         pub fn after(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::param::user_leaderboard::Bound::After(bound)),
+                bound: Some(Bound::After(bound)),
                 ..self
             }
         }
@@ -1585,7 +1589,7 @@ pub mod records_leaderboard {
         /// ```
         pub fn before(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::param::user_leaderboard::Bound::Before(bound)),
+                bound: Some(Bound::Before(bound)),
                 ..self
             }
         }
