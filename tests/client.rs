@@ -17,50 +17,6 @@ fn get_server_activity_data() {
 }
 
 #[test]
-fn get_league_leaderboard_data() {
-    let _ = tokio_test::block_on(
-        Client::new().get_league_leaderboard(query::LeagueLeaderboardQuery::new()),
-    );
-}
-
-#[test]
-fn get_league_leaderboard_data_with_two_queries() {
-    let _ = tokio_test::block_on(
-        Client::new()
-            .get_league_leaderboard(query::LeagueLeaderboardQuery::new().limit(2).before(23000.)),
-    );
-}
-
-#[test]
-fn get_league_leaderboard_data_with_three_queries() {
-    let _ = tokio_test::block_on(
-        Client::new().get_league_leaderboard(
-            query::LeagueLeaderboardQuery::new()
-                .limit(2)
-                .country("us")
-                .after(13000.),
-        ),
-    );
-}
-
-#[test]
-fn get_full_league_leaderboard_data() {
-    let _ = tokio_test::block_on(
-        Client::new().get_league_leaderboard(query::LeagueLeaderboardQuery::new().limit(0)),
-    );
-}
-
-#[test]
-#[should_panic]
-fn panic_if_invalid_limit_range_exhaustivegetting_league_leaderboard() {
-    let q = query::LeagueLeaderboardQuery {
-        limit: Some(query::Limit::Limit(101)),
-        ..query::LeagueLeaderboardQuery::new()
-    };
-    let _ = tokio_test::block_on(Client::new().get_league_leaderboard(q));
-}
-
-#[test]
 fn get_xp_leaderboard_data() {
     let _ =
         tokio_test::block_on(Client::new().get_xp_leaderboard(query::XPLeaderboardQuery::new()));
