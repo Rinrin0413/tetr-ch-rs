@@ -2,5 +2,6 @@
 
 pub mod news_stream;
 pub mod pagination;
+pub mod record;
 pub mod search_user;
 pub mod user_leaderboard;
