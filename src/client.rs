@@ -3,7 +3,10 @@
 use crate::{
     error::{ResponseError, Status},
     model::{
-        labs::{league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse, scoreflow::LabsScoreflowResponse},
+        labs::{
+            league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
+            scoreflow::LabsScoreflowResponse,
+        },
         leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
         league_leaderboard::{self, LeagueLeaderboardResponse},
         news::{NewsAllResponse, NewsLatestResponse},
