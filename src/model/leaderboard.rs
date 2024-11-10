@@ -1,6 +1,7 @@
 //! The User Leaderboard models.
 
 use crate::{
+    client::param::pagination::Prisecter,
     model::{
         cache::CacheData,
         league_rank::Rank,
@@ -209,35 +210,6 @@ pub struct League {
 }
 
 impl AsRef<League> for League {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-/// A prisecter.
-///
-/// A **prisecter** is consisting of three floats.
-/// It allows you to continue paginating.
-#[derive(Clone, Debug, Deserialize)]
-pub struct Prisecter {
-    /// The primary sort key.
-    pub pri: f64,
-    /// The secondary sort key.
-    pub sec: f64,
-    /// The tertiary sort key.
-    pub ter: f64,
-}
-
-impl Prisecter {
-    /// Converts this prisecter to an array.
-    ///
-    /// This array can be used as a bound for the next search.
-    pub fn to_array(&self) -> [f64; 3] {
-        [self.pri, self.sec, self.ter]
-    }
-}
-
-impl AsRef<Prisecter> for Prisecter {
     fn as_ref(&self) -> &Self {
         self
     }

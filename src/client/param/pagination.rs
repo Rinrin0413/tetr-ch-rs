@@ -1,5 +1,36 @@
 //! Features for pagination.
 
+use serde::Deserialize;
+
+/// A prisecter.
+///
+/// A **prisecter** is consisting of three floats.
+/// It allows you to continue paginating.
+#[derive(Clone, Debug, Deserialize)]
+pub struct Prisecter {
+    /// The primary sort key.
+    pub pri: f64,
+    /// The secondary sort key.
+    pub sec: f64,
+    /// The tertiary sort key.
+    pub ter: f64,
+}
+
+impl Prisecter {
+    /// Converts to an array.
+    ///
+    /// This array can be used as a bound for the next search.
+    pub fn to_array(&self) -> [f64; 3] {
+        [self.pri, self.sec, self.ter]
+    }
+}
+
+impl AsRef<Prisecter> for Prisecter {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
 /// A bound to paginate.
 #[derive(Clone, Debug)]
 pub enum Bound {
