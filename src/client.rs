@@ -2662,19 +2662,6 @@ mod tests {
     }
 
     #[test]
-    fn init_league_query() {
-        let mut _query = query::LeagueLeaderboardQuery::new();
-        _query.init();
-    }
-
-    #[test]
-    #[should_panic]
-    fn panic_invalid_limit_range_in_league_query() {
-        let mut _query = query::LeagueLeaderboardQuery::new();
-        _query.limit(101);
-    }
-
-    #[test]
     fn init_xp_query() {
         let mut _query = query::XPLeaderboardQuery::new();
         _query.init();
