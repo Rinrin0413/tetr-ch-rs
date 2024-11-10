@@ -19,72 +19,6 @@ pub struct ServerStatsResponse {
     pub data: Option<ServerStats>,
 }
 
-impl ServerStatsResponse {
-    /// Returns the amount of registered players.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn registered_players(&self) -> u64 {
-        self.get_server_stats().registered_players()
-    }
-
-    /// Returns the average amount of pieces placed per second.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn avg_pieces_per_second(&self) -> f64 {
-        self.get_server_stats().avg_pieces_per_second()
-    }
-
-    /// Returns the average amount of keys pressed per second.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    pub fn avg_keys_per_second(&self) -> f64 {
-        self.get_server_stats().avg_keys_per_second()
-    }
-
-    /// Returns a UNIX timestamp when this resource was cached.
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no cache data.
-    pub fn cached_at(&self) -> i64 {
-        match self.cache.as_ref() {
-            Some(c) => c.cached_at(),
-            None => panic!("There is no cache data."),
-        }
-    }
-
-    /// Returns a UNIX timestamp when this resource's cache expires.
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no cache data.
-    pub fn cached_until(&self) -> i64 {
-        match self.cache.as_ref() {
-            Some(c) => c.cached_at(),
-            None => panic!("There is no cache data."),
-        }
-    }
-
-    /// Returns the reference to the [`&ServerStats`](crate::model::server_stats::ServerStats).
-    ///
-    /// # Panics
-    ///
-    /// Panics if the request was not successful.
-    fn get_server_stats(&self) -> &ServerStats {
-        if let Some(d) = self.data.as_ref() {
-            d
-        } else {
-            panic!("There is no server stats object because the request was not successful.")
-        }
-    }
-}
-
 impl AsRef<ServerStatsResponse> for ServerStatsResponse {
     fn as_ref(&self) -> &Self {
         self
@@ -147,6 +81,36 @@ impl ServerStats {
     /// Returns the amount of registered players.
     pub fn registered_players(&self) -> u64 {
         self.user_count - self.anon_count
+    }
+
+    /// Returns the amount of minutes spent playing across all users.
+    /// including both off- and online modes. 1*60
+    pub fn play_time_minutes(&self) -> f64 {
+        self.play_time / 60.
+    }
+
+    /// Returns the amount of hours spent playing across all users.
+    /// including both off- and online modes.
+    pub fn play_time_hours(&self) -> f64 {
+        self.play_time / 3600.
+    }
+
+    /// Returns the amount of days spent playing across all users.
+    /// including both off- and online modes.
+    pub fn play_time_days(&self) -> f64 {
+        self.play_time / 86400.
+    }
+
+    /// Returns the amount of months spent playing across all users.
+    /// including both off- and online modes.
+    pub fn play_time_months(&self) -> f64 {
+        self.play_time / 2628000.
+    }
+
+    /// Returns the amount of years spent playing across all users.
+    /// including both off- and online modes.
+    pub fn play_time_years(&self) -> f64 {
+        self.play_time / 31536000.0
     }
 
     /// Returns the average amount of pieces placed per second.
