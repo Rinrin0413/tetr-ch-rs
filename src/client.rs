@@ -14,7 +14,6 @@ use crate::{
         searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
         server_stats::ServerStatsResponse,
-        stream::StreamResponse,
         summary::{
             achievements::AchievementsResponse,
             blitz::BlitzResponse,
@@ -787,90 +786,6 @@ impl Client {
         ];
         let url = format!("{}records/reverse", API_URL);
         let res = self.client.get(url).query(&query_params).send().await;
-        response(res).await
-    }
-
-    /// Returns the stream model.
-    ///
-    /// # Arguments
-    ///
-    /// - `stream_type`:
-    ///
-    /// The type of Stream.
-    /// Currently
-    /// [`StreamType::FortyLines`](stream::StreamType::FortyLines),
-    /// [`StreamType::Blitz`](stream::StreamType::Blitz),
-    /// [`StreamType::Any`](stream::StreamType::Any),
-    /// or [`StreamType::League`](stream::StreamType::League).
-    ///
-    /// - `stream_context`:
-    ///
-    /// The context of the Stream.
-    /// Currently
-    /// [`StreamContext::Global`](stream::StreamContext::Global),
-    /// [`StreamContext::UserBest`](stream::StreamContext::UserBest),
-    /// or [`StreamContext::UserRecent`](stream::StreamContext::UserRecent).
-    ///
-    /// - `stream_identifier` (Optional):
-    ///
-    /// If applicable.
-    /// For example, in the case of "userbest" or "userrecent", the user ID.
-    ///
-    /// # Examples
-    ///
-    /// Getting the stream object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::{
-    ///     Client,
-    ///     stream::{StreamType, StreamContext}
-    /// };
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// // Get the stream.
-    /// let user = client.get_stream(
-    ///     // 40 LINES.
-    ///     StreamType::FortyLines,
-    ///     // User's best.
-    ///     StreamContext::UserBest,
-    ///     // User ID.
-    ///     Some("621db46d1d638ea850be2aa0"),
-    /// ).await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// Go to [`stream::StreamType`] | [`stream::StreamContext`].
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_stream(
-        self,
-        stream_type: stream::StreamType,
-        stream_context: stream::StreamContext,
-        stream_identifier: Option<&str>,
-    ) -> RspErr<StreamResponse> {
-        let stream_id = format!(
-            "{}_{}{}",
-            stream_type.as_str(),
-            stream_context.as_str(),
-            if let Some(i) = stream_identifier {
-                format!("_{}", i)
-            } else {
-                String::new()
-            }
-        );
-        let url = format!("{}streams/{}", API_URL, stream_id.to_lowercase());
-        let res = self.client.get(url).send().await;
         response(res).await
     }
 
