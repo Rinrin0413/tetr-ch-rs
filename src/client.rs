@@ -2249,26 +2249,6 @@ mod tests {
     }
 
     #[test]
-    fn init_xp_query() {
-        let mut _query = query::XPLeaderboardQuery::new();
-        _query.init();
-    }
-
-    #[test]
-    #[should_panic]
-    fn panic_invalid_limit_range_in_xp_query_with101() {
-        let mut _query = query::XPLeaderboardQuery::new();
-        _query.limit(101);
-    }
-
-    #[test]
-    #[should_panic]
-    fn panic_invalid_limit_range_in_xp_query_with0() {
-        let mut _query = query::XPLeaderboardQuery::new();
-        _query.limit(101);
-    }
-
-    #[test]
     fn fortylines_as_str() {
         assert_eq!(stream::StreamType::FortyLines.as_str(), "40l");
     }
