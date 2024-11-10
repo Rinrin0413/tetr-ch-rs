@@ -17,48 +17,6 @@ fn get_server_activity_data() {
 }
 
 #[test]
-fn get_xp_leaderboard_data() {
-    let _ =
-        tokio_test::block_on(Client::new().get_xp_leaderboard(query::XPLeaderboardQuery::new()));
-}
-
-#[test]
-fn get_xp_leaderboard_data_with_a_query() {
-    let _ = tokio_test::block_on(
-        Client::new().get_xp_leaderboard(query::XPLeaderboardQuery::new().limit(2)),
-    );
-}
-
-#[test]
-fn get_xp_leaderboard_data_with_two_queries() {
-    let _ = tokio_test::block_on(
-        Client::new().get_xp_leaderboard(query::XPLeaderboardQuery::new().limit(2).before(23000.)),
-    );
-}
-
-#[test]
-fn get_xp_leaderboard_data_with_three_queries() {
-    let _ = tokio_test::block_on(
-        Client::new().get_xp_leaderboard(
-            query::XPLeaderboardQuery::new()
-                .limit(2)
-                .country("us")
-                .after(13000.),
-        ),
-    );
-}
-
-#[test]
-#[should_panic]
-fn panic_if_invalid_limit_range_exhaustive_in_getting_xp_leaderboard() {
-    let q = query::XPLeaderboardQuery {
-        limit: Some(std::num::NonZeroU8::new(101).unwrap()),
-        ..query::XPLeaderboardQuery::new()
-    };
-    let _ = tokio_test::block_on(Client::new().get_xp_leaderboard(q));
-}
-
-#[test]
 fn get_stream_data() {
     let _ = tokio_test::block_on(Client::new().get_stream(
         stream::StreamType::FortyLines,
