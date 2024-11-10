@@ -1,6 +1,6 @@
 //! The User Summary TETRA LEAGUE models.
 
-use crate::model::{cache::CacheData, league::Rank};
+use crate::model::{cache::CacheData, league_rank::Rank};
 use serde::Deserialize;
 use std::collections::HashMap;
 

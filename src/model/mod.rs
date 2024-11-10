@@ -1,13 +1,14 @@
 //! Easy-to-use models of the various objects returned by the API.
 
+pub mod achievement;
 pub mod achievement_info;
 pub mod cache;
 pub mod labs;
-pub mod latest_news;
 pub mod leaderboard;
-pub mod league;
+pub mod league_rank;
 pub mod news;
 pub mod records_leaderboard;
+pub mod role;
 pub mod searched_user;
 pub mod server_activity;
 pub mod server_stats;

@@ -1,8 +1,7 @@
 //! The Searched User model.
 
 use crate::{
-    client::Client,
-    error::ResponseError,
+    client::{error::RspErr, Client},
     model::{
         cache::CacheData,
         user::{UserId, UserResponse},
@@ -25,8 +24,6 @@ pub struct SearchedUserResponse {
     /// The requested data.
     pub data: Option<UserData>,
 }
-
-type RspErr<T> = Result<T, ResponseError>;
 
 impl SearchedUserResponse {
     /// Gets the user's data.

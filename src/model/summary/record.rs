@@ -1,7 +1,8 @@
 //! The Record Data models.
 
 use crate::{
-    model::{leaderboard::Prisecter, league::Rank, user::UserId},
+    client::param::pagination::Prisecter,
+    model::{league_rank::Rank, user::UserId},
     util::to_unix_ts,
 };
 use serde::Deserialize;

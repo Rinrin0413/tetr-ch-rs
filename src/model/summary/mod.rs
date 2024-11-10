@@ -1,6 +1,6 @@
 //! Easy-to-use models of the various objects returned by the User Summaries API endpoint.
 
-use crate::model::cache::CacheData;
+use crate::model::{achievement::Achievement, cache::CacheData};
 use serde::Deserialize;
 
 pub mod achievements;
@@ -52,5 +52,5 @@ pub struct AllSummaries {
     /// The user's ZEN summary data.
     pub zen: zen::Zen,
     /// The user's achievements.
-    pub achievements: Vec<achievements::Achievement>,
+    pub achievements: Vec<Achievement>,
 }
