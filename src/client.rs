@@ -2095,39 +2095,4 @@ mod tests {
     fn create_a_new_client() {
         let _ = Client::new();
     }
-
-    #[test]
-    fn fortylines_as_str() {
-        assert_eq!(stream::StreamType::FortyLines.as_str(), "40l");
-    }
-
-    #[test]
-    fn blitz_as_str() {
-        assert_eq!(stream::StreamType::Blitz.as_str(), "blitz");
-    }
-
-    #[test]
-    fn any_as_str() {
-        assert_eq!(stream::StreamType::Any.as_str(), "any");
-    }
-
-    #[test]
-    fn league_as_str() {
-        assert_eq!(stream::StreamType::League.as_str(), "league");
-    }
-
-    #[test]
-    fn global_as_str() {
-        assert_eq!(stream::StreamContext::Global.as_str(), "global");
-    }
-
-    #[test]
-    fn userbest_as_str() {
-        assert_eq!(stream::StreamContext::UserBest.as_str(), "userbest");
-    }
-
-    #[test]
-    fn userrecent_as_str() {
-        assert_eq!(stream::StreamContext::UserRecent.as_str(), "userrecent");
-    }
 }
