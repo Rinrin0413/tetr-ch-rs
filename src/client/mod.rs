@@ -1,6 +1,6 @@
 //! Client for API requests.
 
-use self::{param::news_stream::NewsStream, response::response};
+use self::{param::{news_stream::NewsStream, search_user::SocialConnection}, response::response};
 use crate::{
     error::ResponseError,
     model::{
@@ -950,7 +950,7 @@ impl Client {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn search_user(
         self,
-        social_connection: search_user::SocialConnection,
+        social_connection: SocialConnection,
     ) -> RspErr<SearchedUserResponse> {
         let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
         let res = self.client.get(url).send().await;
@@ -1113,35 +1113,6 @@ impl Client {
 
 mod response;
 pub mod param;
-
-pub mod search_user {
-    //! Features for searching users.
-
-    /// The social connection.
-    ///
-    /// The API documentation says searching for the other social links will be added in the near future.
-    pub enum SocialConnection {
-        /// A Discord ID.
-        Discord(String),
-    }
-
-    impl SocialConnection {
-        /// Converts into a parameter.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::search_user::SocialConnection;
-        /// let discord_id = "724976600873041940".to_string();
-        /// assert_eq!(SocialConnection::Discord(discord_id).to_param(), "discord:724976600873041940");
-        /// ```
-        pub(crate) fn to_param(&self) -> String {
-            match self {
-                SocialConnection::Discord(id) => format!("discord:{}", id),
-            }
-        }
-    }
-}
 
 pub mod leaderboard {
     //! Features for leaderboards.
