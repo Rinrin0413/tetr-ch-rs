@@ -1,6 +1,7 @@
 //! Client for API requests.
 
 use self::{
+    error::ResponseError,
     param::{
         news_stream::NewsStream,
         record::{self, Gamemode},
@@ -10,32 +11,29 @@ use self::{
     },
     response::response,
 };
-use crate::{
-    error::ResponseError,
-    model::{
-        achievement_info::AchievementInfoResponse,
-        labs::{
-            league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
-            scoreflow::LabsScoreflowResponse,
-        },
-        leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
-        news::{NewsAllResponse, NewsLatestResponse},
-        records_leaderboard::RecordsLeaderboardResponse,
-        searched_user::SearchedUserResponse,
-        server_activity::ServerActivityResponse,
-        server_stats::ServerStatsResponse,
-        summary::{
-            achievements::AchievementsResponse,
-            blitz::BlitzResponse,
-            forty_lines::FortyLinesResponse,
-            league::LeagueResponse,
-            zen::ZenResponse,
-            zenith::{ZenithExResponse, ZenithResponse},
-            AllSummariesResponse,
-        },
-        user::UserResponse,
-        user_records::UserRecordsResponse,
+use crate::model::{
+    achievement_info::AchievementInfoResponse,
+    labs::{
+        league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
+        scoreflow::LabsScoreflowResponse,
     },
+    leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
+    news::{NewsAllResponse, NewsLatestResponse},
+    records_leaderboard::RecordsLeaderboardResponse,
+    searched_user::SearchedUserResponse,
+    server_activity::ServerActivityResponse,
+    server_stats::ServerStatsResponse,
+    summary::{
+        achievements::AchievementsResponse,
+        blitz::BlitzResponse,
+        forty_lines::FortyLinesResponse,
+        league::LeagueResponse,
+        zen::ZenResponse,
+        zenith::{ZenithExResponse, ZenithResponse},
+        AllSummariesResponse,
+    },
+    user::UserResponse,
+    user_records::UserRecordsResponse,
 };
 use reqwest::{self};
 
@@ -1116,6 +1114,7 @@ impl Client {
     }
 }
 
+pub mod error;
 pub mod param;
 mod response;
 

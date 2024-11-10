@@ -1,8 +1,7 @@
 //! The User Info models.
 
 use crate::{
-    client::Client,
-    error::ResponseError,
+    client::{error::ResponseError, Client},
     model::cache::CacheData,
     util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
 };

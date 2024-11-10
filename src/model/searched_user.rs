@@ -1,8 +1,7 @@
 //! The Searched User model.
 
 use crate::{
-    client::Client,
-    error::ResponseError,
+    client::{error::ResponseError, Client},
     model::{
         cache::CacheData,
         user::{UserId, UserResponse},

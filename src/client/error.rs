@@ -1,4 +1,4 @@
-//! Error enum for the tetr-ch-rs.
+//! An error enum for the response handling.
 
 use http::status::{InvalidStatusCode, StatusCode};
 use std::error::Error;
@@ -10,7 +10,7 @@ pub enum ResponseError {
     /// When there are some mismatches in the API docs,
     /// or when this library is defective.
     DeserializeErr(String),
-    /// When redirect loop was detected or redirect limit was exhausted.
+    /// When the request is invalid.
     RequestErr(String),
     /// When the HTTP request fails.
     HttpErr(Status),
@@ -40,7 +40,7 @@ impl From<ResponseError> for std::io::Error {
     }
 }
 
-/// HTTP status codes.
+/// A HTTP status code.
 #[derive(Debug)]
 pub enum Status {
     /// If the status code greater or equal to 100 but less than 600.

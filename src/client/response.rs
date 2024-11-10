@@ -1,4 +1,4 @@
-use crate::error::{ResponseError, Status};
+use super::error::{ResponseError, Status};
 use http::StatusCode;
 use reqwest::{Error, Response};
 use serde::Deserialize;
