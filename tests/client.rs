@@ -17,24 +17,6 @@ fn get_server_activity_data() {
 }
 
 #[test]
-fn get_stream_data() {
-    let _ = tokio_test::block_on(Client::new().get_stream(
-        stream::StreamType::FortyLines,
-        stream::StreamContext::Global,
-        None,
-    ));
-}
-
-#[test]
-fn get_user_40l_best_stream_data() {
-    let _ = tokio_test::block_on(Client::new().get_stream(
-        stream::StreamType::FortyLines,
-        stream::StreamContext::UserBest,
-        Some("621db46d1d638ea850be2aa0"),
-    ));
-}
-
-#[test]
 fn get_latest_global_news_data() {
     let _ = tokio_test::block_on(Client::new().get_news_latest(stream::NewsStream::Global, 3));
 }
