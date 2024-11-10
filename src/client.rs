@@ -26,7 +26,6 @@ use crate::{
         },
         user::UserResponse,
         user_records::UserRecordsResponse,
-        xp_leaderboard::{self, XPLeaderboardResponse},
     },
 };
 use http::status::StatusCode;
@@ -789,123 +788,6 @@ impl Client {
         let url = format!("{}records/reverse", API_URL);
         let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
-    }
-
-    /// Returns the XP leaderboard model.
-    ///
-    /// # Arguments
-    ///
-    /// - `query`:
-    ///
-    /// The query parameters.
-    /// This argument requires a [`query::XPLeaderboardQuery`].
-    ///
-    /// # Examples
-    ///
-    /// Getting the XP leaderboard object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::{Client, query::XPLeaderboardQuery};
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// // Set the query parameters.
-    /// let query = XPLeaderboardQuery::new()
-    ///     // 50,000,000,000,000xp or less.
-    ///     .after(50_000_000_000_000.)
-    ///     // 10 users.
-    ///     .limit(10)
-    ///     // Serbia.
-    ///     .country("rs");
-    ///
-    /// // Get the XP leaderboard.
-    /// let user = client.get_xp_leaderboard(query).await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// See [here](query::XPLeaderboardQuery) for details on setting query parameters.
-    ///
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the query parameter`limit` is not between 1 and 100.
-    ///
-    /// ```should_panic,no_run
-    /// use tetr_ch::client::{Client, query::XPLeaderboardQuery};
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// let query = XPLeaderboardQuery {
-    ///     // 101 users(not allowed).
-    ///     limit: Some(std::num::NonZeroU8::new(101).unwrap()),
-    ///     ..XPLeaderboardQuery::new()
-    /// };
-    ///
-    /// let user = client.get_xp_leaderboard(query).await?;
-    /// # Ok(())
-    /// # }
-    ///
-    /// # tokio_test::block_on(run());
-    /// ```
-    pub async fn get_xp_leaderboard(
-        self,
-        query: query::XPLeaderboardQuery,
-    ) -> RspErr<XPLeaderboardResponse> {
-        if query.is_invalid_limit_range() {
-            panic!(
-                "The query parameter`limit` must be between 1 and 100.\n\
-                Received: {}",
-                query.limit.unwrap()
-            );
-        }
-        // Cloned the `query` here because the query parameters will be referenced later.
-        let q = query.clone().build();
-        let url = format!("{}users/lists/xp", API_URL);
-        let r = self.client.get(url);
-        let res = match q.len() {
-            1 => r.query(&[&q[0]]),
-            2 => r.query(&[&q[0], &q[1]]),
-            3 => r.query(&[&q[0], &q[1], &q[2]]),
-            _ => r,
-        }
-        .send()
-        .await;
-        match response::<XPLeaderboardResponse>(res).await {
-            Ok(mut m) => {
-                let (before, after) = if let Some(b_a) = query.before_or_after {
-                    match b_a {
-                        query::BeforeAfter::Before(b) => (Some(b.to_string()), None),
-                        query::BeforeAfter::After(b) => (None, Some(b.to_string())),
-                    }
-                } else {
-                    (None, None)
-                };
-                let limit = query.limit.map(|l| l.to_string());
-                let country = query.country;
-                m.query = Some(xp_leaderboard::QueryCache {
-                    before,
-                    after,
-                    limit,
-                    country,
-                });
-                Ok(m)
-            }
-            Err(e) => Err(e),
-        }
     }
 
     /// Returns the stream model.
