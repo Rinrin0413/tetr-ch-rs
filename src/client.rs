@@ -850,7 +850,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, stream::NewsStream};
+    /// use tetr_ch::client::{Client, param::news_stream::NewsStream};
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {
@@ -881,7 +881,7 @@ impl Client {
     /// Panics if the query parameter `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// use tetr_ch::client::{Client, stream::NewsStream};
+    /// use tetr_ch::client::{Client, param::news_stream::NewsStream};
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {
@@ -927,7 +927,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, search_user::SocialConnection};
+    /// use tetr_ch::client::{Client, param::search_user::SocialConnection};
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {

@@ -16,7 +16,7 @@ impl LeaderboardType {
     /// # Examples
     ///
     /// ```ignore
-    /// # use tetr_ch::client::leaderboard::LeaderboardType;
+    /// # use tetr_ch::client::param::user_leaderboard::LeaderboardType;
     /// assert_eq!(LeaderboardType::League.to_param(), "league");
     /// assert_eq!(LeaderboardType::Xp.to_param(), "xp");
     /// assert_eq!(LeaderboardType::Ar.to_param(), "ar");

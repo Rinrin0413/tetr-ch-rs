@@ -15,7 +15,7 @@ impl NewsStream {
     /// # Examples
     ///
     /// ```ignore
-    /// # use tetr_ch::client::stream::NewsStream;
+    /// # use tetr_ch::client::param::news_stream::NewsStream;
     /// let global = NewsStream::Global;
     /// let user = NewsStream::User("621db46d1d638ea850be2aa0".to_string());
     /// assert_eq!(global.to_param(), "global");

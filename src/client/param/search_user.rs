@@ -14,7 +14,7 @@ impl SocialConnection {
     /// # Examples
     ///
     /// ```ignore
-    /// # use tetr_ch::client::search_user::SocialConnection;
+    /// # use tetr_ch::client::param::search_user::SocialConnection;
     /// let connection = SocialConnection::Discord("724976600873041940".to_string());
     /// assert_eq!(connection.to_param(), "discord:724976600873041940");
     /// ```
