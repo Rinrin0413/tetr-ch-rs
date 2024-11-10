@@ -1,5 +1,6 @@
 //! Easy-to-use models of the various objects returned by the API.
 
+pub mod achievement;
 pub mod achievement_info;
 pub mod cache;
 pub mod labs;

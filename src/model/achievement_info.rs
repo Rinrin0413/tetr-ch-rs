@@ -1,8 +1,6 @@
 //! The Achievement Info models.
 
-use crate::model::{
-    cache::CacheData, role::Role, summary::achievements::Achievement, user::UserId,
-};
+use crate::model::{achievement::Achievement, cache::CacheData, role::Role, user::UserId};
 use serde::Deserialize;
 
 /// The response for the Achievement Info data.
