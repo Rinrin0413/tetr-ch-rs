@@ -3,7 +3,6 @@
 pub mod achievement_info;
 pub mod cache;
 pub mod labs;
-pub mod latest_news;
 pub mod leaderboard;
 pub mod league_rank;
 pub mod news;
