@@ -3,7 +3,7 @@
 use crate::{
     model::{
         cache::CacheData,
-        league::Rank,
+        league_rank::Rank,
         user::{AchievementRatingCounts, Role, UserId},
     },
     util::{max_f64, to_unix_ts},

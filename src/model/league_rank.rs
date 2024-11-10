@@ -1,139 +1,9 @@
-//! TETRA LEAGUE related objects.
+//! Ranks in TETRA LEAGUE.
 
 use serde::Deserialize;
 use std::fmt::{self, Display, Formatter};
 
-/// The user's TETRA LEAGUE data.
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct LeagueData {
-    /// The amount of TETRA LEAGUE games played by this user.
-    #[serde(rename = "gamesplayed")]
-    pub play_count: u32,
-    /// The amount of TETRA LEAGUE games won by this user.
-    #[serde(rename = "gameswon")]
-    pub win_count: u32,
-    /// This user's TR (Tetra Rating), or -1 if less than 10 games were played.
-    pub rating: f64,
-    /// This user's letter rank. Z is unranked.
-    pub rank: Rank,
-    /// This user's highest achieved rank this season.
-    #[serde(rename = "bestrank")]
-    pub best_rank: Option<Rank>,
-    /// This user's position in global leaderboards, or -1 if not applicable.
-    pub standing: i32,
-    /// This user's position in local leaderboards, or -1 if not applicable.
-    pub standing_local: i32,
-    /// The next rank this user can achieve,
-    /// if they win more games, or `None` if unranked (or the best rank).
-    pub next_rank: Option<Rank>,
-    /// The previous rank this user can achieve,
-    /// if they lose more games, or `None` if unranked (or the worst rank).
-    pub prev_rank: Option<Rank>,
-    /// The position of the best player in the user's current rank, surpass them to go up a rank.
-    /// -1 if unranked (or the best rank).
-    pub next_at: i32,
-    /// The position of the worst player in the user's current rank, dip below them to go down a rank.
-    /// -1 if unranked (or the worst rank).
-    pub prev_at: i32,
-    /// This user's percentile position (0 is best, 1 is worst).
-    pub percentile: f64,
-    /// This user's percentile rank, or Z if not applicable.
-    pub percentile_rank: Rank,
-    /// This user's Glicko-2 rating.
-    pub glicko: Option<f64>,
-    /// This user's Glicko-2 Rating Deviation.
-    /// If over 100, this user is unranked.
-    pub rd: Option<f64>,
-    /// This user's average APM (attack per minute) over the last 10 games.
-    pub apm: Option<f64>,
-    /// This user's average PPS (pieces per second) over the last 10 games.
-    pub pps: Option<f64>,
-    /// This user's average VS (versus score) over the last 10 games.
-    pub vs: Option<f64>,
-    /// Whether this user's RD is rising (has not played in the last week).
-    #[serde(rename = "decaying")]
-    pub is_decaying: bool,
-}
-
-impl LeagueData {
-    /// Returns an icon URL of the user's rank.
-    /// If the user is unranked, returns ?-rank(z) icon URL.
-    /// If the user has no rank, returns `None`.
-    pub fn rank_icon_url(&self) -> Option<String> {
-        if 10 <= self.play_count {
-            Some(self.rank.icon_url())
-        } else {
-            None
-        }
-    }
-
-    /// Returns a rank color. (Hex color codes)
-    /// If the user has no rank, returns `None`.
-    pub fn rank_color(&self) -> Option<u32> {
-        if 10 <= self.play_count {
-            Some(self.rank.color())
-        } else {
-            None
-        }
-    }
-
-    /// Returns an icon URL of the user's percentile rank.
-    /// If not applicable, returns `None`.
-    pub fn percentile_rank_icon_url(&self) -> Option<String> {
-        let pr = &self.percentile_rank;
-        if !pr.is_unranked() {
-            Some(pr.icon_url())
-        } else {
-            None
-        }
-    }
-
-    /// Returns a percentile rank color. (Hex color codes)
-    /// If not applicable, returns `None`.
-    pub fn percentile_rank_color(&self) -> Option<u32> {
-        let pr = &self.percentile_rank;
-        if !pr.is_unranked() {
-            Some(pr.color())
-        } else {
-            None
-        }
-    }
-
-    /// Returns an icon URL of the user's highest achieved rank.
-    /// If the user has no highest achieved rank, returns `None`.
-    pub fn best_rank_icon_url(&self) -> Option<String> {
-        self.best_rank.as_ref().map(|br| br.icon_url())
-    }
-
-    /// Returns a highest achieved rank color. (Hex color codes)
-    /// If the user has no highest achieved rank, returns `None`.
-    pub fn best_rank_color(&self) -> Option<u32> {
-        self.best_rank.as_ref().map(|br| br.color())
-    }
-
-    /// Returns the user's progress percentage in the rank.
-    /// Returns `None` if there is no user's position in global leaderboards.
-    pub fn rank_progress(&self) -> Option<f64> {
-        let current_standing = self.standing as f64;
-        let prev_at = self.prev_at as f64;
-        let next_at = self.next_at as f64;
-
-        if prev_at < 0. || next_at < 0. {
-            return None;
-        }
-
-        Some((current_standing - prev_at) / (next_at - prev_at) * 100.)
-    }
-}
-
-impl AsRef<LeagueData> for LeagueData {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-/// The TETRA LEAGUE rank.
+/// A rank in TETRA LEAGUE.
 #[derive(Clone, Debug, Deserialize)]
 pub enum Rank {
     /// The D rank.
@@ -201,7 +71,7 @@ impl Rank {
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::league::Rank;
+    /// # use tetr_ch::model::league_rank::Rank;
     /// assert_eq!(Rank::D.as_str(), "D");
     /// assert_eq!(Rank::DPlus.as_str(), "D+");
     /// assert_eq!(Rank::CMinus.as_str(), "C-");
@@ -246,12 +116,12 @@ impl Rank {
         }
     }
 
-    /// Whether the rank is unranked(Z).
+    /// Whether the rank is unranked (Z rank).
     ///
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::league::Rank;
+    /// # use tetr_ch::model::league_rank::Rank;
     /// assert!(!Rank::D.is_unranked());
     /// assert!(!Rank::A.is_unranked());
     /// assert!(!Rank::X.is_unranked());
@@ -266,7 +136,7 @@ impl Rank {
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::league::Rank;
+    /// # use tetr_ch::model::league_rank::Rank;
     /// assert_eq!(Rank::D.icon_url(), "https://tetr.io/res/league-ranks/d.png");
     /// assert_eq!(Rank::DPlus.icon_url(), "https://tetr.io/res/league-ranks/d+.png");
     /// assert_eq!(Rank::CMinus.icon_url(), "https://tetr.io/res/league-ranks/c-.png");
@@ -291,12 +161,12 @@ impl Rank {
         format!("https://tetr.io/res/league-ranks/{}.png", self)
     }
 
-    /// Returns the rank color. (Hex color codes)
+    /// Returns the rank color (hex color code).
     ///
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::league::Rank;
+    /// # use tetr_ch::model::league_rank::Rank;
     /// assert_eq!(Rank::D.color(), 0x907591);
     /// assert_eq!(Rank::DPlus.color(), 0x8e6091);
     /// assert_eq!(Rank::CMinus.color(), 0x79558c);
@@ -459,84 +329,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn get_rank_icon_url_from_league_data() {
-        let league_data_ranked = LeagueData {
-            rank: Rank::D,
-            play_count: 10,
-            ..default_league_data()
-        };
-        let league_data_unranked = LeagueData {
-            play_count: 9,
-            ..default_league_data()
-        };
-        assert_eq!(
-            league_data_ranked.rank_icon_url(),
-            Some("https://tetr.io/res/league-ranks/d.png".to_string())
-        );
-        assert_eq!(league_data_unranked.rank_icon_url(), None);
-    }
-
-    #[test]
-    fn get_rank_color_from_league_data() {
-        let league_data = LeagueData {
-            rank: Rank::A,
-            play_count: 10,
-            ..default_league_data()
-        };
-        assert_eq!(league_data.rank_color(), Some(0x46ad51));
-    }
-
-    #[test]
-    fn get_percentile_rank_icon_url_from_league_data() {
-        let league_data_ranked = LeagueData {
-            percentile_rank: Rank::X,
-            ..default_league_data()
-        };
-        let league_data_unranked = LeagueData {
-            percentile_rank: Rank::Z,
-            ..default_league_data()
-        };
-        assert_eq!(
-            league_data_ranked.percentile_rank_icon_url(),
-            Some("https://tetr.io/res/league-ranks/x.png".to_string())
-        );
-        assert_eq!(league_data_unranked.percentile_rank_icon_url(), None);
-    }
-
-    #[test]
-    fn get_percentile_rank_color_from_league_data() {
-        let league_data = LeagueData {
-            percentile_rank: Rank::DPlus,
-            ..default_league_data()
-        };
-        assert_eq!(league_data.percentile_rank_color(), Option::Some(0x8e6091));
-    }
-
-    #[test]
-    fn get_rank_progress() {
-        let league_data_unranked = LeagueData {
-            prev_at: -1,
-            next_at: -1,
-            ..default_league_data()
-        };
-        let league_data_ranked = LeagueData {
-            standing: 600,
-            prev_at: 2000,
-            next_at: 400,
-            ..default_league_data()
-        };
-        assert_eq!(league_data_unranked.rank_progress(), None);
-        assert_eq!(league_data_ranked.rank_progress(), Some(87.5));
-    }
-
-    #[test]
-    fn league_data_as_ref() {
-        let league_data = default_league_data();
-        let _a = league_data.as_ref();
-        let _b = league_data;
-    }
-
-    #[test]
     fn ranks_as_str() {
         let rank_d = Rank::D;
         let rank_d_plus = Rank::DPlus;
@@ -642,29 +434,5 @@ mod tests {
         let rank = Rank::C;
         let _a = rank.as_ref();
         let _b = rank;
-    }
-
-    fn default_league_data() -> LeagueData {
-        LeagueData {
-            play_count: 0,
-            win_count: 0,
-            rating: 0.,
-            rank: Rank::Z,
-            best_rank: None,
-            standing: 0,
-            standing_local: 0,
-            next_rank: Some(Rank::Z),
-            prev_rank: Some(Rank::Z),
-            next_at: 0,
-            prev_at: 0,
-            percentile: 0.,
-            percentile_rank: Rank::Z,
-            glicko: Some(0.),
-            rd: Some(0.),
-            apm: Some(0.),
-            pps: Some(0.),
-            vs: Some(0.),
-            is_decaying: false,
-        }
     }
 }

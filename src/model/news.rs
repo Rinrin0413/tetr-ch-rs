@@ -1,6 +1,6 @@
 //! The All Latest News models.
 
-use crate::model::{cache::CacheData, league::Rank};
+use crate::model::{cache::CacheData, league_rank::Rank};
 use serde::Deserialize;
 
 /// The response for the All Latest News data.
