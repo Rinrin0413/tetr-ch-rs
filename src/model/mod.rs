@@ -6,7 +6,6 @@ pub mod labs;
 pub mod latest_news;
 pub mod leaderboard;
 pub mod league;
-pub mod league_leaderboard;
 pub mod news;
 pub mod record;
 pub mod records_leaderboard;
