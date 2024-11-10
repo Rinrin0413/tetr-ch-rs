@@ -25,7 +25,7 @@ use crate::{
             zenith::{ZenithExResponse, ZenithResponse},
             AllSummariesResponse,
         },
-        user::{UserRecordsOldResponse, UserResponse},
+        user::UserResponse,
         user_records::UserRecordsResponse,
         xp_leaderboard::{self, XPLeaderboardResponse},
     },
@@ -167,38 +167,6 @@ impl Client {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
         let url = format!("{}general/activity", API_URL);
-        let res = self.client.get(url).send().await;
-        response(res).await
-    }
-
-    /// Returns the user records model.
-    ///
-    /// # Examples
-    ///
-    /// Getting the records object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::Client;
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    /// // Get the user records.
-    /// let user = client.get_user_records("621db46d1d638ea850be2aa0").await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user_records_old(self, user: &str) -> RspErr<UserRecordsOldResponse> {
-        let url = format!("{}users/{}/records", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
