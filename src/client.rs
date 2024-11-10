@@ -1,7 +1,7 @@
 //! Client for API requests.
 
 use self::{
-    param::{news_stream::NewsStream, search_user::SocialConnection},
+    param::{news_stream::NewsStream, search_user::SocialConnection, user_leaderboard::{self, LeaderboardType}},
     response::response,
 };
 use crate::{
@@ -466,14 +466,14 @@ impl Client {
     /// ```no_run
     /// use tetr_ch::client::{
     ///     Client,
-    ///     leaderboard::{LeaderboardType, LeaderboardSearchCriteria}
+    ///     param::user_leaderboard::{self, LeaderboardType}
     /// };
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
     ///
-    /// let criteria = LeaderboardSearchCriteria::new()
+    /// let criteria = user_leaderboard::SearchCriteria::new()
     ///     // Upper bound is `[15200, 0, 0]`
     ///     .after([15200.,0.,0.])
     ///     // Three entries
@@ -500,8 +500,8 @@ impl Client {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_leaderboard(
         self,
-        leaderboard: leaderboard::LeaderboardType,
-        search_criteria: Option<leaderboard::LeaderboardSearchCriteria>,
+        leaderboard: LeaderboardType,
+        search_criteria: Option<user_leaderboard::SearchCriteria>,
     ) -> RspErr<LeaderboardResponse> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
@@ -531,14 +531,14 @@ impl Client {
     /// ```no_run
     /// use tetr_ch::client::{
     ///     Client,
-    ///     leaderboard::LeaderboardSearchCriteria
+    ///     param::user_leaderboard::{self, LeaderboardType}
     /// };
     /// # use std::io;
     ///
     /// # async fn run() -> io::Result<()> {
     /// let client = Client::new();
     ///
-    /// let criteria = LeaderboardSearchCriteria::new()
+    /// let criteria = user_leaderboard::SearchCriteria::new()
     ///     // Upper bound is `[15200, 0, 0]`
     ///     .after([15200.,0.,0.])
     ///     // Three entries
@@ -566,7 +566,7 @@ impl Client {
     pub async fn get_historical_league_leaderboard(
         self,
         season: &str,
-        search_criteria: Option<leaderboard::LeaderboardSearchCriteria>,
+        search_criteria: Option<user_leaderboard::SearchCriteria>,
     ) -> RspErr<HistoricalLeaderboardResponse> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
@@ -582,7 +582,7 @@ impl Client {
         let url = format!(
             "{}users/history/{}/{}",
             API_URL,
-            leaderboard::LeaderboardType::League.to_param(),
+            LeaderboardType::League.to_param(),
             season
         );
         let res = self.client.get(url).query(&query_params).send().await;
@@ -1117,319 +1117,6 @@ impl Client {
 pub mod param;
 mod response;
 
-pub mod leaderboard {
-    //! Features for leaderboards.
-
-    /// The leaderboard type.
-    pub enum LeaderboardType {
-        /// The TETRA LEAGUE leaderboard.
-        League,
-        /// The XP leaderboard.
-        Xp,
-        /// The Achievement Rating leaderboard.
-        Ar,
-    }
-
-    impl LeaderboardType {
-        /// Converts into a parameter.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::leaderboard::LeaderboardType;
-        /// assert_eq!(LeaderboardType::League.to_param(), "league");
-        /// assert_eq!(LeaderboardType::Xp.to_param(), "xp");
-        /// assert_eq!(LeaderboardType::Ar.to_param(), "ar");
-        /// ```
-        pub(crate) fn to_param(&self) -> String {
-            match self {
-                LeaderboardType::League => "league".to_string(),
-                LeaderboardType::Xp => "xp".to_string(),
-                LeaderboardType::Ar => "ar".to_string(),
-            }
-        }
-    }
-
-    /// The search criteria for the leaderboard.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-    ///
-    /// // Default search criteria.
-    /// let c1 = LeaderboardSearchCriteria::new();
-    ///
-    /// // Upper bound is `[15200, 0, 0]`, three entries, filter by Japan.
-    /// let c2 = LeaderboardSearchCriteria::new()
-    ///     .after([15200., 0., 0.])
-    ///     .limit(3)
-    ///     .country("jp");
-    ///
-    /// // Lower bound is `[15200, 0, 0]`.
-    /// // Also the search order is reversed.
-    /// let c3 = LeaderboardSearchCriteria::new()
-    ///     .before([15200., 0., 0.]);
-    ///
-    /// // You can initialize the search criteria to default as follows:
-    /// let mut c4 = LeaderboardSearchCriteria::new().country("us");
-    /// c4.init();
-    /// ```
-    #[derive(Clone, Debug, Default)]
-    pub struct LeaderboardSearchCriteria {
-        /// The bound to paginate.
-        pub bound: Option<Bound>,
-        /// The amount of entries to return,
-        /// between 1 and 100. 25 by default.
-        pub limit: Option<u8>,
-        /// The ISO 3166-1 country code to filter to.
-        /// Leave unset to not filter by country.
-        pub country: Option<String>,
-    }
-
-    impl LeaderboardSearchCriteria {
-        /// Creates a new [`LeaderboardSearchCriteria`].
-        /// The values are set to default.
-        ///
-        /// # Examples
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let criteria = LeaderboardSearchCriteria::new();
-        /// ```
-        pub fn new() -> Self {
-            Self::default()
-        }
-
-        /// Initializes the search criteria.
-        ///
-        /// # Examples
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let mut criteria = LeaderboardSearchCriteria::new().country("us");
-        /// criteria.init();
-        /// ```
-        pub fn init(self) -> Self {
-            Self::default()
-        }
-
-        /// Sets the upper bound.
-        ///
-        /// # Arguments
-        ///
-        /// - `bound`: The upper bound to paginate downwards:
-        /// take the lowest seen prisecter and pass that back through this field to continue scrolling.
-        ///
-        /// A **prisecter** is consisting of three floats.
-        /// The `prisecter` field in a response data allows you to continue paginating.
-        ///
-        /// # Examples
-        ///
-        /// Sets the upper bound to `[10000.0, 0.0, 0.0]`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let mut criteria = LeaderboardSearchCriteria::new();
-        /// criteria.after([10000.0, 0.0, 0.0]);
-        /// ```
-        pub fn after(self, bound: [f64; 3]) -> Self {
-            Self {
-                bound: Some(Bound::After(bound)),
-                ..self
-            }
-        }
-
-        /// Sets the lower bound.
-        ///
-        /// # Arguments
-        ///
-        /// - `bound`: The lower bound to paginate upwards:
-        /// take the highest seen prisecter and pass that back through this field to continue scrolling.
-        /// If use this, the search order is reversed
-        /// (returning the lowest items that match the query)
-        ///
-        /// A **prisecter** is consisting of three floats.
-        /// The `prisecter` field in a response data allows you to continue paginating.
-        ///
-        /// # Examples
-        ///
-        /// Sets the lower bound to `[10000.0, 0.0, 0.0]`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let mut criteria = LeaderboardSearchCriteria::new();
-        /// criteria.before([10000.0, 0.0, 0.0]);
-        /// ```
-        pub fn before(self, bound: [f64; 3]) -> Self {
-            Self {
-                bound: Some(Bound::Before(bound)),
-                ..self
-            }
-        }
-
-        /// Limits the amount of entries to return.
-        ///
-        /// # Arguments
-        ///
-        /// - `limit`: The amount of entries to return.
-        /// Between 1 and 100. 25 by default.
-        ///
-        /// # Examples
-        ///
-        /// Limits the amount of entries to return to `10`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let mut criteria = LeaderboardSearchCriteria::new();
-        /// criteria.limit(10);
-        /// ```
-        ///
-        /// # Panics
-        ///
-        /// Panics if the argument `limit` is not between `1` and `100`.
-        ///
-        /// ```should_panic
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let mut criteria = LeaderboardSearchCriteria::new();
-        /// criteria.limit(0);
-        /// ```
-        ///
-        /// ```should_panic
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let mut criteria = LeaderboardSearchCriteria::new();
-        /// criteria.limit(101);
-        /// ```
-        pub fn limit(self, limit: u8) -> Self {
-            if (1..=100).contains(&limit) {
-                Self {
-                    limit: Some(limit),
-                    ..self
-                }
-            } else {
-                panic!(
-                    "The argument `limit` must be between 1 and 100.\n\
-                    Received: {}",
-                    limit
-                );
-            }
-        }
-
-        /// Sets the ISO 3166-1 country code to filter to.
-        ///
-        /// # Arguments
-        ///
-        /// - `country`: The ISO 3166-1 country code to filter to.
-        ///
-        /// # Examples
-        ///
-        /// Sets the country code to `jp`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let mut criteria = LeaderboardSearchCriteria::new();
-        /// criteria.country("jp");
-        /// ```
-        pub fn country(self, country: &str) -> Self {
-            Self {
-                country: Some(country.to_owned().to_uppercase()),
-                ..self
-            }
-        }
-
-        /// Whether the search criteria `limit` is out of bounds.
-        ///
-        /// # Examples
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let invalid_criteria = LeaderboardSearchCriteria {
-        ///     limit: Some(0),
-        ///     ..LeaderboardSearchCriteria::new()
-        /// };
-        /// assert!(invalid_criteria.is_invalid_limit_range());
-        /// ```
-        ///
-        /// ```
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let invalid_criteria = LeaderboardSearchCriteria {
-        ///     limit: Some(101),
-        ///     ..LeaderboardSearchCriteria::new()
-        /// };
-        /// assert!(invalid_criteria.is_invalid_limit_range());
-        /// ```
-        pub fn is_invalid_limit_range(&self) -> bool {
-            if let Some(l) = self.limit {
-                !(1..=100).contains(&l)
-            } else {
-                false
-            }
-        }
-
-        /// Builds the search criteria to `Vec<(String, String)>`.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::leaderboard::LeaderboardSearchCriteria;
-        /// let criteria = LeaderboardSearchCriteria::new();
-        /// let query_params = criteria.build();
-        /// ```
-        pub(crate) fn build(self) -> Vec<(String, String)> {
-            let mut result = Vec::new();
-            if let Some(b) = self.bound {
-                result.push(b.to_query_param());
-            }
-            if let Some(l) = self.limit {
-                result.push(("limit".to_string(), l.to_string()));
-            }
-            if let Some(c) = self.country {
-                result.push(("country".to_string(), c));
-            }
-            result
-        }
-    }
-
-    /// The bound to paginate.
-    #[derive(Clone, Debug)]
-    pub enum Bound {
-        /// The upper bound.
-        /// Use this to paginate downwards:
-        /// take the lowest seen prisecter and pass that back through this field to continue scrolling.
-        ///
-        /// A **prisecter** is consisting of three floats.
-        /// The `prisecter` field in a response data allows you to continue paginating.
-        After([f64; 3]),
-        /// The lower bound.
-        /// Use this to paginate upwards:
-        /// take the highest seen prisecter and pass that back through this field to continue scrolling.
-        /// If set, the search order is reversed
-        /// (returning the lowest items that match the query)
-        ///
-        /// A **prisecter** is consisting of three floats.
-        /// The `prisecter` field in a response data allows you to continue paginating.
-        Before([f64; 3]),
-    }
-
-    impl Bound {
-        /// Converts into a query parameter.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::leaderboard::Bound;
-        /// let bound = Bound::After([12345.678, 0.0, 0.0]);
-        /// assert_eq!(bound.to_query_param(), ("after".to_string(), "12345.678:0:0".to_string()));
-        /// ```
-        pub(crate) fn to_query_param(&self) -> (String, String) {
-            match self {
-                Bound::After(b) => ("after".to_string(), format!("{}:{}:{}", b[0], b[1], b[2])),
-                Bound::Before(b) => ("before".to_string(), format!("{}:{}:{}", b[0], b[1], b[2])),
-            }
-        }
-    }
-}
-
 pub mod user_record {
     //! Features for user records.
 
@@ -1538,7 +1225,7 @@ pub mod user_record {
     #[derive(Clone, Debug, Default)]
     pub struct RecordSearchCriteria {
         /// The bound to paginate.
-        pub bound: Option<super::leaderboard::Bound>,
+        pub bound: Option<super::param::user_leaderboard::Bound>,
         /// The amount of entries to return,
         /// between 1 and 100. 25 by default.
         pub limit: Option<u8>,
@@ -1592,7 +1279,7 @@ pub mod user_record {
         /// ```
         pub fn after(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::leaderboard::Bound::After(bound)),
+                bound: Some(super::param::user_leaderboard::Bound::After(bound)),
                 ..self
             }
         }
@@ -1620,7 +1307,7 @@ pub mod user_record {
         /// ```
         pub fn before(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::leaderboard::Bound::Before(bound)),
+                bound: Some(super::param::user_leaderboard::Bound::Before(bound)),
                 ..self
             }
         }
@@ -1816,7 +1503,7 @@ pub mod records_leaderboard {
     #[derive(Clone, Debug, Default)]
     pub struct RecordsLeaderboardSearchCriteria {
         /// The bound to paginate.
-        pub bound: Option<super::leaderboard::Bound>,
+        pub bound: Option<super::param::user_leaderboard::Bound>,
         /// The amount of entries to return,
         /// between 1 and 100. 25 by default.
         pub limit: Option<u8>,
@@ -1870,7 +1557,7 @@ pub mod records_leaderboard {
         /// ```
         pub fn after(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::leaderboard::Bound::After(bound)),
+                bound: Some(super::param::user_leaderboard::Bound::After(bound)),
                 ..self
             }
         }
@@ -1898,7 +1585,7 @@ pub mod records_leaderboard {
         /// ```
         pub fn before(self, bound: [f64; 3]) -> Self {
             Self {
-                bound: Some(super::leaderboard::Bound::Before(bound)),
+                bound: Some(super::param::user_leaderboard::Bound::Before(bound)),
                 ..self
             }
         }

@@ -2,3 +2,4 @@
 
 pub mod news_stream;
 pub mod search_user;
+pub mod user_leaderboard;
