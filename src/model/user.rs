@@ -1,7 +1,7 @@
 //! The User Info models.
 
 use crate::{
-    client::{error::ResponseError, Client},
+    client::{error::RspErr, Client},
     model::cache::CacheData,
     util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
 };
@@ -789,8 +789,6 @@ impl AsRef<AchievementRatingCounts> for AchievementRatingCounts {
 /// The user's internal ID.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
 pub struct UserId(pub String);
-
-type RspErr<T> = Result<T, ResponseError>;
 
 impl UserId {
     /// Returns the user's internal ID.

@@ -1,4 +1,4 @@
-use super::error::{ResponseError, Status};
+use super::error::{ResponseError, RspErr, Status};
 use http::StatusCode;
 use reqwest::{Error, Response};
 use serde::Deserialize;
@@ -11,7 +11,7 @@ use serde::Deserialize;
 /// let res = self.client.get(url).send().await;
 /// response(res).await
 /// ```
-pub(super) async fn response<T>(response: Result<Response, Error>) -> Result<T, ResponseError>
+pub(super) async fn response<T>(response: Result<Response, Error>) -> RspErr<T>
 where
     for<'de> T: Deserialize<'de>,
 {

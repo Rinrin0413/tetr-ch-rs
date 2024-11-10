@@ -49,6 +49,8 @@ pub enum Status {
     Invalid(InvalidStatusCode),
 }
 
+pub(crate) type RspErr<T> = Result<T, ResponseError>;
+
 #[cfg(test)]
 mod tests {
     use super::*;

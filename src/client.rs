@@ -1,7 +1,7 @@
 //! Client for API requests.
 
 use self::{
-    error::ResponseError,
+    error::RspErr,
     param::{
         news_stream::NewsStream,
         record::{self, Gamemode},
@@ -63,8 +63,6 @@ const API_URL: &str = "https://ch.tetr.io/api/";
 pub struct Client {
     client: reqwest::Client,
 }
-
-type RspErr<T> = Result<T, ResponseError>;
 
 impl Client {
     /// Create a new [`Client`].
