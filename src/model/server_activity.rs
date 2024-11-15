@@ -49,7 +49,11 @@ impl ServerActivity {
     /// If several points are equally maximum, the first one is returned.
     /// If the activity is empty, `None` is returned.
     pub fn peak_index(&self) -> Option<usize> {
-        self.activity.iter().enumerate().max_by_key(|(_, &v)| v).map(|(i, _)| i)
+        self.activity
+            .iter()
+            .enumerate()
+            .max_by_key(|(_, &v)| v)
+            .map(|(i, _)| i)
     }
 
     /// Get the trough point of the activity.
@@ -64,7 +68,11 @@ impl ServerActivity {
     /// If several points are equally minimum, the first one is returned.
     /// If the activity is empty, `None` is returned.
     pub fn trough_index(&self) -> Option<usize> {
-        self.activity.iter().enumerate().min_by_key(|(_, &v)| v).map(|(i, _)| i)
+        self.activity
+            .iter()
+            .enumerate()
+            .min_by_key(|(_, &v)| v)
+            .map(|(i, _)| i)
     }
 
     /// Get the average of the activity.

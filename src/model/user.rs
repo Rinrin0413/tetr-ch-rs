@@ -253,7 +253,7 @@ pub struct Badge {
     /// The badge's label, shown when hovered.
     pub label: String,
     /// Extra flavor text for the badge, shown when hovered.
-    pub desc: Option<String>,  // EXCEPTION
+    pub desc: Option<String>, // EXCEPTION
     /// The badge's timestamp, if shown.
     ///
     /// Why it uses `deserialize_with` attribute?
@@ -432,10 +432,7 @@ pub struct UserId(pub String);
 
 impl UserId {
     /// Returns the user's internal ID.
-    #[deprecated(
-        since = "0.6.0",
-        note = "please use the `.to_string()` method instead"
-    )]
+    #[deprecated(since = "0.6.0", note = "please use the `.to_string()` method instead")]
     pub fn id(&self) -> &str {
         &self.0
     }
