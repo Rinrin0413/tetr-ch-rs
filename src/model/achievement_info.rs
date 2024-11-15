@@ -1,6 +1,6 @@
 //! The Achievement Info models.
 
-use crate::model::{achievement::Achievement, cache::CacheData, role::Role, user::UserId};
+use crate::{client::error::RspErr, model::{achievement::Achievement, cache::CacheData, role::Role, user::{UserId, UserResponse}}};
 use serde::Deserialize;
 
 /// The response for the Achievement Info data.
@@ -84,6 +84,81 @@ pub struct User {
     pub is_supporter: bool,
     /// The user's country, if public.
     pub country: Option<String>,
+}
+
+impl User {
+    /// Gets the user's data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        self.id.get_user().await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+
+    /// Whether the user is a normal user.
+    pub fn is_normal_user(&self) -> bool {
+        self.role.is_normal_user()
+    }
+
+    /// Whether the user is an anonymous.
+    pub fn is_anon(&self) -> bool {
+        self.role.is_anon()
+    }
+
+    /// Whether the user is a bot.
+    pub fn is_bot(&self) -> bool {
+        self.role.is_bot()
+    }
+
+    /// Whether the user is a SYSOP.
+    pub fn is_sysop(&self) -> bool {
+        self.role.is_sysop()
+    }
+
+    /// Whether the user is an administrator.
+    pub fn is_admin(&self) -> bool {
+        self.role.is_admin()
+    }
+
+    /// Whether the user is a moderator.
+    pub fn is_mod(&self) -> bool {
+        self.role.is_mod()
+    }
+
+    /// Whether the user is a community moderator.
+    pub fn is_halfmod(&self) -> bool {
+        self.role.is_halfmod()
+    }
+
+    /// Whether the user is banned.
+    pub fn is_banned(&self) -> bool {
+        self.role.is_banned()
+    }
+
+    /// Whether the user is hidden.
+    pub fn is_hidden(&self) -> bool {
+        self.role.is_hidden()
+    }
+
+    /// Returns the national flag URL of the user's country.
+    ///
+    /// If the user's country is not public, `None` is returned.
+    pub fn national_flag_url(&self) -> Option<String> {
+        self.country
+            .as_ref()
+            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
+    }
 }
 
 impl AsRef<User> for User {
