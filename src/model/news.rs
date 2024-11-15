@@ -1,6 +1,9 @@
-//! The All Latest News models.
+//! The Latest News models.
 
-use crate::model::{cache::CacheData, league_rank::Rank};
+use crate::{
+    client::{error::RspErr, Client},
+    model::{cache::CacheData, league_rank::Rank, user::{UserId, UserResponse}}, util::to_unix_ts
+};
 use serde::Deserialize;
 
 /// The response for the All Latest News data.
@@ -46,7 +49,7 @@ impl AsRef<NewsItems> for NewsItems {
 pub struct News {
     /// The item's internal ID.
     #[serde(rename = "_id")]
-    pub id: String,
+    pub id: UserId,
     /// The item's stream.
     pub stream: String,
     /// The item's type.
@@ -56,6 +59,27 @@ pub struct News {
     /// The item's creation date.
     #[serde(rename = "ts")]
     pub created_at: String,
+}
+
+impl News {
+    /// Gets the user's data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        self.id.get_user().await
+    }
+
+    /// Returns an UNIX timestamp when the news item was created.
+    pub fn created_at(&self) -> i64 {
+        to_unix_ts(&self.created_at)
+    }
 }
 
 impl AsRef<News> for News {
@@ -92,6 +116,43 @@ pub enum NewsData {
     Unknown(serde_json::Value),
 }
 
+impl NewsData {
+    /// Whether the news data is a leaderboard news.
+    pub fn is_leaderboard_news(&self) -> bool {
+        matches!(self, Self::LeaderboardNews(_))
+    }
+
+    /// Whether the news data is a personal best news.
+    pub fn is_personal_best_news(&self) -> bool {
+        matches!(self, Self::PersonalBestNews(_))
+    }
+
+    /// Whether the news data is a badge news.
+    pub fn is_badge_news(&self) -> bool {
+        matches!(self, Self::BadgeNews(_))
+    }
+
+    /// Whether the news data is a rank up news.
+    pub fn is_rank_up_news(&self) -> bool {
+        matches!(self, Self::RankUpNews(_))
+    }
+
+    /// Whether the news data is a supporter news.
+    pub fn is_supporter_news(&self) -> bool {
+        matches!(self, Self::SupporterNews(_))
+    }
+
+    /// Whether the news data is a supporter gift news.
+    pub fn is_supporter_gift_news(&self) -> bool {
+        matches!(self, Self::SupporterGiftNews(_))
+    }
+
+    /// Whether the news data is an unknown news type.
+    pub fn is_unknown(&self) -> bool {
+        matches!(self, Self::Unknown(_))
+    }
+}
+
 impl AsRef<NewsData> for NewsData {
     fn as_ref(&self) -> &Self {
         self
@@ -115,6 +176,32 @@ pub struct LeaderboardNews {
     pub replay_id: String,
 }
 
+impl LeaderboardNews {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        Client::new().get_user(&self.username).await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+
+    /// Returns the replay URL.
+    pub fn replay_url(&self) -> String {
+        format!("https://tetr.io/#R:{}", self.replay_id)
+    }
+}
+
 impl AsRef<LeaderboardNews> for LeaderboardNews {
     fn as_ref(&self) -> &Self {
         self
@@ -136,6 +223,32 @@ pub struct PersonalBestNews {
     pub replay_id: String,
 }
 
+impl PersonalBestNews {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        Client::new().get_user(&self.username).await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+
+    /// Returns the replay URL.
+    pub fn replay_url(&self) -> String {
+        format!("https://tetr.io/#R:{}", self.replay_id)
+    }
+}
+
 impl AsRef<PersonalBestNews> for PersonalBestNews {
     fn as_ref(&self) -> &Self {
         self
@@ -155,6 +268,32 @@ pub struct BadgeNews {
     pub label: String,
 }
 
+impl BadgeNews {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        Client::new().get_user(&self.username).await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+
+    /// Returns the badge icon URL.
+    pub fn badge_icon_url(&self) -> String {
+        format!("https://tetr.io/res/badges/{}.png", self.r#type)
+    }
+}
+
 impl AsRef<BadgeNews> for BadgeNews {
     fn as_ref(&self) -> &Self {
         self
@@ -171,6 +310,27 @@ pub struct RankUpNews {
     pub rank: Rank,
 }
 
+impl RankUpNews {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        Client::new().get_user(&self.username).await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+}
+
 impl AsRef<RankUpNews> for RankUpNews {
     fn as_ref(&self) -> &Self {
         self
@@ -185,6 +345,27 @@ pub struct SupporterNews {
     pub username: String,
 }
 
+impl SupporterNews {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        Client::new().get_user(&self.username).await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+}
+
 impl AsRef<SupporterNews> for SupporterNews {
     fn as_ref(&self) -> &Self {
         self
@@ -197,6 +378,27 @@ impl AsRef<SupporterNews> for SupporterNews {
 pub struct SupporterGiftNews {
     /// The username of the recipient.
     pub username: String,
+}
+
+impl SupporterGiftNews {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        Client::new().get_user(&self.username).await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
 }
 
 /// The response for the Latest News data.
