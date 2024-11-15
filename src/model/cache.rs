@@ -1,4 +1,4 @@
-//! The cache-related data.
+//! The cache-related models.
 
 use serde::Deserialize;
 

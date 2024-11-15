@@ -1,8 +1,11 @@
 //! The Record Data models.
 
 use crate::{
-    client::param::pagination::Prisecter,
-    model::{league_rank::Rank, user::UserId},
+    client::{error::RspErr, param::pagination::Prisecter},
+    model::{
+        league_rank::Rank,
+        user::{UserId, UserResponse},
+    },
     util::to_unix_ts,
 };
 use serde::Deserialize;
@@ -68,12 +71,12 @@ pub struct Record {
 }
 
 impl Record {
-    /// Returns the URL to the replay.
+    /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
         format!("https://tetr.io/#R:{}", self.replay_id)
     }
 
-    /// Returns a UNIX timestamp when this record was submitted.
+    /// Returns a UNIX timestamp when the record was submitted.
     pub fn submitted_at(&self) -> i64 {
         to_unix_ts(&self.submitted_at)
     }
@@ -102,6 +105,75 @@ pub struct User {
     /// Whether the user is supporting TETR.IO.
     #[serde(rename = "supporter")]
     pub is_supporter: bool,
+}
+
+impl User {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        self.id.get_user().await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+
+    /// Returns the user's avatar URL.
+    ///
+    /// If the user does not have an avatar, the anonymous's avatar URL is returned.
+    pub fn avatar_url(&self) -> String {
+        let default = "https://tetr.io/res/avatar.png".to_string();
+        if let Some(ar) = self.avatar_revision {
+            if ar == 0 {
+                return default;
+            }
+            format!(
+                "https://tetr.io/user-content/avatars/{}.jpg?rv={}",
+                self.id, ar
+            )
+        } else {
+            default
+        }
+    }
+
+    /// Returns the user's banner URL.
+    ///
+    /// If the user does not have a banner, `None` is returned.
+    ///
+    /// ***Ignore the returned value if the user is not a supporter.
+    /// Because even if the user is not currently a supporter,
+    /// `Some<String>` may be returned if the banner was once set.**
+    pub fn banner_url(&self) -> Option<String> {
+        if let Some(br) = self.banner_revision {
+            if br == 0 {
+                return None;
+            }
+            Some(format!(
+                "https://tetr.io/user-content/banners/{}.jpg?rv={}",
+                self.id, br
+            ))
+        } else {
+            None
+        }
+    }
+
+    /// Returns the national flag URL of the user's country.
+    ///
+    /// If the user's country is hidden or unknown, `None` is returned.
+    pub fn national_flag_url(&self) -> Option<String> {
+        self.country
+            .as_ref()
+            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
+    }
 }
 
 impl AsRef<User> for User {
@@ -207,6 +279,27 @@ pub struct PlayerStats {
     pub stats: serde_json::Value,
 }
 
+impl PlayerStats {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        self.id.get_user().await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+}
+
 impl AsRef<PlayerStats> for PlayerStats {
     fn as_ref(&self) -> &Self {
         self
@@ -232,6 +325,27 @@ pub struct PlayerStatsRound {
     pub lifetime: u32,
     /// The aggregate stats for the player for this round.
     pub stats: serde_json::Value,
+}
+
+impl PlayerStatsRound {
+    /// Gets the User Info data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        self.id.get_user().await
+    }
+
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
 }
 
 impl AsRef<PlayerStatsRound> for PlayerStatsRound {

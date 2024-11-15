@@ -1,12 +1,12 @@
 //! The User Leaderboard models.
 
 use crate::{
-    client::param::pagination::Prisecter,
+    client::{error::RspErr, param::pagination::Prisecter},
     model::{
         cache::CacheData,
         league_rank::Rank,
         role::Role,
-        user::{AchievementRatingCounts, UserId},
+        user::{AchievementRatingCounts, UserId, UserResponse},
     },
     util::{max_f64, to_unix_ts},
 };
@@ -101,54 +101,21 @@ pub struct LeaderboardEntry {
 }
 
 impl LeaderboardEntry {
-    /// Whether this user is an anonymous.
-    pub fn is_anon(&self) -> bool {
-        self.role.is_anon()
+    /// Gets the user's data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        self.id.get_user().await
     }
 
-    /// Whether this user is a bot.
-    pub fn is_bot(&self) -> bool {
-        self.role.is_bot()
-    }
-
-    /// Whether this user is a SYSOP.
-    pub fn is_sysop(&self) -> bool {
-        self.role.is_sysop()
-    }
-
-    /// Whether this user is an administrator.
-    pub fn is_admin(&self) -> bool {
-        self.role.is_admin()
-    }
-
-    /// Whether this user is a moderator.
-    pub fn is_mod(&self) -> bool {
-        self.role.is_mod()
-    }
-
-    /// Whether this user is a community moderator.
-    pub fn is_halfmod(&self) -> bool {
-        self.role.is_halfmod()
-    }
-
-    /// Whether this user is banned.
-    pub fn is_banned(&self) -> bool {
-        self.role.is_banned()
-    }
-
-    /// Whether this user is hidden.
-    pub fn is_hidden(&self) -> bool {
-        self.role.is_hidden()
-    }
-
-    /// Returns an UNIX timestamp of when the account was created.
-    /// If this account was created before join dates were recorded,
-    /// returns `None`.
-    pub fn account_created_at(&self) -> Option<i64> {
-        self.account_created_at.as_ref().map(|ts| to_unix_ts(ts))
-    }
-
-    /// Returns the level based on the user's xp.
+    /// Returns the level of the user.
     pub fn level(&self) -> u32 {
         let xp = self.xp;
         // (xp/500)^0.6 + (xp / (5000 + max(0, xp-4000000) / 5000)) + 1
@@ -156,16 +123,71 @@ impl LeaderboardEntry {
             as u32
     }
 
+    /// Returns the user's TETRA CHANNEL profile URL.
+    pub fn profile_url(&self) -> String {
+        format!("https://ch.tetr.io/u/{}", self.username)
+    }
+
+    /// Whether the user is a normal user.
+    pub fn is_normal_user(&self) -> bool {
+        self.role.is_normal_user()
+    }
+
+    /// Whether the user is an anonymous.
+    pub fn is_anon(&self) -> bool {
+        self.role.is_anon()
+    }
+
+    /// Whether the user is a bot.
+    pub fn is_bot(&self) -> bool {
+        self.role.is_bot()
+    }
+
+    /// Whether the user is a SYSOP.
+    pub fn is_sysop(&self) -> bool {
+        self.role.is_sysop()
+    }
+
+    /// Whether the user is an administrator.
+    pub fn is_admin(&self) -> bool {
+        self.role.is_admin()
+    }
+
+    /// Whether the user is a moderator.
+    pub fn is_mod(&self) -> bool {
+        self.role.is_mod()
+    }
+
+    /// Whether the user is a community moderator.
+    pub fn is_halfmod(&self) -> bool {
+        self.role.is_halfmod()
+    }
+
+    /// Whether the user is banned.
+    pub fn is_banned(&self) -> bool {
+        self.role.is_banned()
+    }
+
+    /// Whether the user is hidden.
+    pub fn is_hidden(&self) -> bool {
+        self.role.is_hidden()
+    }
+
+    /// Returns a UNIX timestamp when the user account was created.
+    ///
+    /// If this account was created before join dates were recorded,
+    /// `None` is returned.
+    pub fn account_created_at(&self) -> Option<i64> {
+        self.account_created_at.as_ref().map(|ts| to_unix_ts(ts))
+    }
+
     /// Returns the national flag URL of the user's country.
+    ///
+    /// If the user's country is hidden or unknown, `None` is returned.
     pub fn national_flag_url(&self) -> Option<String> {
         self.country
             .as_ref()
             .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
-
-    /// Whether this user is a supporter.
-    pub fn is_supporter(&self) -> bool {
-        self.is_supporter.unwrap_or(false)
     }
 }
 
@@ -301,6 +323,31 @@ pub struct HistoricalEntry {
     /// It allows you to continue paginating.
     #[serde(rename = "p")]
     pub prisecter: Prisecter,
+}
+
+impl HistoricalEntry {
+    /// Gets the user's data.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
+    /// or when this library is defective.
+    ///
+    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    ///
+    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    pub async fn get_user(&self) -> RspErr<UserResponse> {
+        self.id.get_user().await
+    }
+
+    /// Returns the national flag URL of the user's country.
+    ///
+    /// If the user's country is hidden or unknown, `None` is returned.
+    pub fn national_flag_url(&self) -> Option<String> {
+        self.country
+            .as_ref()
+            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
+    }
 }
 
 impl AsRef<HistoricalEntry> for HistoricalEntry {

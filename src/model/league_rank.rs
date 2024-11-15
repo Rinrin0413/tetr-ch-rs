@@ -72,27 +72,27 @@ impl Rank {
     ///
     /// ```
     /// # use tetr_ch::model::league_rank::Rank;
-    /// assert_eq!(Rank::D.as_str(), "D");
-    /// assert_eq!(Rank::DPlus.as_str(), "D+");
-    /// assert_eq!(Rank::CMinus.as_str(), "C-");
-    /// assert_eq!(Rank::C.as_str(), "C");
-    /// assert_eq!(Rank::CPlus.as_str(), "C+");
-    /// assert_eq!(Rank::BMinus.as_str(), "B-");
-    /// assert_eq!(Rank::B.as_str(), "B");
-    /// assert_eq!(Rank::BPlus.as_str(), "B+");
-    /// assert_eq!(Rank::AMinus.as_str(), "A-");
-    /// assert_eq!(Rank::A.as_str(), "A");
-    /// assert_eq!(Rank::APlus.as_str(), "A+");
-    /// assert_eq!(Rank::SMinus.as_str(), "S-");
-    /// assert_eq!(Rank::S.as_str(), "S");
-    /// assert_eq!(Rank::SPlus.as_str(), "S+");
-    /// assert_eq!(Rank::SS.as_str(), "SS");
-    /// assert_eq!(Rank::U.as_str(), "U");
-    /// assert_eq!(Rank::X.as_str(), "X");
-    /// assert_eq!(Rank::XPlus.as_str(), "X+");
-    /// assert_eq!(Rank::Z.as_str(), "Unranked");
+    /// assert_eq!(Rank::D.name(), "D");
+    /// assert_eq!(Rank::DPlus.name(), "D+");
+    /// assert_eq!(Rank::CMinus.name(), "C-");
+    /// assert_eq!(Rank::C.name(), "C");
+    /// assert_eq!(Rank::CPlus.name(), "C+");
+    /// assert_eq!(Rank::BMinus.name(), "B-");
+    /// assert_eq!(Rank::B.name(), "B");
+    /// assert_eq!(Rank::BPlus.name(), "B+");
+    /// assert_eq!(Rank::AMinus.name(), "A-");
+    /// assert_eq!(Rank::A.name(), "A");
+    /// assert_eq!(Rank::APlus.name(), "A+");
+    /// assert_eq!(Rank::SMinus.name(), "S-");
+    /// assert_eq!(Rank::S.name(), "S");
+    /// assert_eq!(Rank::SPlus.name(), "S+");
+    /// assert_eq!(Rank::SS.name(), "SS");
+    /// assert_eq!(Rank::U.name(), "U");
+    /// assert_eq!(Rank::X.name(), "X");
+    /// assert_eq!(Rank::XPlus.name(), "X+");
+    /// assert_eq!(Rank::Z.name(), "Unranked");
     /// ```
-    pub fn as_str(&self) -> &str {
+    pub fn name(&self) -> &str {
         match self {
             Rank::D => "D",
             Rank::DPlus => "D+",
@@ -349,25 +349,25 @@ mod tests {
         let rank_x = Rank::X;
         let rank_x_plus = Rank::XPlus;
         let rank_z = Rank::Z;
-        assert_eq!(rank_d.as_str(), "D");
-        assert_eq!(rank_d_plus.as_str(), "D+");
-        assert_eq!(rank_c_minus.as_str(), "C-");
-        assert_eq!(rank_c.as_str(), "C");
-        assert_eq!(rank_c_plus.as_str(), "C+");
-        assert_eq!(rank_b_minus.as_str(), "B-");
-        assert_eq!(rank_b.as_str(), "B");
-        assert_eq!(rank_b_plus.as_str(), "B+");
-        assert_eq!(rank_a_minus.as_str(), "A-");
-        assert_eq!(rank_a.as_str(), "A");
-        assert_eq!(rank_a_plus.as_str(), "A+");
-        assert_eq!(rank_s_minus.as_str(), "S-");
-        assert_eq!(rank_s.as_str(), "S");
-        assert_eq!(rank_s_plus.as_str(), "S+");
-        assert_eq!(rank_ss.as_str(), "SS");
-        assert_eq!(rank_u.as_str(), "U");
-        assert_eq!(rank_x.as_str(), "X");
-        assert_eq!(rank_x_plus.as_str(), "X+");
-        assert_eq!(rank_z.as_str(), "Unranked");
+        assert_eq!(rank_d.name(), "D");
+        assert_eq!(rank_d_plus.name(), "D+");
+        assert_eq!(rank_c_minus.name(), "C-");
+        assert_eq!(rank_c.name(), "C");
+        assert_eq!(rank_c_plus.name(), "C+");
+        assert_eq!(rank_b_minus.name(), "B-");
+        assert_eq!(rank_b.name(), "B");
+        assert_eq!(rank_b_plus.name(), "B+");
+        assert_eq!(rank_a_minus.name(), "A-");
+        assert_eq!(rank_a.name(), "A");
+        assert_eq!(rank_a_plus.name(), "A+");
+        assert_eq!(rank_s_minus.name(), "S-");
+        assert_eq!(rank_s.name(), "S");
+        assert_eq!(rank_s_plus.name(), "S+");
+        assert_eq!(rank_ss.name(), "SS");
+        assert_eq!(rank_u.name(), "U");
+        assert_eq!(rank_x.name(), "X");
+        assert_eq!(rank_x_plus.name(), "X+");
+        assert_eq!(rank_z.name(), "Unranked");
     }
 
     #[test]

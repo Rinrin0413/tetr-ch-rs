@@ -1,6 +1,7 @@
 //! A model for user roles.
 
 use serde::Deserialize;
+use std::fmt;
 
 /// A user role.
 #[derive(Clone, Debug, Deserialize)]
@@ -35,6 +36,11 @@ pub enum Role {
 }
 
 impl Role {
+    /// Whether the user is a normal user.
+    pub fn is_normal_user(&self) -> bool {
+        matches!(self, Role::User)
+    }
+
     /// Whether the user is an anonymous.
     pub fn is_anon(&self) -> bool {
         matches!(self, Role::Anon)
@@ -82,35 +88,18 @@ impl AsRef<Role> for Role {
     }
 }
 
-impl ToString for Role {
-    /// Converts to a `String`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use tetr_ch::model::role::Role;
-    /// assert_eq!(Role::User.to_string(), "User");
-    /// assert_eq!(Role::Anon.to_string(), "Anonymous");
-    /// assert_eq!(Role::Bot.to_string(), "Bot");
-    /// assert_eq!(Role::Sysop.to_string(), "SYSOP");
-    /// assert_eq!(Role::Admin.to_string(), "Administrator");
-    /// assert_eq!(Role::Mod.to_string(), "Moderator");
-    /// assert_eq!(Role::Halfmod.to_string(), "Community moderator");
-    /// assert_eq!(Role::Banned.to_string(), "Banned user");
-    /// assert_eq!(Role::Hidden.to_string(), "Hidden user");
-    /// ```
-    fn to_string(&self) -> String {
+impl fmt::Display for Role {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Role::User => "User",
-            Role::Anon => "Anonymous",
-            Role::Bot => "Bot",
-            Role::Sysop => "SYSOP",
-            Role::Admin => "Administrator",
-            Role::Mod => "Moderator",
-            Role::Halfmod => "Community moderator",
-            Role::Banned => "Banned user",
-            Role::Hidden => "Hidden user",
+            Role::User => write!(f, "User"),
+            Role::Anon => write!(f, "Anonymous"),
+            Role::Bot => write!(f, "Bot"),
+            Role::Sysop => write!(f, "SYSOP"),
+            Role::Admin => write!(f, "Administrator"),
+            Role::Mod => write!(f, "Moderator"),
+            Role::Halfmod => write!(f, "Community moderator"),
+            Role::Banned => write!(f, "Banned user"),
+            Role::Hidden => write!(f, "Hidden user"),
         }
-        .to_string()
     }
 }
