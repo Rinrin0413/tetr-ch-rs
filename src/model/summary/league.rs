@@ -86,6 +86,29 @@ pub struct League {
     pub past: HashMap<String, PastSeason>,
 }
 
+impl League {
+    /// Returns the user's progress percentage in the rank.
+    ///
+    /// But there are cases where values less than 0 or greater than 100 are returned,
+    /// because the rank boundaries are fluctuating.  
+    /// (e.g. `-88.5` `104.9`, `-0.0`)
+    ///
+    /// If there is no user's position in global leaderboards,
+    /// `None` is returned.
+    pub fn rank_progress(&self) -> Option<f64> {
+        if let (Some(standing), Some(prev_at), Some(next_at)) = (self.standing, self.prev_at, self.next_at) {
+            if prev_at < 0 || next_at < 0 {
+                return None;
+            }
+            let current_standing = standing as f64;
+            let prev_at = prev_at as f64;
+            let next_at = next_at as f64;
+            return Some((current_standing - prev_at) / (next_at - prev_at) * 100.);
+        }
+        return None;
+    }
+}
+
 impl AsRef<League> for League {
     fn as_ref(&self) -> &Self {
         self
@@ -132,6 +155,15 @@ pub struct PastSeason {
     pub pps: f64,
     /// This user's average VS (versus score) over the last 10 games in the season.
     pub vs: f64,
+}
+
+impl PastSeason {
+    /// Returns the national flag URL of the user's country.
+    pub fn national_flag_url(&self) -> Option<String> {
+        self.country
+            .as_ref()
+            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
+    }
 }
 
 impl AsRef<PastSeason> for PastSeason {
