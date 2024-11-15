@@ -1,6 +1,14 @@
 //! The Achievement Info models.
 
-use crate::{client::error::RspErr, model::{achievement::Achievement, cache::CacheData, role::Role, user::{UserId, UserResponse}}};
+use crate::{
+    client::error::RspErr,
+    model::{
+        achievement::Achievement,
+        cache::CacheData,
+        role::Role,
+        user::{UserId, UserResponse},
+    },
+};
 use serde::Deserialize;
 
 /// The response for the Achievement Info data.

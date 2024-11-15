@@ -2,7 +2,12 @@
 
 use crate::{
     client::{error::RspErr, Client},
-    model::{cache::CacheData, league_rank::Rank, user::{UserId, UserResponse}}, util::to_unix_ts
+    model::{
+        cache::CacheData,
+        league_rank::Rank,
+        user::{UserId, UserResponse},
+    },
+    util::to_unix_ts,
 };
 use serde::Deserialize;
 
