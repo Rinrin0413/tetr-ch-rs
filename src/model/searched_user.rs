@@ -39,7 +39,7 @@ impl SearchedUserResponse {
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user(&self) -> Option<RspErr<UserResponse>> {
         if let Some(u) = &self.data {
-            Some(Client::new().get_user(u.user.id.id()).await)
+            Some(Client::new().get_user(&u.user.id.to_string()).await)
         } else {
             None
         }
@@ -105,7 +105,7 @@ impl UserData {
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(self.user.id.id()).await
+        Client::new().get_user(&self.user.id.to_string()).await
     }
 
     /// Returns the user's profile URL.
@@ -144,7 +144,7 @@ impl UserInfo {
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(self.id.id()).await
+        Client::new().get_user(&self.id.to_string()).await
     }
 
     /// Returns the user's profile URL.
