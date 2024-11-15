@@ -25,56 +25,6 @@ pub struct SearchedUserResponse {
     pub data: Option<UserData>,
 }
 
-impl SearchedUserResponse {
-    /// Gets the user's data.
-    /// Returns `None` if the user was not found.
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user(&self) -> Option<RspErr<UserResponse>> {
-        if let Some(u) = &self.data {
-            Some(Client::new().get_user(&u.user.id.to_string()).await)
-        } else {
-            None
-        }
-    }
-
-    /// Returns the user's profile URL or `None` if the user was not found.
-    pub fn profile_url(&self) -> Option<String> {
-        self.data.as_ref().map(|u| u.profile_url())
-    }
-
-    /// Returns a UNIX timestamp when this resource was cached.
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no cache data.
-    pub fn cached_at(&self) -> i64 {
-        match self.cache.as_ref() {
-            Some(c) => c.cached_at(),
-            None => panic!("There is no cache data."),
-        }
-    }
-
-    /// Returns a UNIX timestamp when this resource's cache expires.
-    ///
-    /// # Panics
-    ///
-    /// Panics if there is no cache data.
-    pub fn cached_until(&self) -> i64 {
-        match self.cache.as_ref() {
-            Some(c) => c.cached_at(),
-            None => panic!("There is no cache data."),
-        }
-    }
-}
-
 impl AsRef<SearchedUserResponse> for SearchedUserResponse {
     fn as_ref(&self) -> &Self {
         self
@@ -94,7 +44,7 @@ pub struct UserData {
 }
 
 impl UserData {
-    /// Gets the user's data.
+    /// Gets the User Info data.
     ///
     /// # Errors
     ///
@@ -105,7 +55,7 @@ impl UserData {
     ///
     /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.user.id.to_string()).await
+        self.user.get_user().await
     }
 
     /// Returns the user's profile URL.
@@ -128,8 +78,7 @@ pub struct UserInfo {
     #[serde(rename = "_id")]
     pub id: UserId,
     /// The user's username.
-    #[serde(rename = "username")]
-    pub name: String,
+    pub username: String,
 }
 
 impl UserInfo {
@@ -147,9 +96,9 @@ impl UserInfo {
         Client::new().get_user(&self.id.to_string()).await
     }
 
-    /// Returns the user's profile URL.
+    /// Returns the user's TETRA CHANNEL profile URL.
     pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.name)
+        format!("https://ch.tetr.io/u/{}", self.username)
     }
 }
 
