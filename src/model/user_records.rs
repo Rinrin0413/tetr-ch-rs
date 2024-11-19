@@ -1,11 +1,12 @@
-//! The User Personal Records models.
+//! Models for the endpoint "User Personal Records".
+//!
+//! About the endpoint "User Personal Records",
+//! see the [API document](https://tetr.io/about/api/#usersuserrecordsgamemodeleaderboard).
 
 use crate::model::{cache::CacheData, summary::record::Record};
 use serde::Deserialize;
 
-/// The response for the User Personal Records data.
-///
-/// A list of Records fulfilling the search criteria.
+/// A struct for the response for the endpoint "User Personal Records".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserRecordsResponse {
@@ -26,7 +27,7 @@ impl AsRef<UserRecordsResponse> for UserRecordsResponse {
     }
 }
 
-/// The User Personal Records data.
+/// An array of user personal records.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserRecords {
