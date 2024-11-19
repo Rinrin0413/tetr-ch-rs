@@ -1,10 +1,12 @@
-//! The Server Statistics model.
+//! Models for the endpoint "Server Statistics".
+//!
+//! About the endpoint "Server Statistics",
+//! see the [API document](https://tetr.io/about/api/#generalstats).
 
 use crate::model::cache::CacheData;
 use serde::Deserialize;
 
-/// The response for the Server Statistics data.
-/// Some statistics about the TETR.IO.
+/// A struct for the response for the endpoint "Server Statistics".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ServerStatsResponse {
@@ -25,7 +27,7 @@ impl AsRef<ServerStatsResponse> for ServerStatsResponse {
     }
 }
 
-/// The Server Statistics data.
+/// Server Statistics about the TETR.IO.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ServerStats {
