@@ -1,4 +1,7 @@
-//! The Searched User model.
+//! Models for the endpoint "User Search".
+//!
+//! About the endpoint "User Search",
+//! see the [API document](https://tetr.io/about/api/#userssearchquery).
 
 use crate::{
     client::{error::RspErr, Client},
@@ -9,8 +12,7 @@ use crate::{
 };
 use serde::Deserialize;
 
-/// The response for the Searched User data.
-/// An object describing the user found.
+/// A struct for the response for the endpoint "User Search".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct SearchedUserResponse {
@@ -31,7 +33,7 @@ impl AsRef<SearchedUserResponse> for SearchedUserResponse {
     }
 }
 
-/// The Searched User data.
+/// A searched user.
 ///
 /// Only one user is contained.
 /// Generally, you won't see two users with the same social linked, though,
@@ -44,16 +46,20 @@ pub struct UserData {
 }
 
 impl UserData {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.user.get_user().await
     }
@@ -70,7 +76,7 @@ impl AsRef<UserData> for UserData {
     }
 }
 
-/// The user information (TETRA.IO user account).
+/// A user information (TETRA.IO user account).
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserInfo {
@@ -82,16 +88,20 @@ pub struct UserInfo {
 }
 
 impl UserInfo {
-    /// Gets the user's data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.id.to_string()).await
     }

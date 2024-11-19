@@ -1,11 +1,12 @@
-//! The Labs Scoreflow models.
+//! Models for the endpoint "Labs Scoreflow".
+//!
+//! About the endpoint "Labs Scoreflow",
+//! see the [API document](https://tetr.io/about/api/#labsscoreflowusergamemode).
 
 use crate::model::cache::CacheData;
 use serde::Deserialize;
 
-/// The response for the Labs Scoreflow data.
-///
-/// A condensed graph of all of the user's records in the gamemode.
+/// A struct for the response for the endpoint "Labs Scoreflow".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LabsScoreflowResponse {
@@ -26,7 +27,7 @@ impl AsRef<LabsScoreflowResponse> for LabsScoreflowResponse {
     }
 }
 
-/// The Labs Scoreflow data.
+/// A condensed graph of all of a user's records in a gamemode.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LabsScoreflow {

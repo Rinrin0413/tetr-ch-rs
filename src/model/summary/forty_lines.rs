@@ -1,10 +1,12 @@
-//! The User Summary 40 LINES models.
+//! Models for the endpoint "User Summary: 40 LINES".
+//!
+//! About the endpoint "User Summary: 40 LINES",
+//! see the [API document](https://tetr.io/about/api/#usersusersummaries40l).
 
 use crate::model::{cache::CacheData, summary::record::Record};
 use serde::Deserialize;
 
-/// The response for the User Summary 40 LINES data.
-/// An object describing a summary of the user's 40 LINES games.
+/// A struct for the response for the endpoint "User Summary: 40 LINES".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct FortyLinesResponse {
@@ -25,7 +27,7 @@ impl AsRef<FortyLinesResponse> for FortyLinesResponse {
     }
 }
 
-/// The User Summary 40 LINES data.
+/// A struct that describes a summary of a user's 40 LINES games.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct FortyLines {

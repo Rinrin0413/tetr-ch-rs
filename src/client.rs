@@ -1,4 +1,4 @@
-//! Client for API requests.
+//! A module for the [`Client`] struct and supporting types.
 
 use self::{
     error::RspErr,
@@ -39,25 +39,25 @@ use reqwest::{self};
 
 const API_URL: &str = "https://ch.tetr.io/api/";
 
-/// Client for API requests.
+/// A client for API requests.
 ///
 /// # Examples
 ///
-/// Creating a Client instance and getting some objects:
+/// Creating a new [`Client`] instance and getting information about the user "RINRIN-RS".
 ///
 /// ```no_run
 /// use tetr_ch::client::Client;
-/// # use std::io;
 ///
-/// # async fn run() -> io::Result<()> {
+/// # async fn run() -> std::io::Result<()> {
+/// // Create a new client.
 /// let client = Client::new();
-/// // For example, get information for user `RINRIN-RS`.
+/// // Get the user information.
 /// let user = client.get_user("rinrin-rs").await?;
 /// # Ok(())
 /// # }
 /// ```
 ///
-/// [See more examples](https://github.com/Rinrin0413/tetr-ch-rs/examples/)
+/// [See more examples](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples)
 #[non_exhaustive]
 #[derive(Default)]
 pub struct Client {
@@ -65,16 +65,30 @@ pub struct Client {
 }
 
 impl Client {
-    /// Create a new [`Client`].
+    //! # Errors
+    //!
+    //! The `get_*` methods and `search_*` methods return a `Result<T, ResponseError>`.
+    //!
+    //! - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    //! if the request failed.
+    //! - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    //! if the response did not match the expected format but the HTTP request succeeded.
+    //! There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    //! - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    //! if the HTTP request failed and the response did not match the expected format.
+    //! Even if the HTTP request failed,
+    //! it may be possible to deserialize the response containing an error message,
+    //! so the deserialization will be tried before returning this error.
+
+    /// Creates a new [`Client`].
     ///
     /// # Examples
     ///
-    /// Creating a Client instance:
-    ///
     /// ```
-    /// use tetr_ch::client;
+    /// use tetr_ch::client::Client;
     ///
-    /// let client = client::Client::new();
+    /// // Create a new client.
+    /// let client = Client::new();
     /// ```
     pub fn new() -> Self {
         Self {
@@ -82,264 +96,212 @@ impl Client {
         }
     }
 
-    /// Returns the object describing the user in detail.
+    /// Gets the detailed information about the specified user.
+    ///
+    /// About the endpoint "User Info",
+    /// see the [API document](https://tetr.io/about/api/#usersuser).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Info.
+    /// // Get the information about the user "RINRIN-RS".
     /// let user = client.get_user("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user(self, user: &str) -> RspErr<UserResponse> {
         let url = format!("{}users/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns some statistics about the TETR.IO.
+    /// Gets some statistics about the TETR.IO.
+    ///
+    /// About the endpoint "Server Statistics",
+    /// see the [API document](https://tetr.io/about/api/#generalstats).
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the Server Statistics.
+    /// // Get the statistics.
     /// let user = client.get_server_stats().await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_server_stats(self) -> RspErr<ServerStatsResponse> {
         let url = format!("{}general/stats", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns an array of user activity over the last 2 days.
+    /// Gets the array of the user activity over the last 2 days.
+    ///
+    /// About the endpoint "Server Activity",
+    /// see the [API document](https://tetr.io/about/api/#generalactivity).
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the Server Activity.
+    /// // Get the activity.
     /// let user = client.get_server_activity().await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
         let url = format!("{}general/activity", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the object containing all the user's summaries in one.
+    /// Gets all the summaries of the specified user.
     ///
-    /// ***consider whether you really need this.
+    /// ***Consider whether you really need to use this method.
     /// If you only collect data for one or two game modes,
-    /// use the individual summaries' methods instead.**
+    /// use the methods for the individual summaries instead.**
+    ///
+    /// About the endpoint "User Summaries",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummaries).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get All the User Summaries.
+    /// // Get all the summaries of the user "RINRIN-RS".
     /// let user = client.get_user_all_summaries("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_all_summaries(self, user: &str) -> RspErr<AllSummariesResponse> {
         let url = format!("{}users/{}/summaries", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the object describing a summary of the user's 40 LINES games.
+    /// Gets the summary of the specified user's 40 LINES games.
+    ///
+    /// About the endpoint "User Summary: 40 LINES",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummaries40l).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Summary 40 LINES.
+    /// // Get the summary of the 40 LINES games of the user "RINRIN-RS".
     /// let user = client.get_user_40l("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_40l(self, user: &str) -> RspErr<FortyLinesResponse> {
         let url = format!("{}users/{}/summaries/40l", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the object describing a summary of the user's BLITZ games.
+    /// Gets the summary of the specified user's BLITZ games.
+    ///
+    /// About the endpoint "User Summary: BLITZ",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummariesblitz).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Summary BLITZ.
+    /// // Get the summary of the BLITZ games of the user "RINRIN-RS".
     /// let user = client.get_user_blitz("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_blitz(self, user: &str) -> RspErr<BlitzResponse> {
         let url = format!("{}users/{}/summaries/blitz", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the object describing a summary of the user's QUICK PLAY games.
+    /// Gets the summary of the specified user's QUICK PLAY games.
+    ///
+    /// About the endpoint "User Summary: QUICK PLAY",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummarieszenith).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Summary QUICK PLAY.
+    /// // Get the summary of the QUICK PLAY games of the user "RINRIN-RS".
     /// let user = client.get_user_zenith("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_zenith(self, user: &str) -> RspErr<ZenithResponse> {
         let url = format!("{}users/{}/summaries/zenith", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the object describing a summary of the user's EXPERT QUICK PLAY games.
+    /// Gets the summary of the specified user's EXPERT QUICK PLAY games.
+    ///
+    /// About the endpoint "User Summary: EXPERT QUICK PLAY",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummarieszenithex).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Summary EXPERT QUICK PLAY.
+    /// // Get the summary of the EXPERT QUICK PLAY games of the user "RINRIN-RS".
     /// let user = client.get_user_zenith_ex("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_zenith_ex(self, user: &str) -> RspErr<ZenithExResponse> {
         let url = format!(
             "{}users/{}/summaries/zenithex",
@@ -350,102 +312,81 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the object describing a summary of the user's TETRA LEAGUE standing.
+    /// Gets the summary of the specified user's TETRA LEAGUE standing.
+    ///
+    /// About the endpoint "User Summary: TETRA LEAGUE",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummariesleague).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Summary TETRA LEAGUE.
+    /// // Get the summary of the TETRA LEAGUE standing of the user "RINRIN-RS".
     /// let user = client.get_user_league("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_league(self, user: &str) -> RspErr<LeagueResponse> {
         let url = format!("{}users/{}/summaries/league", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the object describing a summary of the user's ZEN progress.
+    /// Gets the summary of the specified user's ZEN progress.
+    ///
+    /// About the endpoint "User Summary: ZEN",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummarieszen).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Summary ZEN.
+    /// // Get the summary of the ZEN progress of the user "RINRIN-RS".
     /// let user = client.get_user_zen("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_zen(self, user: &str) -> RspErr<ZenResponse> {
         let url = format!("{}users/{}/summaries/zen", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the object containing all the user's achievements.
+    /// Gets all the achievements of the specified user.
+    ///
+    /// About the endpoint "User Summary: Achievements",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummariesachievements).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the User Summary Achievements.
+    /// // Get all the achievements of the user "RINRIN-RS".
     /// let user = client.get_user_achievements("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_achievements(self, user: &str) -> RspErr<AchievementsResponse> {
         let url = format!(
             "{}users/{}/summaries/achievements",
@@ -456,23 +397,31 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the array of users fulfilling the search criteria.
+    /// Gets the user leaderboard fulfilling the search criteria.
+    ///
+    /// About the endpoint "User Leaderboard",
+    /// see the [API document](https://tetr.io/about/api/#usersbyleaderboard).
     ///
     /// # Arguments
     ///
-    /// - `leaderboard`: The leaderboard to sort users by.
-    /// - `search_criteria`: The search criteria to filter users by.
+    /// - `leaderboard` - The user leaderboard type.
+    /// - `search_criteria` - The search criteria to filter users by.
     ///
     /// # Examples
+    ///
+    /// Gets the TETRA LEAGUE leaderboard with the following criteria:
+    ///
+    /// - Upper bound is `[15200, 0, 0]`
+    /// - Three entries
+    /// - Filter by Japan
     ///
     /// ```no_run
     /// use tetr_ch::client::{
     ///     Client,
     ///     param::user_leaderboard::{self, LeaderboardType}
     /// };
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
     /// let criteria = user_leaderboard::SearchCriteria::new()
@@ -483,7 +432,7 @@ impl Client {
     ///     // Filter by Japan
     ///     .country("jp");
     ///
-    /// // Get the User Leaderboard.
+    /// // Get the user leaderboard.
     /// let user = client.get_leaderboard(
     ///     LeaderboardType::League,
     ///     Some(criteria)
@@ -491,15 +440,6 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_leaderboard(
         self,
         leaderboard: LeaderboardType,
@@ -521,23 +461,32 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the array of historical user blobs fulfilling the search criteria.
+    /// Gets the array of the historical user blobs fulfilling the search criteria.
+    ///
+    /// About the endpoint "Historical User Leaderboard",
+    /// see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
     ///
     /// # Arguments
     ///
-    /// - `season`: The season to look up. (e.g. `"1"`)
-    /// - `search_criteria`: The search criteria to filter users by.
+    /// - `season` - The season to look up. (e.g. `"1"`)
+    /// - `search_criteria` - The search criteria to filter users by.
     ///
     /// # Examples
+    ///
+    /// Gets the array of the historical user blobs with the following criteria:
+    ///
+    /// - Season 1
+    /// - Upper bound is `[15200, 0, 0]`
+    /// - Three entries
+    /// - Filter by Japan
     ///
     /// ```no_run
     /// use tetr_ch::client::{
     ///     Client,
     ///     param::user_leaderboard::{self, LeaderboardType}
     /// };
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
     /// let criteria = user_leaderboard::SearchCriteria::new()
@@ -548,23 +497,15 @@ impl Client {
     ///     // Filter by Japan
     ///     .country("jp");
     ///
-    /// // Get the User Leaderboard.
+    /// // Get the array.
     /// let user = client.get_historical_league_leaderboard(
+    ///     // Season 1
     ///     "1",
     ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_historical_league_leaderboard(
         self,
         season: &str,
@@ -591,25 +532,33 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the list of Records fulfilling the search criteria.
+    /// Gets the personal record leaderboard of the specified user,
+    /// fulfilling the search criteria.
+    ///
+    /// About the endpoint "User Personal Records",
+    /// see the [API document](https://tetr.io/about/api/#usersuserrecordsgamemodeleaderboard).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
-    /// - `gamemode`: The game mode to look up.
-    /// - `leaderboard`: The personal leaderboard to look up.
-    /// - `search_criteria`: The search criteria to filter records by.
+    /// - `user` - The username or user ID to look up.
+    /// - `gamemode` - The game mode to look up.
+    /// - `leaderboard` - The personal leaderboard to look up.
+    /// - `search_criteria` - The search criteria to filter records by.
     ///
     /// # Examples
+    ///
+    /// Gets the personal top score leaderboard of the 40 LINES records of the user "RINRIN-RS" with the following criteria:
+    ///
+    /// - Upper bound is `[500000, 0, 0]`
+    /// - Three entries
     ///
     /// ```no_run
     /// use tetr_ch::client::{
     ///     Client,
     ///     param::record::{self, Gamemode, LeaderboardType}
     /// };
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
     /// // Set the search criteria.
@@ -619,25 +568,19 @@ impl Client {
     ///     // Three entries
     ///     .limit(3);
     ///
-    /// // Get the User Records.
+    /// // Get the leaderboard.
     /// let user = client.get_user_records(
+    ///     // Record of the user "RINRIN-RS"
     ///     "rinrin-rs",
+    ///     // 40 LINES
     ///     Gamemode::FortyLines,
+    ///     // Top score leaderboard
     ///     LeaderboardType::Top,
     ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_user_records(
         self,
         user: &str,
@@ -667,23 +610,33 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the list of Records fulfilling the search criteria.
+    /// Gets the record leaderboard fulfilling the search criteria.
+    ///
+    /// About the endpoint "Records Leaderboard",
+    /// see the [API document](https://tetr.io/about/api/#recordsleaderboard).
     ///
     /// # Arguments
     ///
-    /// - `leaderboard`: The leaderboard to look up.
-    /// - `search_criteria`: The search criteria to filter records by.
+    /// - `leaderboard` - The record leaderboard ID to look up.
+    /// - `search_criteria` - The search criteria to filter records by.
     ///
     /// # Examples
+    ///
+    /// Gets the record leaderboard with the following criteria:
+    ///
+    /// - Upper bound is `[500000, 0, 0]`
+    /// - Three entries
+    /// - Game mode: `blitz` (BLITZ)
+    /// - Scope: `JP` (Japan)
+    /// - Revolution ID: `@2024w31`
     ///
     /// ```no_run
     /// use tetr_ch::client::{
     ///     Client,
     ///     param::record_leaderboard::{self, RecordsLeaderboardId, Scope}
     /// };
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
     /// // Set the search criteria.
@@ -693,11 +646,15 @@ impl Client {
     ///     // Three entries
     ///     .limit(3);
     ///
-    /// // Get the Records Leaderboard.
+    /// // Get the record leaderboard.
     /// let user = client.get_records_leaderboard(
+    ///     // Record leaderboard ID: `blitz_country_JP@2024w31`
     ///     RecordsLeaderboardId::new(
+    ///         // Game mode: `blitz` (BLITZ)
     ///         "blitz",
+    ///         // Scope: `JP` (Japan)
     ///         Scope::Country("JP".to_string()),
+    ///         // Revolution ID: `@2024w31`
     ///         Some("@2024w31")
     ///     ),
     ///    Some(criteria)
@@ -705,15 +662,6 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_records_leaderboard(
         self,
         leaderboard: RecordsLeaderboardId,
@@ -735,44 +683,46 @@ impl Client {
         response(res).await
     }
 
-    /// Searches for a record.
+    /// Searches for a record of the specified user with the specified timestamp.
     ///
     /// Only one record is returned.
     /// It is generally not possible for a player to play the same gamemode twice in a millisecond.
     ///
+    /// About the endpoint "Record Search",
+    /// see the [API document](https://tetr.io/about/api/#recordsreverse).
+    ///
     /// # Arguments
     ///
-    /// - `user_id`: The user ID to look up.
-    /// - `gamemode`: The game mode to look up.
-    /// - `timestamp`: The timestamp of the record to find.
+    /// - `user_id` - The user ID to look up.
+    /// - `gamemode` - The game mode to look up.
+    /// - `timestamp` - The timestamp of the record to find.
     ///
     /// # Examples
     ///
+    /// Gets a record with the following criteria:
+    ///
+    /// - User ID: `621db46d1d638ea850be2aa0`
+    /// - Gamemode: `blitz` (BLITZ)
+    /// - Timestamp: `1680053762145` (`2023-03-29T01:36:02.145Z`)
+    ///
     /// ```no_run
     /// use tetr_ch::client::{param::record::Gamemode, Client};
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Get the User Record.
+    /// // Get a record.
     /// let user = client.search_record(
+    ///     // User ID: `621db46d1d638ea850be2aa0`
     ///     "621db46d1d638ea850be2aa0",
+    ///     // Gamemode: `blitz` (BLITZ)
     ///     Gamemode::Blitz,
+    ///     // Timestamp: `1680053762145` (`2023-03-29T01:36:02.145Z`)
     ///     1680053762145
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn search_record(
         self,
         user_id: &str,
@@ -789,36 +739,29 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the latest news items in any stream.
+    /// Gets the latest news items in any stream.
+    ///
+    /// About the endpoint "All Latest News",
+    /// see the [API document](https://tetr.io/about/api/#newsall).
     ///
     /// # Arguments
     ///
-    /// - `limit`:The amount of entries to return,
+    /// - `limit` - The amount of entries to return,
     /// between 1 and 100. 25 by default.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Get the All Latest News.
+    /// // Get three latest news.
     /// let user = client.get_news_all(Some(3)).await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Error
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_news_all(self, limit: Option<u8>) -> RspErr<NewsAllResponse> {
         let mut query_param = Vec::new();
         if let Some(l) = limit {
@@ -837,42 +780,36 @@ impl Client {
         response(res).await
     }
 
-    /// Returns latest news items in the stream.
+    /// Gets the latest news items in the specified stream.
+    ///
+    /// About the endpoint "Latest News",
+    /// see the [API document](https://tetr.io/about/api/#newsstream).
     ///
     /// # Arguments
     ///
-    /// - `stream`: The news stream to look up.
-    ///
-    /// - `limit`: The amount of entries to return, between 1 and 100.
+    /// - `stream` - The news stream to look up.
+    /// - `limit` - The amount of entries to return, between 1 and 100.
     ///
     /// # Examples
     ///
+    /// Gets three latest news of the user `621db46d1d638ea850be2aa0`.
+    ///
     /// ```no_run
     /// use tetr_ch::client::{Client, param::news_stream::NewsStream};
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
     /// // Get the latest news.
     /// let user = client.get_news_latest(
-    ///     // News of the user `621db46d1d638ea850be2aa0`.
+    ///     // News of the user `621db46d1d638ea850be2aa0`
     ///     NewsStream::User("621db46d1d638ea850be2aa0".to_string()),
-    ///     // three news.
+    ///     // Three news
     ///     3,
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     ///
     /// # Panics
     ///
@@ -880,14 +817,14 @@ impl Client {
     ///
     /// ```should_panic,no_run
     /// use tetr_ch::client::{Client, param::news_stream::NewsStream};
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
     /// let user = client.get_news_latest(
+    ///     // Global news
     ///     NewsStream::Global,
-    ///     // 101 news. (not allowed)
+    ///     // 101 news (not allowed)
     ///     101,
     /// ).await?;
     /// # Ok(())
@@ -913,26 +850,28 @@ impl Client {
         response(res).await
     }
 
-    /// Searches for a TETR.IO user account by the social account.
+    /// Searches for a TETR.IO user account by the social connection.
+    ///
+    /// About the endpoint "User Search",
+    /// see the [API document](https://tetr.io/about/api/#userssearchquery).
     ///
     /// # Arguments
     ///
-    /// - `social_connection`:
-    ///
-    /// The social connection to look up.
-    /// This argument requires a [`search_user::SocialConnection`].
+    /// - `social_connection` - The social connection to look up.
     ///
     /// # Examples
     ///
+    /// Searches for a account by Discord ID `724976600873041940`.
+    ///
     /// ```no_run
     /// use tetr_ch::client::{Client, param::search_user::SocialConnection};
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Search for a TETR.IO user account.
+    /// // Search for a account.
     /// let user = client.search_user(
+    ///     // By Discord ID `724976600873041940`
     ///     SocialConnection::Discord("724976600873041940".to_string())
     /// ).await?;
     /// # Ok(())
@@ -940,15 +879,6 @@ impl Client {
     ///
     /// # tokio_test::block_on(run());
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn search_user(
         self,
         social_connection: SocialConnection,
@@ -958,39 +888,36 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the condensed graph of all of the user's records in the gamemode.
+    /// Gets the condensed graph of all of the specified user's records in the specified gamemode.
+    ///
+    /// About the endpoint "Labs Scoreflow",
+    /// see the [API document](https://tetr.io/about/api/#labsscoreflowusergamemode).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
-    /// - `gamemode`: The game mode to look up.
+    /// - `user` - The username or user ID to look up.
+    /// - `gamemode` - The game mode to look up.
     ///
     /// # Examples
     ///
+    /// Gets the graph of the 40 LINES records of the user `RINRIN-RS`.
+    ///
     /// ```no_run
     /// use tetr_ch::client::{param::record::Gamemode, Client};
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Get the Labs Scoreflow.
+    /// // Get the graph of the records.
     /// let user = client.get_labs_scoreflow(
+    ///     // Records of the user "RINRIN-RS"
     ///     "rinrin-rs",
+    ///     // 40 LINES records
     ///     Gamemode::FortyLines
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_labs_scoreflow(
         self,
         user: &str,
@@ -1006,102 +933,80 @@ impl Client {
         response(res).await
     }
 
-    /// Returns the condensed graph of all of the user's matches in TETRA LEAGUE.
+    /// Gets the condensed graph of all of the specified user's matches in TETRA LEAGUE.
+    ///
+    /// About the endpoint "Labs Leagueflow,
+    /// see the [API document](https://tetr.io/about/api/#labsleagueflowuser).
     ///
     /// # Arguments
     ///
-    /// - `user`: The username or user ID to look up.
+    /// - `user` - The username or user ID to look up.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Get the Labs Leagueflow.
+    /// // Get the graph of the matches of the user `RINRIN-RS` in TETRA LEAGUE.
     /// let user = client.get_labs_leagueflow("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_labs_leagueflow(self, user: &str) -> RspErr<LabsLeagueflowResponse> {
         let url = format!("{}labs/leagueflow/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the view over all TETRA LEAGUE ranks and their metadata.
+    /// Gets the view over all TETRA LEAGUE ranks and their metadata.
+    ///
+    /// About the endpoint "Labs League Ranks",
+    /// see the [API document](https://tetr.io/about/api/#labsleagueranks).
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Get the Labs League Ranks.
+    /// // Get the view over all TETRA LEAGUE ranks and their metadata.
     /// let user = client.get_labs_league_ranks().await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_labs_league_ranks(self) -> RspErr<LabsLeagueRanksResponse> {
         let url = format!("{}labs/league_ranks", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the data about the achievement itself, its cutoffs, and its leaderboard.
+    /// Gets the data about the specified achievement itself, its cutoffs, and its leaderboard.
+    ///
+    /// About the endpoint "Achievement Info",
+    /// see the [API document](https://tetr.io/about/api/#achievementsk).
     ///
     /// # Arguments
     ///
-    /// - `achievement_id`: The achievement ID to look up.
+    /// - `achievement_id` - The achievement ID to look up. (e.g. `"15"`)
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use tetr_ch::client::Client;
-    /// # use std::io;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Get the Achievement Info.
+    /// // Get the data about the achievement "15".
     /// let user = client.get_achievement_info("15").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
     pub async fn get_achievement_info(
         self,
         achievement_id: &str,

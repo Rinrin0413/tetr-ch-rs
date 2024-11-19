@@ -1,4 +1,4 @@
-//! Easy-to-use models of the various objects returned by the User Summaries API endpoint.
+//! Easy-to-use models of the various objects received from the User Summaries API endpoints.
 
 use crate::model::{achievement::Achievement, cache::CacheData};
 use serde::Deserialize;
@@ -11,8 +11,7 @@ pub mod record;
 pub mod zen;
 pub mod zenith;
 
-/// The response for the User Summary All data.
-/// An object containing all the user's summaries in one.
+/// A struct for the response for the endpoint "User Summary: All".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct AllSummariesResponse {
@@ -33,7 +32,7 @@ impl AsRef<AllSummariesResponse> for AllSummariesResponse {
     }
 }
 
-/// All the User Summary data.
+/// A struct that contains all summaries of a user in one.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct AllSummaries {

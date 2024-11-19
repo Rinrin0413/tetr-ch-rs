@@ -1,4 +1,6 @@
-//! A model for achievements.
+//! A model for the achievement data.
+//!
+//! For more details, see the [API document](https://tetr.io/about/api/#achievementdata).
 
 use serde::Deserialize;
 

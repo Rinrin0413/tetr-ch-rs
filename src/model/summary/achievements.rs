@@ -1,10 +1,12 @@
-//! The User Summary Achievements models.
+//! A model for the endpoint "User Summary: Achievements".
+//!
+//! About the endpoint "User Summary: Achievements",
+//! see the [API document](https://tetr.io/about/api/#usersusersummariesachievements).
 
 use crate::model::{achievement::Achievement, cache::CacheData};
 use serde::Deserialize;
 
-/// The response for the User Summary Achievements data.
-/// An object containing all the user's achievements.
+/// A struct for the response for the endpoint "User Summary: Achievements".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct AchievementsResponse {

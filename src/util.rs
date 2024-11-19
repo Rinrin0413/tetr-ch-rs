@@ -1,10 +1,10 @@
-//! Utilities for the tetr-ch-rs.
+//! Utilities for tetr-ch-rs.
 
 use chrono::DateTime;
 use serde::Deserialize;
 use serde_json::Value;
 
-/// Parses a RFC 3339 and ISO 8601 date to UNIX timestamp as `i64`.
+/// Parses an RFC 3339 and ISO 8601 date and time string into a UNIX timestamp.
 pub(crate) fn to_unix_ts(ts: &str) -> i64 {
     match DateTime::parse_from_rfc3339(ts) {
         Ok(dt) => dt.timestamp(),

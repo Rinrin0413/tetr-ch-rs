@@ -1,10 +1,12 @@
-//! The User Summary BLITZ models.
+//! Models for the endpoint "User Summary: BLITZ".
+//!
+//! About the endpoint "User Summary: BLITZ",
+//! see the [API document](https://tetr.io/about/api/#usersusersummariesblitz).
 
 use crate::model::{cache::CacheData, summary::record::Record};
 use serde::Deserialize;
 
-/// The response for the User Summary BLITZ data.
-/// An object describing a summary of the user's BLITZ games.
+/// A struct for the response for the endpoint "User Summary: BLITZ".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct BlitzResponse {
@@ -25,7 +27,7 @@ impl AsRef<BlitzResponse> for BlitzResponse {
     }
 }
 
-/// The User Summary BLITZ data.
+/// A struct that describes a summary of a user's BLITZ games.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Blitz {

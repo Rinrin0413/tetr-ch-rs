@@ -1,10 +1,14 @@
-//! The User Summaries QUICK PLAY, EXPERT QUICK PLAY models.
+//! Models for the endpoints "User Summary: QUICK PLAY", "User Summary: EXPERT QUICK PLAY".
+//!
+//! - About the endpoint "User Summary: QUICK PLAY",
+//! see the [API document](https://tetr.io/about/api/#usersusersummarieszenith).
+//! - About the endpoint "User Summary: EXPERT QUICK PLAY",
+//! see the [API document](https://tetr.io/about/api/#usersusersummarieszenithex).
 
 use crate::model::{cache::CacheData, summary::record::Record};
 use serde::Deserialize;
 
-/// The response for the User Summary QUICK PLAY data.
-/// An object describing a summary of the user's QUICK PLAY games.
+/// A struct for the response for the endpoint "User Summary: QUICK PLAY".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ZenithResponse {
@@ -25,7 +29,7 @@ impl AsRef<ZenithResponse> for ZenithResponse {
     }
 }
 
-/// The User Summary QUICK PLAY data.
+/// A struct that describes a summary of a user's QUICK PLAY or EXPERT QUICK PLAY games.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Zenith {
@@ -51,7 +55,7 @@ impl AsRef<Zenith> for Zenith {
     }
 }
 
-/// The user's career best QUICK PLAY data.
+/// A user's career best QUICK PLAY data.
 ///
 /// Career bests are only updated on revolve time
 /// (when the week changes, which is 12AM on Monday, UTC).
@@ -74,8 +78,7 @@ impl AsRef<ZenithBest> for ZenithBest {
     }
 }
 
-/// The response for the User Summary EXPERT QUICK PLAY data.
-/// An object describing a summary of the user's EXPERT QUICK PLAY games.
+/// A struct for the response for the endpoint "User Summary: EXPERT QUICK PLAY".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ZenithExResponse {
