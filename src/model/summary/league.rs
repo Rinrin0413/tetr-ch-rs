@@ -1,11 +1,13 @@
-//! The User Summary TETRA LEAGUE models.
+//! Models for the endpoint "User Summary: TETRA LEAGUE".
+//!
+//! About the endpoint "User Summary: TETRA LEAGUE",
+//! see the [API document](https://tetr.io/about/api/#usersusersummariesleague).
 
 use crate::model::{cache::CacheData, league_rank::Rank};
 use serde::Deserialize;
 use std::collections::HashMap;
 
-/// The response for the User Summary TETRA LEAGUE data.
-/// An object describing a summary of the user's TETRA LEAGUE standing.
+/// A struct for the response for the endpoint "User Summary: TETRA LEAGUE".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LeagueResponse {
@@ -26,7 +28,7 @@ impl AsRef<LeagueResponse> for LeagueResponse {
     }
 }
 
-/// The User Summary TETRA LEAGUE data.
+/// A struct that describes a summary of a user's TETRA LEAGUE standing.
 ///
 /// Season information is only saved if the user had finished placements in the season,
 /// and was not banned or hidden.
@@ -96,7 +98,9 @@ impl League {
     /// If there is no user's position in global leaderboards,
     /// `None` is returned.
     pub fn rank_progress(&self) -> Option<f64> {
-        if let (Some(standing), Some(prev_at), Some(next_at)) = (self.standing, self.prev_at, self.next_at) {
+        if let (Some(standing), Some(prev_at), Some(next_at)) =
+            (self.standing, self.prev_at, self.next_at)
+        {
             if prev_at < 0 || next_at < 0 {
                 return None;
             }
@@ -105,7 +109,7 @@ impl League {
             let next_at = next_at as f64;
             return Some((current_standing - prev_at) / (next_at - prev_at) * 100.);
         }
-        return None;
+        None
     }
 }
 
