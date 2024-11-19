@@ -1,9 +1,12 @@
-//! The Labs Leagueflow models.
+//! Models for the endpoint "Labs Leagueflow".
+//!
+//! About the endpoint "Labs Leagueflow",
+//! see the [API document](https://tetr.io/about/api/#labsleagueflowuser).
 
 use crate::model::cache::CacheData;
 use serde::Deserialize;
 
-/// The response for the Labs Leagueflow data.
+/// A struct for the response for the endpoint "Labs Leagueflow".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LabsLeagueflowResponse {
@@ -24,7 +27,7 @@ impl AsRef<LabsLeagueflowResponse> for LabsLeagueflowResponse {
     }
 }
 
-/// The Labs Leagueflow data.
+/// A condensed graph of all of a user's matches in TETRA LEAGUE.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LabsLeagueflow {
