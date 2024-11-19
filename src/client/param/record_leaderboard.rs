@@ -1,6 +1,7 @@
 //! Features for record leaderboards.
 
 use super::pagination::Bound;
+use crate::util::validate_limit;
 
 /// A record leaderboard ID.
 pub struct RecordsLeaderboardId {
@@ -213,46 +214,19 @@ impl SearchCriteria {
     /// let criteria = SearchCriteria::new().limit(101);
     /// ```
     pub fn limit(self, limit: u8) -> Self {
-        if (1..=100).contains(&limit) {
-            Self {
-                limit: Some(limit),
-                ..self
-            }
-        } else {
-            panic!(
-                "The argument `limit` must be between 1 and 100.\n\
-                Received: {}",
-                limit
-            );
+        validate_limit(limit);
+        Self {
+            limit: Some(limit),
+            ..self
         }
     }
 
-    /// Whether the search criteria `limit` is out of bounds.
+    /// # Panics
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use tetr_ch::client::param::record::SearchCriteria;
-    /// let invalid_criteria = SearchCriteria {
-    ///     limit: Some(0),
-    ///     ..SearchCriteria::new()
-    /// };
-    /// assert!(invalid_criteria.is_invalid_limit_range());
-    /// ```
-    ///
-    /// ```
-    /// # use tetr_ch::client::param::record::SearchCriteria;
-    /// let invalid_criteria = SearchCriteria {
-    ///     limit: Some(101),
-    ///     ..SearchCriteria::new()
-    /// };
-    /// assert!(invalid_criteria.is_invalid_limit_range());
-    /// ```
-    pub fn is_invalid_limit_range(&self) -> bool {
-        if let Some(l) = self.limit {
-            !(1..=100).contains(&l)
-        } else {
-            false
+    /// Panics if the limit is not between 1 and 100.
+    pub(crate) fn validate_limit(&self) {
+        if let Some(self_limit) = self.limit {
+            validate_limit(self_limit)
         }
     }
 
