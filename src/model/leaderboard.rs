@@ -1,4 +1,9 @@
-//! The User Leaderboard models.
+//! Models for the endpoints "User Leaderboard", "Historical User Leaderboard".
+//!
+//! - About the endpoint "User Leaderboard",
+//! see the [API document](https://tetr.io/about/api/#usersbyleaderboard).
+//! - About the endpoint "Historical User Leaderboard",
+//! see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
 
 use crate::{
     client::{error::RspErr, param::pagination::Prisecter},
@@ -12,9 +17,7 @@ use crate::{
 };
 use serde::Deserialize;
 
-/// The response for the User Leaderboard data.
-///
-/// An array of users fulfilling the search criteria.
+/// A struct for the response for the endpoint "User Leaderboard".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LeaderboardResponse {
@@ -35,7 +38,7 @@ impl AsRef<LeaderboardResponse> for LeaderboardResponse {
     }
 }
 
-/// The User Leaderboard data.
+/// An array of users. (user leaderboard)
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Leaderboard {
@@ -49,7 +52,7 @@ impl AsRef<Leaderboard> for Leaderboard {
     }
 }
 
-/// An entry in the User Leaderboard.
+/// An entry as a user.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LeaderboardEntry {
@@ -101,16 +104,20 @@ pub struct LeaderboardEntry {
 }
 
 impl LeaderboardEntry {
-    /// Gets the user's data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.id.get_user().await
     }
@@ -197,7 +204,7 @@ impl AsRef<LeaderboardEntry> for LeaderboardEntry {
     }
 }
 
-/// The user's current TETRA LEAGUE standing.
+/// A user's current TETRA LEAGUE standing.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct League {
@@ -237,9 +244,7 @@ impl AsRef<League> for League {
     }
 }
 
-/// The response for the Historical User Leaderboard data.
-///
-/// An array of historical user blobs fulfilling the search criteria.
+/// A struct for the response for the endpoint "Historical User Leaderboard".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct HistoricalLeaderboardResponse {
@@ -260,7 +265,7 @@ impl AsRef<HistoricalLeaderboardResponse> for HistoricalLeaderboardResponse {
     }
 }
 
-/// The Historical User Leaderboard data.
+/// An array of historical user blobs. (user leaderboard)
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct HistoricalLeaderboard {
@@ -274,7 +279,7 @@ impl AsRef<HistoricalLeaderboard> for HistoricalLeaderboard {
     }
 }
 
-/// An entry in the Historical User Leaderboard.
+/// An entry as a historical user blobs.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct HistoricalEntry {
@@ -326,16 +331,20 @@ pub struct HistoricalEntry {
 }
 
 impl HistoricalEntry {
-    /// Gets the user's data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.id.get_user().await
     }
