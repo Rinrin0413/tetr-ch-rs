@@ -747,8 +747,7 @@ impl Client {
     ///
     /// # Arguments
     ///
-    /// - `limit` - The amount of entries to return,
-    /// between 1 and 100. 25 by default.
+    /// - `limit` - The amount of entries to return, between 1 and 100.
     ///
     /// # Examples
     ///
@@ -759,25 +758,26 @@ impl Client {
     /// let client = Client::new();
     ///
     /// // Get three latest news.
-    /// let user = client.get_news_all(Some(3)).await?;
+    /// let user = client.get_news_all(3).await?;
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_news_all(self, limit: Option<u8>) -> RspErr<NewsAllResponse> {
-        let mut query_param = Vec::new();
-        if let Some(l) = limit {
-            if !(1..=100).contains(&l) {
-                // !(1 <= limit && limit <= 100)
-                panic!(
-                    "The query parameter`limit` must be between 1 and 100.\n\
-                    Received: {}",
-                    l
-                );
-            }
-            query_param.push(("limit", l.to_string()));
+    pub async fn get_news_all(self, limit: u8) -> RspErr<NewsAllResponse> {
+        if !(1..=100).contains(&limit) {
+            // !(1 <= limit && limit <= 100)
+            panic!(
+                "The query parameter`limit` must be between 1 and 100.\n\
+                Received: {}",
+                limit
+            );
         }
         let url = format!("{}news/", API_URL);
-        let res = self.client.get(url).query(&query_param).send().await;
+        let res = self
+            .client
+            .get(url)
+            .query(&[("limit", limit.to_string())])
+            .send()
+            .await;
         response(res).await
     }
 
