@@ -1,4 +1,7 @@
-//! The User Info models.
+//! Models for the endpoint "User Info", and its related types.
+//!
+//! About the endpoint "User Info",
+//! see the [API document](https://tetr.io/about/api/#usersuser).
 
 use crate::{
     client::{error::RspErr, Client},
@@ -8,8 +11,7 @@ use crate::{
 use serde::Deserialize;
 use std::fmt;
 
-/// The response for User Info data.
-/// An object describing the user in detail.
+/// A struct for the response for the endpoint "User Info".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserResponse {
@@ -30,7 +32,7 @@ impl AsRef<UserResponse> for UserResponse {
     }
 }
 
-/// The User Info data.
+/// A struct that describes a user in detail.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct User {
@@ -236,7 +238,7 @@ impl AsRef<User> for User {
     }
 }
 
-/// The user's badges.
+/// A user's badge.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Badge {
@@ -284,7 +286,7 @@ impl AsRef<Badge> for Badge {
     }
 }
 
-/// This user's third party connections.
+/// A user's third party connections.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Connections {
@@ -333,7 +335,7 @@ impl AsRef<Connections> for Connections {
     }
 }
 
-/// This user's connection.
+/// A user's connection.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Connection {
@@ -351,7 +353,7 @@ impl AsRef<Connection> for Connection {
     }
 }
 
-/// This user's distinguishment banner.
+/// A user's distinguishment banner.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Distinguishment {
@@ -378,7 +380,7 @@ impl AsRef<Distinguishment> for Distinguishment {
     }
 }
 
-/// The breakdown of the source of this user's Achievement Rating.
+/// A breakdown of the source of a user's Achievement Rating.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct AchievementRatingCounts {
@@ -426,7 +428,7 @@ impl AsRef<AchievementRatingCounts> for AchievementRatingCounts {
     }
 }
 
-/// The user's internal ID.
+/// A user's internal ID.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
 pub struct UserId(pub String);
 
@@ -437,16 +439,20 @@ impl UserId {
         &self.0
     }
 
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.to_string()).await
     }
