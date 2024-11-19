@@ -169,6 +169,10 @@ impl User {
     /// Returns an UNIX timestamp when the user's account created.
     ///
     /// If the account was created before join dates were recorded, `None` is returned.
+    ///
+    /// # Panics
+    ///
+    /// Panics if failed to parse the timestamp.
     pub fn created_at(&self) -> Option<i64> {
         self.created_at.as_ref().map(|ts| to_unix_ts(ts))
     }
@@ -275,6 +279,10 @@ impl Badge {
     }
 
     /// Returns a UNIX timestamp when the badge was achieved.
+    ///
+    /// # Panics
+    ///
+    /// Panics if failed to parse the timestamp.
     pub fn received_at(&self) -> Option<i64> {
         self.received_at.as_ref().map(|ts| to_unix_ts(ts))
     }

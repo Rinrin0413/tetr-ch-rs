@@ -441,6 +441,32 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the search criteria `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::client::{
+    /// #     Client,
+    /// #     param::user_leaderboard::{self, LeaderboardType}
+    /// # };
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = user_leaderboard::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// // Panics!
+    /// let user = client.get_leaderboard(
+    ///     LeaderboardType::League,
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn get_leaderboard(
         self,
         leaderboard: LeaderboardType,
@@ -501,6 +527,32 @@ impl Client {
     /// // Get the array.
     /// let user = client.get_historical_league_leaderboard(
     ///     // Season 1
+    ///     "1",
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the search criteria `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::client::{
+    /// #     Client,
+    /// #     param::user_leaderboard::{self, LeaderboardType}
+    /// # };
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = user_leaderboard::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// // Panics!
+    /// let user = client.get_historical_league_leaderboard(
     ///     "1",
     ///     Some(criteria)
     /// ).await?;
@@ -576,6 +628,34 @@ impl Client {
     ///     // 40 LINES
     ///     Gamemode::FortyLines,
     ///     // Top score leaderboard
+    ///     LeaderboardType::Top,
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the search criteria `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::client::{
+    /// #     Client,
+    /// #     param::record::{self, Gamemode, LeaderboardType}
+    /// # };
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = record::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// // Panics!
+    /// let user = client.get_user_records(
+    ///     "rinrin-rs",
+    ///     Gamemode::FortyLines,
     ///     LeaderboardType::Top,
     ///     Some(criteria)
     /// ).await?;
@@ -659,6 +739,36 @@ impl Client {
     ///         Some("@2024w31")
     ///     ),
     ///    Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the search criteria `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::client::{
+    /// #     Client,
+    /// #     param::record_leaderboard::{self, RecordsLeaderboardId, Scope}
+    /// # };
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = record_leaderboard::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// // Panics!
+    /// let user = client.get_records_leaderboard(
+    ///     RecordsLeaderboardId::new(
+    ///         "zenith",
+    ///         Scope::Global,
+    ///         None
+    ///     ),
+    ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
     /// # }
@@ -762,6 +872,21 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the argument `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::client::Client;
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// // Panics!
+    /// // Because the limit is 101 (out of bounds)
+    /// let user = client.get_news_all(101).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn get_news_all(self, limit: u8) -> RspErr<NewsAllResponse> {
         if !(1..=100).contains(&limit) {
             // !(1 <= limit && limit <= 100)
@@ -814,24 +939,20 @@ impl Client {
     ///
     /// # Panics
     ///
-    /// Panics if the query parameter `limit` is not between 1 and 100.
+    /// Panics if the argument `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// use tetr_ch::client::{Client, param::news_stream::NewsStream};
-    ///
+    /// # use tetr_ch::client::{Client, param::news_stream::NewsStream};
     /// # async fn run() -> std::io::Result<()> {
-    /// let client = Client::new();
-    ///
+    /// # let client = Client::new();
+    /// // Panics!
     /// let user = client.get_news_latest(
-    ///     // Global news
     ///     NewsStream::Global,
-    ///     // 101 news (not allowed)
+    ///     // 101 news (out of bounds)
     ///     101,
     /// ).await?;
     /// # Ok(())
     /// # }
-    ///
-    /// # tokio_test::block_on(run());
     /// ```
     pub async fn get_news_latest(
         self,
