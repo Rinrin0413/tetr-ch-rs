@@ -1,4 +1,4 @@
-//! An error enum for the response handling.
+//! A module for the error related types for the [`client`](crate::client) module.
 
 use http::status::{InvalidStatusCode, StatusCode};
 use std::error::Error;
@@ -7,12 +7,17 @@ use std::fmt;
 /// A enum for the response handling errors.
 #[derive(Debug)]
 pub enum ResponseError {
-    /// When there are some mismatches in the API docs,
-    /// or when this library is defective.
-    DeserializeErr(String),
-    /// When the request is invalid.
+    /// The request failed.
     RequestErr(String),
-    /// When the HTTP request fails.
+    /// The response did not match the expected format but the HTTP request succeeded.
+    ///
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    DeserializeErr(String),
+    /// The HTTP request failed and the response did not match the expected format.
+    ///
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     HttpErr(Status),
 }
 
@@ -43,8 +48,10 @@ impl From<ResponseError> for std::io::Error {
 /// A HTTP status code.
 #[derive(Debug)]
 pub enum Status {
+    /// A valid HTTP status code.
     /// If the status code greater or equal to 100 but less than 600.
     Valid(StatusCode),
+    /// An invalid HTTP status code.
     /// If the status code less than 100 or greater than 599.
     Invalid(InvalidStatusCode),
 }
