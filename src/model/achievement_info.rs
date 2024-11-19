@@ -1,4 +1,7 @@
-//! The Achievement Info models.
+//! Models for the endpoint "Achievement Info".
+//!
+//! About the endpoint "Achievement Info",
+//! see the [API document](https://tetr.io/about/api/#achievementsk).
 
 use crate::{
     client::error::RspErr,
@@ -11,9 +14,7 @@ use crate::{
 };
 use serde::Deserialize;
 
-/// The response for the Achievement Info data.
-///
-/// Data about the achievement itself, its cutoffs, and its leaderboard.
+/// A struct for the response for the endpoint "Achievement Info".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct AchievementInfoResponse {
@@ -34,7 +35,7 @@ impl AsRef<AchievementInfoResponse> for AchievementInfoResponse {
     }
 }
 
-/// The Achievement Info data.
+/// Data about an achievement itself, its cutoffs, and its leaderboard.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct AchievementInfo {
@@ -95,16 +96,20 @@ pub struct User {
 }
 
 impl User {
-    /// Gets the user's data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.id.get_user().await
     }
