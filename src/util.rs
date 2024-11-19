@@ -10,10 +10,9 @@ use serde_json::Value;
 ///
 /// Panics if failed to parse the given string.
 pub(crate) fn to_unix_ts(ts: &str) -> i64 {
-    match DateTime::parse_from_rfc3339(ts) {
-        Ok(dt) => dt.timestamp(),
-        Err(e) => panic!("{}", e),
-    }
+    DateTime::parse_from_rfc3339(ts)
+        .expect("Failed to parse the given string.")
+        .timestamp()
 }
 
 /// Compares and returns the maximum of two 64bit floats`.
@@ -41,6 +40,18 @@ where
     } else {
         Ok(None)
     }
+}
+
+/// # Panics
+///
+/// Panics with a message "The limit must be between 1 and 100, but got X."
+/// if the given value is not between 1 and 100.
+pub(crate) fn validate_limit(value: u8) {
+    assert!(
+        (1..=100).contains(&value),
+        "The limit must be between 1 and 100, but got {}.",
+        value
+    );
 }
 
 #[cfg(test)]

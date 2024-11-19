@@ -11,30 +11,33 @@ use self::{
     },
     response::response,
 };
-use crate::model::{
-    achievement_info::AchievementInfoResponse,
-    labs::{
-        league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
-        scoreflow::LabsScoreflowResponse,
+use crate::{
+    model::{
+        achievement_info::AchievementInfoResponse,
+        labs::{
+            league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
+            scoreflow::LabsScoreflowResponse,
+        },
+        leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
+        news::{NewsAllResponse, NewsLatestResponse},
+        records_leaderboard::RecordsLeaderboardResponse,
+        searched_record::SearchedRecordResponse,
+        searched_user::SearchedUserResponse,
+        server_activity::ServerActivityResponse,
+        server_stats::ServerStatsResponse,
+        summary::{
+            achievements::AchievementsResponse,
+            blitz::BlitzResponse,
+            forty_lines::FortyLinesResponse,
+            league::LeagueResponse,
+            zen::ZenResponse,
+            zenith::{ZenithExResponse, ZenithResponse},
+            AllSummariesResponse,
+        },
+        user::UserResponse,
+        user_records::UserRecordsResponse,
     },
-    leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
-    news::{NewsAllResponse, NewsLatestResponse},
-    records_leaderboard::RecordsLeaderboardResponse,
-    searched_record::SearchedRecordResponse,
-    searched_user::SearchedUserResponse,
-    server_activity::ServerActivityResponse,
-    server_stats::ServerStatsResponse,
-    summary::{
-        achievements::AchievementsResponse,
-        blitz::BlitzResponse,
-        forty_lines::FortyLinesResponse,
-        league::LeagueResponse,
-        zen::ZenResponse,
-        zenith::{ZenithExResponse, ZenithResponse},
-        AllSummariesResponse,
-    },
-    user::UserResponse,
-    user_records::UserRecordsResponse,
+    util::validate_limit,
 };
 use reqwest::{self};
 
@@ -474,13 +477,7 @@ impl Client {
     ) -> RspErr<LeaderboardResponse> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
-            if criteria.is_invalid_limit_range() {
-                panic!(
-                    "The query parameter`limit` must be between 0 and 100.\n\
-                    Received: {}",
-                    criteria.limit.unwrap()
-                );
-            }
+            criteria.validate_limit();
             query_params = criteria.build();
         }
         let url = format!("{}users/by/{}", API_URL, leaderboard.to_param());
@@ -566,13 +563,7 @@ impl Client {
     ) -> RspErr<HistoricalLeaderboardResponse> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
-            if criteria.is_invalid_limit_range() {
-                panic!(
-                    "The query parameter`limit` must be between 0 and 100.\n\
-                    Received: {}",
-                    criteria.limit.unwrap()
-                );
-            }
+            criteria.validate_limit();
             query_params = criteria.build();
         }
         let url = format!(
@@ -671,13 +662,7 @@ impl Client {
     ) -> RspErr<UserRecordsResponse> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
-            if criteria.is_invalid_limit_range() {
-                panic!(
-                    "The query parameter`limit` must be between 0 and 100.\n\
-                    Received: {}",
-                    criteria.limit.unwrap()
-                );
-            }
+            criteria.validate_limit();
             query_params = criteria.build();
         }
         let url = format!(
@@ -780,13 +765,7 @@ impl Client {
     ) -> RspErr<RecordsLeaderboardResponse> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
-            if criteria.is_invalid_limit_range() {
-                panic!(
-                    "The query parameter`limit` must be between 0 and 100.\n\
-                    Received: {}",
-                    criteria.limit.unwrap()
-                );
-            }
+            criteria.validate_limit();
             query_params = criteria.build();
         }
         let url = format!("{}records/{}", API_URL, leaderboard.to_param());
@@ -888,14 +867,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_news_all(self, limit: u8) -> RspErr<NewsAllResponse> {
-        if !(1..=100).contains(&limit) {
-            // !(1 <= limit && limit <= 100)
-            panic!(
-                "The query parameter`limit` must be between 1 and 100.\n\
-                Received: {}",
-                limit
-            );
-        }
+        validate_limit(limit);
         let url = format!("{}news/", API_URL);
         let res = self
             .client
@@ -959,14 +931,7 @@ impl Client {
         stream: NewsStream,
         limit: u8,
     ) -> RspErr<NewsLatestResponse> {
-        if !(1..=100).contains(&limit) {
-            // !(1 <= limit && limit <= 100)
-            panic!(
-                "The query parameter`limit` must be between 1 and 100.\n\
-                Received: {}",
-                limit
-            );
-        }
+        validate_limit(limit);
         let url = format!("{}news/{}", API_URL, stream.to_param());
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
         response(res).await
