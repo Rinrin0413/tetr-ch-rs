@@ -49,10 +49,12 @@ impl RecordsLeaderboardId {
     /// assert_eq!(id3.to_param(), "zenith_global@2024w31");
     /// ```
     pub(crate) fn to_param(&self) -> String {
-        match &self.scope {
-            Scope::Global => format!("{}_global", self.gamemode),
-            Scope::Country(c) => format!("{}_country_{}", self.gamemode, c.to_uppercase()),
-        }
+        let scope = match &self.scope {
+            Scope::Global => "global".to_string(),
+            Scope::Country(c) => format!("country_{}", c.to_uppercase()),
+        };
+        let revolution_id = self.revolution_id.as_deref().unwrap_or("");
+        format!("{}_{}{}", self.gamemode, scope, revolution_id)
     }
 }
 

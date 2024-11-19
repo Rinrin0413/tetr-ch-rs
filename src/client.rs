@@ -627,7 +627,7 @@ impl Client {
     ///
     /// - Upper bound is `[500000, 0, 0]`
     /// - Three entries
-    /// - Game mode: `blitz` (BLITZ)
+    /// - Game mode: `zenith` (QUICK PLAY)
     /// - Scope: `JP` (Japan)
     /// - Revolution ID: `@2024w31`
     ///
@@ -649,10 +649,10 @@ impl Client {
     ///
     /// // Get the record leaderboard.
     /// let user = client.get_records_leaderboard(
-    ///     // Record leaderboard ID: `blitz_country_JP@2024w31`
+    ///     // Record leaderboard ID: `zenith_country_JP@2024w31`
     ///     RecordsLeaderboardId::new(
-    ///         // Game mode: `blitz` (BLITZ)
-    ///         "blitz",
+    ///         // Game mode: `zenith` (QUICK PLAY)
+    ///         "zenith",
     ///         // Scope: `JP` (Japan)
     ///         Scope::Country("JP".to_string()),
     ///         // Revolution ID: `@2024w31`
