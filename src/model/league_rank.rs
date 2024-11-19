@@ -1,63 +1,63 @@
-//! Ranks in TETRA LEAGUE.
+//! A model for the ranks in TETRA LEAGUE.
 
 use serde::Deserialize;
 use std::fmt::{self, Display, Formatter};
 
-/// A rank in TETRA LEAGUE.
+/// A enum for the ranks in TETRA LEAGUE.
 #[derive(Clone, Debug, Deserialize)]
 pub enum Rank {
-    /// The D rank.
+    /// D rank.
     #[serde(rename = "d")]
     D,
-    /// The D+ rank.
+    /// D+ rank.
     #[serde(rename = "d+")]
     DPlus,
-    /// The C- rank.
+    /// C- rank.
     #[serde(rename = "c-")]
     CMinus,
-    /// The C rank.
+    /// C rank.
     #[serde(rename = "c")]
     C,
-    /// The C+ rank.
+    /// C+ rank.
     #[serde(rename = "c+")]
     CPlus,
-    /// The B- rank.
+    /// B- rank.
     #[serde(rename = "b-")]
     BMinus,
-    /// The B rank.
+    /// B rank.
     #[serde(rename = "b")]
     B,
-    /// The B+ rank.
+    /// B+ rank.
     #[serde(rename = "b+")]
     BPlus,
-    /// The A- rank.
+    /// A- rank.
     #[serde(rename = "a-")]
     AMinus,
-    /// The A rank.
+    /// A rank.
     #[serde(rename = "a")]
     A,
-    /// The A+ rank.
+    /// A+ rank.
     #[serde(rename = "a+")]
     APlus,
-    /// The S- rank.
+    /// S- rank.
     #[serde(rename = "s-")]
     SMinus,
-    /// The S rank.
+    /// S rank.
     #[serde(rename = "s")]
     S,
-    /// The S+ rank.
+    /// S+ rank.
     #[serde(rename = "s+")]
     SPlus,
-    /// The SS rank.
+    /// SS rank.
     #[serde(rename = "ss")]
     SS,
-    /// The U rank.
+    /// U rank.
     #[serde(rename = "u")]
     U,
-    /// The X rank.
+    /// X rank.
     #[serde(rename = "x")]
     X,
-    /// The X+ rank.
+    /// X+ rank.
     #[serde(rename = "x+")]
     XPlus,
     /// Unranked.
