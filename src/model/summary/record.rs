@@ -1,4 +1,6 @@
-//! The Record Data models.
+//! Models for the record data.
+//!
+//! For more details, see the [API document](https://tetr.io/about/api/#recorddata).
 
 use crate::{
     client::{error::RspErr, param::pagination::Prisecter},
@@ -11,11 +13,11 @@ use crate::{
 use serde::Deserialize;
 use std::collections::HashMap;
 
-/// The record data.
-/// Achieved scores and matches.
+/// A record data.
+/// Includes achieved scores and matches.
 ///
-/// ***This structure may be changed drastically at any time.
-/// See the [official API documentation](https://tetr.io/about/api/#recorddata) for more information.**
+/// ***This structure may be changed drastically at any time.**  
+/// For more details, see the [API document](https://tetr.io/about/api/#recorddata).
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Record {
@@ -88,7 +90,7 @@ impl AsRef<Record> for Record {
     }
 }
 
-/// The User owning the Record.
+/// A User owning a Record.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct User {
@@ -108,16 +110,20 @@ pub struct User {
 }
 
 impl User {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.id.get_user().await
     }
@@ -182,7 +188,7 @@ impl AsRef<User> for User {
     }
 }
 
-/// The results of a Record.
+/// Results of a Record.
 ///
 /// If [`Record::other_users`] is empty, this is [`SinglePlayer`](`Results::SinglePlayer`).
 /// Otherwise, this is [`MultiPlayer`](`Results::MultiPlayer`).
@@ -193,11 +199,11 @@ impl AsRef<User> for User {
 #[serde(untagged)]
 #[non_exhaustive]
 pub enum Results {
-    /// The results for a single-player games.
+    /// Results for a single-player games.
     SinglePlayer(SinglePlayerResults),
-    /// The results for a multi-player games.
+    /// Results for a multi-player games.
     MultiPlayer(MultiPlayerResults),
-    /// An unknown result type.
+    /// Unknown structure.
     Unknown(serde_json::Value),
 }
 
@@ -224,7 +230,7 @@ impl AsRef<Results> for Results {
     }
 }
 
-/// The results for a single-player games.
+/// Results for a single-player games.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct SinglePlayerResults {
@@ -245,7 +251,7 @@ impl AsRef<SinglePlayerResults> for SinglePlayerResults {
     }
 }
 
-/// The results of a multi-player games.
+/// Results of a multi-player games.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct MultiPlayerResults {
@@ -261,7 +267,7 @@ impl AsRef<MultiPlayerResults> for MultiPlayerResults {
     }
 }
 
-/// The stats of a player in a multi-player game.
+/// Stats of a player in a multi-player game.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct PlayerStats {
@@ -280,16 +286,20 @@ pub struct PlayerStats {
 }
 
 impl PlayerStats {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.id.get_user().await
     }
@@ -306,7 +316,7 @@ impl AsRef<PlayerStats> for PlayerStats {
     }
 }
 
-/// The stats of a round in a multi-player game.
+/// Stats of a round in a multi-player game.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct PlayerStatsRound {
@@ -328,16 +338,20 @@ pub struct PlayerStatsRound {
 }
 
 impl PlayerStatsRound {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.id.get_user().await
     }
