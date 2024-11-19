@@ -1,4 +1,4 @@
-//! A model for user roles.
+//! A model for the user roles.
 
 use serde::Deserialize;
 use std::fmt;
