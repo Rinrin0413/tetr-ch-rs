@@ -1,10 +1,12 @@
-//! The User Summary ZEN models.
+//! Models for the endpoint "User Summary: ZEN".
+//!
+//! About the endpoint "User Summary: ZEN",
+//! see the [API document](https://tetr.io/about/api/#usersusersummarieszen).
 
 use crate::model::cache::CacheData;
 use serde::Deserialize;
 
-/// The response for the User Summary ZEN data.
-/// An object describing a summary of the user's ZEN progress.
+/// A struct for the response for the endpoint "User Summary: ZEN".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct ZenResponse {
@@ -25,13 +27,13 @@ impl AsRef<ZenResponse> for ZenResponse {
     }
 }
 
-/// The User Summary ZEN data.
+/// A struct that describes a summary of a user's ZEN progress.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Zen {
-    /// The user's level.
+    /// The user's ZEN level.
     pub level: u32,
-    /// The user's score.
+    /// The user's ZEN score.
     pub score: f64,
 }
 
