@@ -1,11 +1,12 @@
-//! The Records Leaderboard models.
+//! Models for the endpoint "Records Leaderboard".
+//!
+//! About the endpoint "Records Leaderboard",
+//! see the [API document](https://tetr.io/about/api/#recordsleaderboard).
 
 use crate::model::{cache::CacheData, summary::record::Record};
 use serde::Deserialize;
 
-/// The response for the Records Leaderboard data.
-///
-/// A list of Records fulfilling the search criteria.
+/// An struct for the response for the endpoint "Records Leaderboard".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct RecordsLeaderboardResponse {
@@ -26,7 +27,7 @@ impl AsRef<RecordsLeaderboardResponse> for RecordsLeaderboardResponse {
     }
 }
 
-/// The Records Leaderboard data.
+/// An array of records.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct RecordsLeaderboard {
