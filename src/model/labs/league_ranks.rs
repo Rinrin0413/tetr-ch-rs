@@ -1,9 +1,12 @@
-//! The Labs League Ranks models.
+//! Models for the endpoint "Labs League Ranks".
+//!
+//! About the endpoint "Labs League Ranks",
+//! see the [API document](https://tetr.io/about/api/#labsleagueranks).
 
 use crate::model::cache::CacheData;
 use serde::Deserialize;
 
-/// The response for the Labs League Ranks data.
+/// A struct for the response for the endpoint "Labs League Ranks".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LabsLeagueRanksResponse {
@@ -24,7 +27,7 @@ impl AsRef<LabsLeagueRanksResponse> for LabsLeagueRanksResponse {
     }
 }
 
-/// The Labs League Ranks data.
+/// A view over all TETRA LEAGUE ranks and their metadata.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LabsLeagueRanks {
@@ -47,9 +50,10 @@ impl AsRef<LabsLeagueRanks> for LabsLeagueRanks {
     }
 }
 
-/// The data point for the Labs League Ranks data.
+/// A data point.
 ///
-/// If there are any unwrapped ranks, please create an Issue on GitHub.
+/// If there are any unwrapped ranks,
+/// please [create an Issue on GitHub](https://github.com/Rinrin0413/tetr-ch-rs/issues/new).
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LeagueRanksData {
@@ -117,7 +121,7 @@ impl AsRef<LeagueRanksData> for LeagueRanksData {
     }
 }
 
-/// The data for a rank.
+/// A rank's data.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct RankData {
