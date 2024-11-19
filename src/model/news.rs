@@ -1,4 +1,9 @@
-//! The Latest News models.
+//! Models for the TETRA NEWS endpoints.
+//!
+//! - About the endpoint "All Latest News",
+//! see the [API document](https://tetr.io/about/api/#newsall).
+//! - About the endpoint "Latest News",
+//! see the [API document](https://tetr.io/about/api/#newsstream).
 
 use crate::{
     client::{error::RspErr, Client},
@@ -11,9 +16,7 @@ use crate::{
 };
 use serde::Deserialize;
 
-/// The response for the All Latest News data.
-///
-/// The latest news items in any stream.
+/// A struct for the response for the endpoint "All Latest News".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct NewsAllResponse {
@@ -34,7 +37,7 @@ impl AsRef<NewsAllResponse> for NewsAllResponse {
     }
 }
 
-/// The All Latest News data.
+/// Latest news items.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct NewsItems {
@@ -67,16 +70,20 @@ pub struct News {
 }
 
 impl News {
-    /// Gets the user's data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         self.id.get_user().await
     }
@@ -93,11 +100,12 @@ impl AsRef<News> for News {
     }
 }
 
-/// The data of a news item.
+/// A news data.
 ///
 /// News data may be stored in different enumerators depending on the type of news item.
 ///
-/// ***New news types may be added at any moment.**
+/// ***New news types may be added at any moment.**  
+/// For more details, see the [API document](https://tetr.io/about/api/#newsdata).
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 #[non_exhaustive]
@@ -164,7 +172,7 @@ impl AsRef<NewsData> for NewsData {
     }
 }
 
-/// The data of a leaderboard news item.
+/// A data of a leaderboard news item.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct LeaderboardNews {
@@ -182,16 +190,20 @@ pub struct LeaderboardNews {
 }
 
 impl LeaderboardNews {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.username).await
     }
@@ -213,7 +225,7 @@ impl AsRef<LeaderboardNews> for LeaderboardNews {
     }
 }
 
-/// The data of a personal best news item.
+/// A data of a personal best news item.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct PersonalBestNews {
@@ -229,16 +241,20 @@ pub struct PersonalBestNews {
 }
 
 impl PersonalBestNews {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.username).await
     }
@@ -260,7 +276,7 @@ impl AsRef<PersonalBestNews> for PersonalBestNews {
     }
 }
 
-/// The data of a badge news item.
+/// A data of a badge news item.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct BadgeNews {
@@ -274,16 +290,20 @@ pub struct BadgeNews {
 }
 
 impl BadgeNews {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.username).await
     }
@@ -305,7 +325,7 @@ impl AsRef<BadgeNews> for BadgeNews {
     }
 }
 
-/// The data of a rank up news item.
+/// A data of a rank up news item.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct RankUpNews {
@@ -316,16 +336,20 @@ pub struct RankUpNews {
 }
 
 impl RankUpNews {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.username).await
     }
@@ -342,7 +366,7 @@ impl AsRef<RankUpNews> for RankUpNews {
     }
 }
 
-/// The data of a supporter news item.
+/// A data of a supporter news item.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct SupporterNews {
@@ -351,16 +375,20 @@ pub struct SupporterNews {
 }
 
 impl SupporterNews {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.username).await
     }
@@ -377,7 +405,7 @@ impl AsRef<SupporterNews> for SupporterNews {
     }
 }
 
-/// The data of a supporter gift news item.
+/// A data of a supporter gift news item.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct SupporterGiftNews {
@@ -386,16 +414,20 @@ pub struct SupporterGiftNews {
 }
 
 impl SupporterGiftNews {
-    /// Gets the User Info data.
+    /// Gets the detailed information about the user.
     ///
     /// # Errors
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
+    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    /// if the request failed.
+    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    /// if the response did not match the expected format but the HTTP request succeeded.
+    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    /// if the HTTP request failed and the response did not match the expected format.
+    /// Even if the HTTP request failed,
+    /// it may be possible to deserialize the response containing an error message,
+    /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.username).await
     }
@@ -406,9 +438,7 @@ impl SupporterGiftNews {
     }
 }
 
-/// The response for the Latest News data.
-///
-/// The latest news items in the stream.
+/// A struct for the response for the endpoint "Latest News".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct NewsLatestResponse {
