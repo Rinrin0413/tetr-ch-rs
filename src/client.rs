@@ -20,6 +20,7 @@ use crate::model::{
     leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
     news::{NewsAllResponse, NewsLatestResponse},
     records_leaderboard::RecordsLeaderboardResponse,
+    searched_record::SearchedRecordResponse,
     searched_user::SearchedUserResponse,
     server_activity::ServerActivityResponse,
     server_stats::ServerStatsResponse,
@@ -728,7 +729,7 @@ impl Client {
         user_id: &str,
         gamemode: Gamemode,
         timestamp: i64,
-    ) -> RspErr<serde_json::Value> {
+    ) -> RspErr<SearchedRecordResponse> {
         let query_params = [
             ("user", user_id.to_string()),
             ("gamemode", gamemode.to_param()),
