@@ -89,6 +89,10 @@ impl News {
     }
 
     /// Returns an UNIX timestamp when the news item was created.
+    ///
+    /// # Panics
+    ///
+    /// Panics if failed to parse the timestamp.
     pub fn created_at(&self) -> i64 {
         to_unix_ts(&self.created_at)
     }

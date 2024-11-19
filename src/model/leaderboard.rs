@@ -184,6 +184,10 @@ impl LeaderboardEntry {
     ///
     /// If this account was created before join dates were recorded,
     /// `None` is returned.
+    ///
+    /// # Panics
+    ///
+    /// Panics if failed to parse the timestamp.
     pub fn account_created_at(&self) -> Option<i64> {
         self.account_created_at.as_ref().map(|ts| to_unix_ts(ts))
     }

@@ -79,6 +79,10 @@ impl Record {
     }
 
     /// Returns a UNIX timestamp when the record was submitted.
+    ///
+    /// # Panics
+    ///
+    /// Panics if failed to parse the timestamp.
     pub fn submitted_at(&self) -> i64 {
         to_unix_ts(&self.submitted_at)
     }

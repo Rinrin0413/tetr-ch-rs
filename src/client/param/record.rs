@@ -217,14 +217,12 @@ impl SearchCriteria {
     ///
     /// ```should_panic
     /// # use tetr_ch::client::param::record::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.limit(0);
+    /// let mut criteria = SearchCriteria::new().limit(0);
     /// ```
     ///
     /// ```should_panic
     /// # use tetr_ch::client::param::record::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.limit(101);
+    /// let mut criteria = SearchCriteria::new().limit(101);
     /// ```
     pub fn limit(self, limit: u8) -> Self {
         if (1..=100).contains(&limit) {

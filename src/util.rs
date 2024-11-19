@@ -5,6 +5,10 @@ use serde::Deserialize;
 use serde_json::Value;
 
 /// Parses an RFC 3339 and ISO 8601 date and time string into a UNIX timestamp.
+///
+/// # Panics
+///
+/// Panics if failed to parse the given string.
 pub(crate) fn to_unix_ts(ts: &str) -> i64 {
     match DateTime::parse_from_rfc3339(ts) {
         Ok(dt) => dt.timestamp(),
