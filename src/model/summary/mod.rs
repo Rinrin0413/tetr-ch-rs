@@ -1,6 +1,6 @@
 //! Easy-to-use models of the various objects received from the User Summaries API endpoints.
 
-use crate::model::{achievement::Achievement, cache::CacheData};
+use crate::model::{achievement::Achievement, cache::CacheData, error_response::ErrorResponse};
 use serde::Deserialize;
 
 pub mod achievements;
@@ -19,7 +19,7 @@ pub struct AllSummariesResponse {
     #[serde(rename = "success")]
     pub is_success: bool,
     /// The reason the request failed.
-    pub error: Option<String>,
+    pub error: Option<ErrorResponse>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.

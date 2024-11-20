@@ -5,7 +5,7 @@
 //! - About the endpoint "User Summary: EXPERT QUICK PLAY",
 //! see the [API document](https://tetr.io/about/api/#usersusersummarieszenithex).
 
-use crate::model::{cache::CacheData, summary::record::Record};
+use crate::model::{cache::CacheData, error_response::ErrorResponse, summary::record::Record};
 use serde::Deserialize;
 
 /// A struct for the response for the endpoint "User Summary: QUICK PLAY".
@@ -16,7 +16,7 @@ pub struct ZenithResponse {
     #[serde(rename = "success")]
     pub is_success: bool,
     /// The reason the request failed.
-    pub error: Option<String>,
+    pub error: Option<ErrorResponse>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.
@@ -86,7 +86,7 @@ pub struct ZenithExResponse {
     #[serde(rename = "success")]
     pub is_success: bool,
     /// The reason the request failed.
-    pub error: Option<String>,
+    pub error: Option<ErrorResponse>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.

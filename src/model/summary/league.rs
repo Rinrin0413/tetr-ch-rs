@@ -3,7 +3,7 @@
 //! About the endpoint "User Summary: TETRA LEAGUE",
 //! see the [API document](https://tetr.io/about/api/#usersusersummariesleague).
 
-use crate::model::{cache::CacheData, league_rank::Rank};
+use crate::model::{cache::CacheData, error_response::ErrorResponse, league_rank::Rank};
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -15,7 +15,7 @@ pub struct LeagueResponse {
     #[serde(rename = "success")]
     pub is_success: bool,
     /// The reason the request failed.
-    pub error: Option<String>,
+    pub error: Option<ErrorResponse>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.

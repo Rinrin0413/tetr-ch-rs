@@ -3,7 +3,7 @@
 //! About the endpoint "User Summary: BLITZ",
 //! see the [API document](https://tetr.io/about/api/#usersusersummariesblitz).
 
-use crate::model::{cache::CacheData, summary::record::Record};
+use crate::model::{cache::CacheData, error_response::ErrorResponse, summary::record::Record};
 use serde::Deserialize;
 
 /// A struct for the response for the endpoint "User Summary: BLITZ".
@@ -14,7 +14,7 @@ pub struct BlitzResponse {
     #[serde(rename = "success")]
     pub is_success: bool,
     /// The reason the request failed.
-    pub error: Option<String>,
+    pub error: Option<ErrorResponse>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.

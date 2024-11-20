@@ -5,7 +5,7 @@
 
 use crate::{
     client::{error::RspErr, Client},
-    model::{cache::CacheData, role::Role},
+    model::{cache::CacheData, error_response::ErrorResponse, role::Role},
     util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
 };
 use serde::Deserialize;
@@ -19,7 +19,7 @@ pub struct UserResponse {
     #[serde(rename = "success")]
     pub is_success: bool,
     /// The reason the request failed.
-    pub error: Option<String>,
+    pub error: Option<ErrorResponse>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.
