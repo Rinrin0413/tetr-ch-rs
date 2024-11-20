@@ -3,6 +3,7 @@
 pub mod achievement;
 pub mod achievement_info;
 pub mod cache;
+pub mod error_response;
 pub mod labs;
 pub mod leaderboard;
 pub mod league_rank;
