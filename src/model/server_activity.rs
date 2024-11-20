@@ -3,7 +3,7 @@
 //! About the endpoint "Server Activity",
 //! see the [API document](https://tetr.io/about/api/#generalactivity).
 
-use crate::model::cache::CacheData;
+use crate::model::{cache::CacheData, error_response::ErrorResponse};
 use serde::Deserialize;
 
 /// A struct for the response for the endpoint "Server Activity".
@@ -14,7 +14,7 @@ pub struct ServerActivityResponse {
     #[serde(rename = "success")]
     pub is_success: bool,
     /// The reason the request failed.
-    pub error: Option<String>,
+    pub error: Option<ErrorResponse>,
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.
