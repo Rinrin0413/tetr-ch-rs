@@ -206,7 +206,7 @@ impl SearchCriteria {
     /// ```
     pub fn country(self, country: &str) -> Self {
         Self {
-            country: Some(country.to_owned().to_uppercase()),
+            country: Some(country.to_owned()),
             ..self
         }
     }
@@ -238,7 +238,7 @@ impl SearchCriteria {
             result.push(("limit".to_string(), l.to_string()));
         }
         if let Some(c) = self.country {
-            result.push(("country".to_string(), c));
+            result.push(("country".to_string(), c.to_uppercase()));
         }
         result
     }
