@@ -15,17 +15,25 @@ pub(super) async fn response<T>(response: Result<Response, Error>) -> RspErr<T>
 where
     for<'de> T: Deserialize<'de>,
 {
+    // Whether the request succeeded or not.
     match response {
         Ok(r) => {
-            if !r.status().is_success() {
-                match StatusCode::from_u16(r.status().as_u16()) {
-                    Ok(c) => return Err(ResponseError::HttpErr(Status::Valid(c))),
-                    Err(e) => return Err(ResponseError::HttpErr(Status::Invalid(e))),
-                }
-            }
+            let status = r.status();
+            let is_success = status.is_success();
+            // Whether the response is an expected structure or not.
             match r.json().await {
                 Ok(m) => Ok(m),
-                Err(e) => Err(ResponseError::DeserializeErr(e.to_string())),
+                Err(e) => {
+                    // Whether the status code is within 200-299 or not.
+                    if is_success {
+                        Err(ResponseError::DeserializeErr(e.to_string()))
+                    } else {
+                        match StatusCode::from_u16(status.as_u16()) {
+                            Ok(c) => Err(ResponseError::HttpErr(Status::Valid(c))),
+                            Err(e) => Err(ResponseError::HttpErr(Status::Invalid(e))),
+                        }
+                    }
+                }
             }
         }
         Err(e) => Err(ResponseError::RequestErr(e.to_string())),
