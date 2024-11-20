@@ -10,6 +10,8 @@ pub struct ErrorResponse {
     ///
     /// e.g. "No such user! | Either you mistyped something, or the account no longer exists."
     pub msg: Option<String>,
+    pub key: Option<String>,
+    pub context: Option<String>,
 }
 
 impl AsRef<ErrorResponse> for ErrorResponse {
