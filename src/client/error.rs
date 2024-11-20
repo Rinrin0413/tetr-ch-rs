@@ -15,7 +15,7 @@ pub enum ResponseError {
     DeserializeErr(String),
     /// The HTTP request failed and the response did not match the expected format.
     ///
-    /// Even if the HTTP request failed,
+    /// Even if the HTTP status code is not within 200-299.
     /// it may be possible to deserialize the response containing an error message,
     /// so the deserialization will be tried before returning this error.
     HttpErr(Status),
