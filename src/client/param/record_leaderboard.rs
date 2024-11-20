@@ -18,9 +18,9 @@ impl RecordsLeaderboardId {
     ///
     /// # Arguments
     ///
-    /// - `gamemode`: The game mode. e.g. `40l`.
-    /// - `scope`: The scope. ether [`Scope::Global`] or [`Scope::Country`].
-    /// - `revolution_id`: The optional Revolution ID. e.g. `@2024w31`.
+    /// - `gamemode` - The game mode. e.g. `40l`.
+    /// - `scope` - The scope. ether [`Scope::Global`] or [`Scope::Country`].
+    /// - `revolution_id` - The optional Revolution ID. e.g. `@2024w31`.
     ///
     /// # Examples
     ///
@@ -133,7 +133,7 @@ impl SearchCriteria {
     ///
     /// # Arguments
     ///
-    /// - `bound`: The upper bound to paginate downwards:
+    /// - `bound` - The upper bound to paginate downwards:
     /// take the lowest seen prisecter and pass that back through this field to continue scrolling.
     ///
     /// A **prisecter** is consisting of three floats.
@@ -159,7 +159,7 @@ impl SearchCriteria {
     ///
     /// # Arguments
     ///
-    /// - `bound`: The lower bound to paginate upwards:
+    /// - `bound` - The lower bound to paginate upwards:
     /// take the highest seen prisecter and pass that back through this field to continue scrolling.
     /// If use this, the search order is reversed
     /// (returning the lowest items that match the query)
@@ -187,7 +187,7 @@ impl SearchCriteria {
     ///
     /// # Arguments
     ///
-    /// - `limit`: The amount of entries to return.
+    /// - `limit` - The amount of entries to return.
     /// Between 1 and 100. 25 by default.
     ///
     /// # Examples
