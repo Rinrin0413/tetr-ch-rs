@@ -1,5 +1,4 @@
-use super::error::{ResponseError, RspErr, Status};
-use http::StatusCode;
+use super::error::{ResponseError, RspErr};
 use reqwest::{Error, Response};
 use serde::Deserialize;
 
@@ -26,16 +25,13 @@ where
                 Err(e) => {
                     // Whether the status code is within 200-299 or not.
                     if is_success {
-                        Err(ResponseError::DeserializeErr(e.to_string()))
+                        Err(ResponseError::DeserializeErr(e))
                     } else {
-                        match StatusCode::from_u16(status.as_u16()) {
-                            Ok(c) => Err(ResponseError::HttpErr(Status::Valid(c))),
-                            Err(e) => Err(ResponseError::HttpErr(Status::Invalid(e))),
-                        }
+                        Err(ResponseError::HttpErr(status))
                     }
                 }
             }
         }
-        Err(e) => Err(ResponseError::RequestErr(e.to_string())),
+        Err(e) => Err(ResponseError::RequestErr(e)),
     }
 }
