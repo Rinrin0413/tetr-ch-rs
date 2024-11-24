@@ -365,21 +365,15 @@ impl AsRef<Connection> for Connection {
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct Distinguishment {
-    // The type of distinguishment banner.
+    /// The type of distinguishment banner.
     #[serde(rename = "type")]
     pub _type: String,
     /// The detail of distinguishment banner.
-    ///
-    /// ***This field is not documented in the API documentation.**
-    pub detail: Option<String>,
+    pub detail: Option<String>, // EXCEPTION
     /// The header of distinguishment banner.
-    ///
-    /// ***This field is not documented in the API documentation.**
-    pub header: Option<String>,
-    /// the footer of distinguishment banner.
-    ///
-    /// ***This field is not documented in the API documentation.**
-    pub footer: Option<String>,
+    pub header: Option<String>, // EXCEPTION
+    /// The footer of distinguishment banner.
+    pub footer: Option<String>, // EXCEPTION
 }
 
 impl AsRef<Distinguishment> for Distinguishment {
