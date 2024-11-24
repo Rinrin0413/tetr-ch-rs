@@ -61,10 +61,11 @@ pub mod rank_col {
     /// The X+ rank color.
     /// <span style="background-color:#a763ea;border-radius:8px;padding:2px;margin:8px;font-size:16px;border:1px solid black;color:black;">#a763ea</span>
     pub const X_PLUS: u32 = 0xa763ea;
-    /// The XX rank color.
-    /// <span style="background-color:#ff8fff;border-radius:8px;padding:2px;margin:8px;font-size:16px;border:1px solid black;color:black;">#ff8fff</span>
-    pub const XX: u32 = 0xff8fff;
     /// The unranked (Z rank) color.
     /// <span style="background-color:#767671;border-radius:8px;padding:2px;margin:8px;font-size:16px;border:1px solid black;color:black;">#767671</span>
     pub const Z: u32 = 0x767671;
+    /// The XX rank color.
+    /// <span style="background-color:#ff8fff;border-radius:8px;padding:2px;margin:8px;font-size:16px;border:1px solid black;color:black;">#ff8fff</span>
+    #[deprecated(since = "0.6.0", note = "this is not official rank")]
+    pub const XX: u32 = 0xff8fff;
 }
