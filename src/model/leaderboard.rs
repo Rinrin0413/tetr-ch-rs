@@ -79,7 +79,7 @@ pub struct LeaderboardUser {
     #[serde(default)] // If the field is missing, it is false.
     pub is_supporter: bool,
     /// This user's current TETRA LEAGUE standing.
-    pub league: League,
+    pub league: PartialLeagueData,
     /// The amount of online games played by this user.
     /// If the user has chosen to hide this statistic, it will be -1.
     #[serde(rename = "gamesplayed")]
@@ -211,10 +211,11 @@ impl AsRef<LeaderboardUser> for LeaderboardUser {
     }
 }
 
-/// A user's current TETRA LEAGUE standing.
+/// Partial summary of a user's TETRA LEAGUE standing.
+/// This is used in the [`LeaderboardUser`] struct,
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct League {
+pub struct PartialLeagueData {
     /// The amount of TETRA LEAGUE games played by this user.
     #[serde(rename = "gamesplayed")]
     pub games_played: u32,
@@ -245,7 +246,7 @@ pub struct League {
     pub is_decaying: bool,
 }
 
-impl AsRef<League> for League {
+impl AsRef<PartialLeagueData> for PartialLeagueData {
     fn as_ref(&self) -> &Self {
         self
     }
