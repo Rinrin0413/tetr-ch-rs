@@ -437,12 +437,6 @@ impl AsRef<AchievementRatingCounts> for AchievementRatingCounts {
 pub struct UserId(pub String);
 
 impl UserId {
-    /// Returns the user's internal ID.
-    #[deprecated(since = "0.6.0", note = "please use the `.to_string()` method instead")]
-    pub fn id(&self) -> &str {
-        &self.0
-    }
-
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -459,6 +453,12 @@ impl UserId {
     /// so the deserialization will be tried before returning this error.
     pub async fn get_user(&self) -> RspErr<UserResponse> {
         Client::new().get_user(&self.to_string()).await
+    }
+
+    /// Returns the user's internal ID.
+    #[deprecated(since = "0.6.0", note = "please use the `.to_string()` method instead")]
+    pub fn id(&self) -> &str {
+        &self.0
     }
 }
 
