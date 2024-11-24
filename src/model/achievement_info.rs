@@ -60,7 +60,7 @@ impl AsRef<AchievementInfo> for AchievementInfo {
 pub struct AchievementLeaderboardUser {
     /// The user owning the achievement.
     #[serde(rename = "u")]
-    pub user: User,
+    pub user: PartialUser,
     /// The achieved score in the achievement.
     #[serde(rename = "v")]
     pub value: f64,
@@ -78,10 +78,11 @@ impl AsRef<AchievementLeaderboardUser> for AchievementLeaderboardUser {
     }
 }
 
-/// A user owning an achievement.
+/// Partial information about a user.
+/// This is used in the [`AchievementLeaderboardUser`] struct.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct User {
+pub struct PartialUser {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -97,7 +98,7 @@ pub struct User {
     pub country: Option<String>,
 }
 
-impl User {
+impl PartialUser {
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -176,7 +177,7 @@ impl User {
     }
 }
 
-impl AsRef<User> for User {
+impl AsRef<PartialUser> for PartialUser {
     fn as_ref(&self) -> &Self {
         self
     }
