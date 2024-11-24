@@ -71,10 +71,12 @@ pub struct User {
     pub country: Option<String>,
     /// Whether the user currently has a bad standing (recently banned).
     #[serde(rename = "badstanding")]
-    pub is_badstanding: Option<bool>,
+    #[serde(default)] // If the field is missing, it is false.
+    pub is_badstanding: bool,
     /// Whether the user is currently supporting TETR.IO <3
     #[serde(rename = "supporter")]
-    pub is_supporter: Option<bool>, // EXCEPTION
+    #[serde(default)] // If the field is missing, it is false.
+    pub is_supporter: bool,
     /// An indicator of their total amount supported,
     /// between 0 and 4 inclusive.
     pub supporter_tier: u8,
