@@ -19,7 +19,7 @@ pub struct LeagueResponse {
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.
-    pub data: Option<League>,
+    pub data: Option<LeagueData>,
 }
 
 impl AsRef<LeagueResponse> for LeagueResponse {
@@ -34,7 +34,7 @@ impl AsRef<LeagueResponse> for LeagueResponse {
 /// and was not banned or hidden.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct League {
+pub struct LeagueData {
     /// The amount of TETRA LEAGUE games played by this user.
     #[serde(rename = "gamesplayed")]
     pub games_played: u32,
@@ -47,7 +47,7 @@ pub struct League {
     /// If over 100, this user is unranked.
     pub rd: Option<f64>,
     /// Whether this user's RD is rising (has not played in the last week).
-    pub decaying: bool,
+    pub is_decaying: bool,
     /// This user's TR (Tetra Rating), or -1 if less than 10 games were played.
     pub tr: f64,
     /// This user's GLIXARE score (a % chance of beating an average player),
@@ -85,10 +85,10 @@ pub struct League {
     /// dip below them to go down a rank. -1 if unranked (or the worst rank).
     pub prev_at: Option<i32>,
     /// An object mapping past season IDs to past season final placement information.
-    pub past: HashMap<String, PastSeason>,
+    pub past: HashMap<String, PastUser>,
 }
 
-impl League {
+impl LeagueData {
     /// Returns the user's progress percentage in the rank.
     ///
     /// But there are cases where values less than 0 or greater than 100 are returned,
@@ -113,16 +113,16 @@ impl League {
     }
 }
 
-impl AsRef<League> for League {
+impl AsRef<LeagueData> for LeagueData {
     fn as_ref(&self) -> &Self {
         self
     }
 }
 
-/// Past season final placement information.
+/// Past season final placement information of a user.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct PastSeason {
+pub struct PastUser {
     /// The season ID.
     pub season: String,
     /// The username the user had at the time.
@@ -161,7 +161,7 @@ pub struct PastSeason {
     pub vs: f64,
 }
 
-impl PastSeason {
+impl PastUser {
     /// Returns the national flag URL of the user's country.
     pub fn national_flag_url(&self) -> Option<String> {
         self.country
@@ -170,7 +170,7 @@ impl PastSeason {
     }
 }
 
-impl AsRef<PastSeason> for PastSeason {
+impl AsRef<PastUser> for PastUser {
     fn as_ref(&self) -> &Self {
         self
     }

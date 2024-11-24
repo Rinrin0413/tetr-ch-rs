@@ -43,7 +43,7 @@ pub struct AchievementInfo {
     /// The achievement info.
     pub achievement: Achievement,
     /// The entries in the achievement's leaderboard.
-    pub leaderboard: Vec<AchievementLeaderboardEntry>,
+    pub leaderboard: Vec<AchievementLeaderboardUser>,
     /// Scores required to obtain the achievement:
     pub cutoffs: Cutoffs,
 }
@@ -54,13 +54,13 @@ impl AsRef<AchievementInfo> for AchievementInfo {
     }
 }
 
-/// An entry in an achievement's leaderboard.
+/// User's achievement data in an achievement's leaderboard.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct AchievementLeaderboardEntry {
+pub struct AchievementLeaderboardUser {
     /// The user owning the achievement.
     #[serde(rename = "u")]
-    pub user: User,
+    pub user: PartialUser,
     /// The achieved score in the achievement.
     #[serde(rename = "v")]
     pub value: f64,
@@ -72,16 +72,17 @@ pub struct AchievementLeaderboardEntry {
     pub last_updated_at: String,
 }
 
-impl AsRef<AchievementLeaderboardEntry> for AchievementLeaderboardEntry {
+impl AsRef<AchievementLeaderboardUser> for AchievementLeaderboardUser {
     fn as_ref(&self) -> &Self {
         self
     }
 }
 
-/// A user owning an achievement.
+/// Partial information about a user.
+/// This is used in the [`AchievementLeaderboardUser`] struct.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct User {
+pub struct PartialUser {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -97,7 +98,7 @@ pub struct User {
     pub country: Option<String>,
 }
 
-impl User {
+impl PartialUser {
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -176,7 +177,7 @@ impl User {
     }
 }
 
-impl AsRef<User> for User {
+impl AsRef<PartialUser> for PartialUser {
     fn as_ref(&self) -> &Self {
         self
     }

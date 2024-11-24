@@ -45,13 +45,13 @@ pub struct Record {
     /// If revolved away, the revolution it belongs to.
     pub revolution: Option<String>,
     /// The user owning the Record.
-    pub user: Option<User>, // EXCEPTION
+    pub user: Option<PartialUser>, // EXCEPTION
     /// Other users mentioned in the Record.
     ///
     /// If not empty, this is a multiplayer game
     /// (this changes the enumerator of the [`Record::results`] field).
     #[serde(rename = "otherusers")]
-    pub other_users: Vec<User>,
+    pub other_users: Vec<PartialUser>,
     /// The leaderboards this Record is mentioned in.
     ///
     /// e.g. `["40l_global", "40l_country_JP"]`
@@ -94,10 +94,11 @@ impl AsRef<Record> for Record {
     }
 }
 
-/// A User owning a Record.
+/// Partial information about a user.
+/// This is used in the [`Record`] struct.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct User {
+pub struct PartialUser {
     /// The user's user ID.
     pub id: UserId,
     /// The user's username.
@@ -114,7 +115,7 @@ pub struct User {
     pub is_supporter: bool,
 }
 
-impl User {
+impl PartialUser {
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -187,7 +188,7 @@ impl User {
     }
 }
 
-impl AsRef<User> for User {
+impl AsRef<PartialUser> for PartialUser {
     fn as_ref(&self) -> &Self {
         self
     }

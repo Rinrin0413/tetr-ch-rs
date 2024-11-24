@@ -44,7 +44,7 @@ impl AsRef<LeaderboardResponse> for LeaderboardResponse {
 #[non_exhaustive]
 pub struct Leaderboard {
     /// The matched users.
-    pub entries: Vec<LeaderboardEntry>,
+    pub entries: Vec<LeaderboardUser>,
 }
 
 impl AsRef<Leaderboard> for Leaderboard {
@@ -53,10 +53,11 @@ impl AsRef<Leaderboard> for Leaderboard {
     }
 }
 
-/// An entry as a user.
+/// User data in a user leaderboard.
+/// This is used as an entry in the [`Leaderboard`] struct,
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct LeaderboardEntry {
+pub struct LeaderboardUser {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -78,7 +79,7 @@ pub struct LeaderboardEntry {
     #[serde(default)] // If the field is missing, it is false.
     pub is_supporter: bool,
     /// This user's current TETRA LEAGUE standing.
-    pub league: League,
+    pub league: PartialLeagueData,
     /// The amount of online games played by this user.
     /// If the user has chosen to hide this statistic, it will be -1.
     #[serde(rename = "gamesplayed")]
@@ -105,7 +106,7 @@ pub struct LeaderboardEntry {
     pub prisecter: Prisecter,
 }
 
-impl LeaderboardEntry {
+impl LeaderboardUser {
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -204,16 +205,17 @@ impl LeaderboardEntry {
     }
 }
 
-impl AsRef<LeaderboardEntry> for LeaderboardEntry {
+impl AsRef<LeaderboardUser> for LeaderboardUser {
     fn as_ref(&self) -> &Self {
         self
     }
 }
 
-/// A user's current TETRA LEAGUE standing.
+/// Partial summary of a user's TETRA LEAGUE standing.
+/// This is used in the [`LeaderboardUser`] struct,
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct League {
+pub struct PartialLeagueData {
     /// The amount of TETRA LEAGUE games played by this user.
     #[serde(rename = "gamesplayed")]
     pub games_played: u32,
@@ -244,7 +246,7 @@ pub struct League {
     pub is_decaying: bool,
 }
 
-impl AsRef<League> for League {
+impl AsRef<PartialLeagueData> for PartialLeagueData {
     fn as_ref(&self) -> &Self {
         self
     }
@@ -276,7 +278,7 @@ impl AsRef<HistoricalLeaderboardResponse> for HistoricalLeaderboardResponse {
 #[non_exhaustive]
 pub struct HistoricalLeaderboard {
     /// The matched historical user blobs.
-    pub entries: Vec<HistoricalEntry>,
+    pub entries: Vec<PastUserWithPrisecter>,
 }
 
 impl AsRef<HistoricalLeaderboard> for HistoricalLeaderboard {
@@ -285,10 +287,11 @@ impl AsRef<HistoricalLeaderboard> for HistoricalLeaderboard {
     }
 }
 
-/// An entry as a historical user blobs.
+/// Past season final placement information of a user, with a [`Prisecter`].
+/// This is used as an entry in the [`HistoricalLeaderboard`] struct,
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct HistoricalEntry {
+pub struct PastUserWithPrisecter {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -336,7 +339,7 @@ pub struct HistoricalEntry {
     pub prisecter: Prisecter,
 }
 
-impl HistoricalEntry {
+impl PastUserWithPrisecter {
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -365,7 +368,7 @@ impl HistoricalEntry {
     }
 }
 
-impl AsRef<HistoricalEntry> for HistoricalEntry {
+impl AsRef<PastUserWithPrisecter> for PastUserWithPrisecter {
     fn as_ref(&self) -> &Self {
         self
     }

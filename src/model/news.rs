@@ -289,7 +289,8 @@ pub struct BadgeNews {
     pub username: String,
     /// The badge's internal ID, and the filename of the badge icon
     /// (all PNGs within `/res/badges/`)
-    pub r#type: String,
+    #[serde(rename = "type")]
+    pub id: String,
     /// The badge's label.
     pub label: String,
 }
@@ -320,7 +321,7 @@ impl BadgeNews {
 
     /// Returns the badge icon URL.
     pub fn badge_icon_url(&self) -> String {
-        format!("https://tetr.io/res/badges/{}.png", self.r#type)
+        format!("https://tetr.io/res/badges/{}.png", self.id)
     }
 }
 
