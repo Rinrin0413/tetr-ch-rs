@@ -43,7 +43,7 @@ pub struct AchievementInfo {
     /// The achievement info.
     pub achievement: Achievement,
     /// The entries in the achievement's leaderboard.
-    pub leaderboard: Vec<AchievementLeaderboardEntry>,
+    pub leaderboard: Vec<AchievementLeaderboardUser>,
     /// Scores required to obtain the achievement:
     pub cutoffs: Cutoffs,
 }
@@ -54,10 +54,10 @@ impl AsRef<AchievementInfo> for AchievementInfo {
     }
 }
 
-/// An entry in an achievement's leaderboard.
+/// User's achievement data in an achievement's leaderboard.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct AchievementLeaderboardEntry {
+pub struct AchievementLeaderboardUser {
     /// The user owning the achievement.
     #[serde(rename = "u")]
     pub user: User,
@@ -72,7 +72,7 @@ pub struct AchievementLeaderboardEntry {
     pub last_updated_at: String,
 }
 
-impl AsRef<AchievementLeaderboardEntry> for AchievementLeaderboardEntry {
+impl AsRef<AchievementLeaderboardUser> for AchievementLeaderboardUser {
     fn as_ref(&self) -> &Self {
         self
     }
