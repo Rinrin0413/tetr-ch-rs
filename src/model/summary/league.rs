@@ -19,7 +19,7 @@ pub struct LeagueResponse {
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.
-    pub data: Option<League>,
+    pub data: Option<LeagueData>,
 }
 
 impl AsRef<LeagueResponse> for LeagueResponse {
@@ -34,7 +34,7 @@ impl AsRef<LeagueResponse> for LeagueResponse {
 /// and was not banned or hidden.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct League {
+pub struct LeagueData {
     /// The amount of TETRA LEAGUE games played by this user.
     #[serde(rename = "gamesplayed")]
     pub games_played: u32,
@@ -88,7 +88,7 @@ pub struct League {
     pub past: HashMap<String, PastSeason>,
 }
 
-impl League {
+impl LeagueData {
     /// Returns the user's progress percentage in the rank.
     ///
     /// But there are cases where values less than 0 or greater than 100 are returned,
@@ -113,7 +113,7 @@ impl League {
     }
 }
 
-impl AsRef<League> for League {
+impl AsRef<LeagueData> for LeagueData {
     fn as_ref(&self) -> &Self {
         self
     }

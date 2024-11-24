@@ -47,7 +47,7 @@ pub struct AllSummaries {
     #[serde(rename = "zenithex")]
     pub zenith_ex: zenith::Zenith,
     /// The user's TETRA LEAGUE summary data.
-    pub league: league::League,
+    pub league: league::LeagueData,
     /// The user's ZEN summary data.
     pub zen: zen::Zen,
     /// The user's achievements.
