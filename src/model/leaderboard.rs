@@ -278,7 +278,7 @@ impl AsRef<HistoricalLeaderboardResponse> for HistoricalLeaderboardResponse {
 #[non_exhaustive]
 pub struct HistoricalLeaderboard {
     /// The matched historical user blobs.
-    pub entries: Vec<HistoricalEntry>,
+    pub entries: Vec<PastUserWithPrisecter>,
 }
 
 impl AsRef<HistoricalLeaderboard> for HistoricalLeaderboard {
@@ -287,10 +287,11 @@ impl AsRef<HistoricalLeaderboard> for HistoricalLeaderboard {
     }
 }
 
-/// An entry as a historical user blobs.
+/// Past season final placement information of a user, with a [`Prisecter`].
+/// This is used as an entry in the [`HistoricalLeaderboard`] struct,
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct HistoricalEntry {
+pub struct PastUserWithPrisecter {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -338,7 +339,7 @@ pub struct HistoricalEntry {
     pub prisecter: Prisecter,
 }
 
-impl HistoricalEntry {
+impl PastUserWithPrisecter {
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -367,7 +368,7 @@ impl HistoricalEntry {
     }
 }
 
-impl AsRef<HistoricalEntry> for HistoricalEntry {
+impl AsRef<PastUserWithPrisecter> for PastUserWithPrisecter {
     fn as_ref(&self) -> &Self {
         self
     }
