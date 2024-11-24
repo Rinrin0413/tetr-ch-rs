@@ -127,48 +127,40 @@ impl Client {
         response(res).await
     }
 
-    /// Gets some statistics about the TETR.IO.
+    /// Searches for a TETR.IO user account by the social connection.
     ///
-    /// About the endpoint "Server Statistics",
-    /// see the [API document](https://tetr.io/about/api/#generalstats).
+    /// About the endpoint "User Search",
+    /// see the [API document](https://tetr.io/about/api/#userssearchquery).
     ///
-    /// # Examples
+    /// # Arguments
     ///
-    /// ```no_run
-    /// use tetr_ch::client::Client;
-    ///
-    /// # async fn run() -> std::io::Result<()> {
-    /// let client = Client::new();
-    /// // Get the statistics.
-    /// let user = client.get_server_stats().await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    pub async fn get_server_stats(self) -> RspErr<ServerStatsResponse> {
-        let url = format!("{}general/stats", API_URL);
-        let res = self.client.get(url).send().await;
-        response(res).await
-    }
-
-    /// Gets the array of the user activity over the last 2 days.
-    ///
-    /// About the endpoint "Server Activity",
-    /// see the [API document](https://tetr.io/about/api/#generalactivity).
+    /// - `social_connection` - The social connection to look up.
     ///
     /// # Examples
     ///
+    /// Searches for an account by Discord ID `724976600873041940`.
+    ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::client::{Client, param::search_user::SocialConnection};
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get the activity.
-    /// let user = client.get_server_activity().await?;
+    ///
+    /// // Search for an account.
+    /// let user = client.search_user(
+    ///     // By Discord ID `724976600873041940`
+    ///     SocialConnection::Discord("724976600873041940".to_string())
+    /// ).await?;
     /// # Ok(())
     /// # }
+    ///
+    /// # tokio_test::block_on(run());
     /// ```
-    pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
-        let url = format!("{}general/activity", API_URL);
+    pub async fn search_user(
+        self,
+        social_connection: SocialConnection,
+    ) -> RspErr<SearchedUserResponse> {
+        let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -937,40 +929,48 @@ impl Client {
         response(res).await
     }
 
-    /// Searches for a TETR.IO user account by the social connection.
+    /// Gets some statistics about the TETR.IO.
     ///
-    /// About the endpoint "User Search",
-    /// see the [API document](https://tetr.io/about/api/#userssearchquery).
-    ///
-    /// # Arguments
-    ///
-    /// - `social_connection` - The social connection to look up.
+    /// About the endpoint "Server Statistics",
+    /// see the [API document](https://tetr.io/about/api/#generalstats).
     ///
     /// # Examples
     ///
-    /// Searches for an account by Discord ID `724976600873041940`.
-    ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, param::search_user::SocialConnection};
+    /// use tetr_ch::client::Client;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    ///
-    /// // Search for an account.
-    /// let user = client.search_user(
-    ///     // By Discord ID `724976600873041940`
-    ///     SocialConnection::Discord("724976600873041940".to_string())
-    /// ).await?;
+    /// // Get the statistics.
+    /// let user = client.get_server_stats().await?;
     /// # Ok(())
     /// # }
-    ///
-    /// # tokio_test::block_on(run());
     /// ```
-    pub async fn search_user(
-        self,
-        social_connection: SocialConnection,
-    ) -> RspErr<SearchedUserResponse> {
-        let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
+    pub async fn get_server_stats(self) -> RspErr<ServerStatsResponse> {
+        let url = format!("{}general/stats", API_URL);
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the array of the user activity over the last 2 days.
+    ///
+    /// About the endpoint "Server Activity",
+    /// see the [API document](https://tetr.io/about/api/#generalactivity).
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::client::Client;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the activity.
+    /// let user = client.get_server_activity().await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
+        let url = format!("{}general/activity", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
     }
