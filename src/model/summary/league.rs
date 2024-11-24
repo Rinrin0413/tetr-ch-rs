@@ -47,7 +47,7 @@ pub struct LeagueData {
     /// If over 100, this user is unranked.
     pub rd: Option<f64>,
     /// Whether this user's RD is rising (has not played in the last week).
-    pub decaying: bool,
+    pub is_decaying: bool,
     /// This user's TR (Tetra Rating), or -1 if less than 10 games were played.
     pub tr: f64,
     /// This user's GLIXARE score (a % chance of beating an average player),
