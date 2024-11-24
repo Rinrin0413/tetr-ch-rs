@@ -110,6 +110,7 @@ pub struct User {
     pub country: Option<String>,
     /// Whether the user is supporting TETR.IO.
     #[serde(rename = "supporter")]
+    #[serde(default)] // If the field is missing, it is false.
     pub is_supporter: bool,
 }
 

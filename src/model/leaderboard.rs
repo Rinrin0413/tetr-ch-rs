@@ -75,7 +75,8 @@ pub struct LeaderboardEntry {
     pub country: Option<String>,
     /// Whether this user is currently supporting TETR.IO <3
     #[serde(rename = "supporter")]
-    pub is_supporter: Option<bool>, // EXCEPTION
+    #[serde(default)] // If the field is missing, it is false.
+    pub is_supporter: bool,
     /// This user's current TETRA LEAGUE standing.
     pub league: League,
     /// The amount of online games played by this user.
