@@ -89,7 +89,7 @@ impl News {
         self.id.get_user().await
     }
 
-    /// Returns an UNIX timestamp when the news item was created.
+    /// Returns a UNIX timestamp when the news item was created.
     ///
     /// # Panics
     ///

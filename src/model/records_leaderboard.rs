@@ -6,7 +6,7 @@
 use crate::model::{cache::CacheData, error_response::ErrorResponse, summary::record::Record};
 use serde::Deserialize;
 
-/// An struct for the response for the endpoint "Records Leaderboard".
+/// A struct for the response for the endpoint "Records Leaderboard".
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct RecordsLeaderboardResponse {

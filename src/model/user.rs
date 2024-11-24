@@ -166,7 +166,7 @@ impl User {
         self.role.is_hidden()
     }
 
-    /// Returns an UNIX timestamp when the user's account created.
+    /// Returns a UNIX timestamp when the user's account created.
     ///
     /// If the account was created before join dates were recorded, `None` is returned.
     ///
