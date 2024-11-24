@@ -43,32 +43,7 @@ impl AsRef<SearchedUserResponse> for SearchedUserResponse {
 #[non_exhaustive]
 pub struct UserData {
     /// The user information (TETRA.IO user account).
-    pub user: UserInfo,
-}
-
-impl UserData {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.user.get_user().await
-    }
-
-    /// Returns the user's profile URL.
-    pub fn profile_url(&self) -> String {
-        self.user.profile_url()
-    }
+    pub user: Option<UserInfo>,
 }
 
 impl AsRef<UserData> for UserData {
