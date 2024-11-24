@@ -199,7 +199,7 @@ impl AsRef<User> for User {
 /// Otherwise, this is [`MultiPlayer`](`Results::MultiPlayer`).
 ///
 /// ***This structure may be changed drastically at any time.
-/// See the [official API documentation](https://tetr.io/about/api/#recorddata) for more information.**
+/// See the [official API document](https://tetr.io/about/api/#recorddata) for more information.**
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 #[non_exhaustive]
