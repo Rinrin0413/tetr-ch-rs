@@ -34,7 +34,7 @@ impl AsRef<Prisecter> for Prisecter {
 /// A bound to paginate.
 #[derive(Clone, Debug)]
 pub enum Bound {
-    /// A upper bound.
+    /// An upper bound.
     /// Use this to paginate downwards:
     /// take the lowest seen prisecter and pass that back through this field to continue scrolling.
     ///

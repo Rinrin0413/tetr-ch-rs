@@ -948,7 +948,7 @@ impl Client {
     ///
     /// # Examples
     ///
-    /// Searches for a account by Discord ID `724976600873041940`.
+    /// Searches for an account by Discord ID `724976600873041940`.
     ///
     /// ```no_run
     /// use tetr_ch::client::{Client, param::search_user::SocialConnection};
@@ -956,7 +956,7 @@ impl Client {
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Search for a account.
+    /// // Search for an account.
     /// let user = client.search_user(
     ///     // By Discord ID `724976600873041940`
     ///     SocialConnection::Discord("724976600873041940".to_string())

@@ -38,7 +38,7 @@ pub struct Achievement {
     /// - 1 = NUMBER — [`Achievement::value`] is a positive number
     /// - 2 = TIME — [`Achievement::value`] is a positive amount of milliseconds
     /// - 3 = TIME_INV — [`Achievement::value`] is a negative amount of milliseconds; negate it before displaying
-    /// - 4 = FLOOR — [`Achievement::value`] is an altitude, A is a floor number
+    /// - 4 = FLOOR — [`Achievement::value`] is an altitude, [`Achievement::additional`] is a floor number
     /// - 5 = ISSUE — [`Achievement::value`] is the negative time of issue
     /// - 6 = NUMBER_INV — [`Achievement::value`] is a negative number; negate it before displaying
     #[serde(rename = "vt")]

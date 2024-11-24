@@ -3,7 +3,7 @@
 use serde::Deserialize;
 use std::fmt::{self, Display, Formatter};
 
-/// A enum for the ranks in TETRA LEAGUE.
+/// An enum for the ranks in TETRA LEAGUE.
 #[derive(Clone, Debug, Deserialize)]
 pub enum Rank {
     /// D rank.

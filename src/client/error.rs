@@ -3,7 +3,7 @@
 use http::status::StatusCode;
 use std::fmt;
 
-/// A enum for the response handling errors.
+/// An enum for the response handling errors.
 #[derive(Debug)]
 pub enum ResponseError {
     /// The request failed.
