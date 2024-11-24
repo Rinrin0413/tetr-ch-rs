@@ -44,7 +44,7 @@ impl AsRef<LeaderboardResponse> for LeaderboardResponse {
 #[non_exhaustive]
 pub struct Leaderboard {
     /// The matched users.
-    pub entries: Vec<LeaderboardEntry>,
+    pub entries: Vec<LeaderboardUser>,
 }
 
 impl AsRef<Leaderboard> for Leaderboard {
@@ -53,10 +53,11 @@ impl AsRef<Leaderboard> for Leaderboard {
     }
 }
 
-/// An entry as a user.
+/// User data in a user leaderboard.
+/// This is used as an entry in the [`Leaderboard`] struct,
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct LeaderboardEntry {
+pub struct LeaderboardUser {
     /// The user's internal ID.
     #[serde(rename = "_id")]
     pub id: UserId,
@@ -105,7 +106,7 @@ pub struct LeaderboardEntry {
     pub prisecter: Prisecter,
 }
 
-impl LeaderboardEntry {
+impl LeaderboardUser {
     /// Gets the detailed information about the user.
     ///
     /// # Errors
@@ -204,7 +205,7 @@ impl LeaderboardEntry {
     }
 }
 
-impl AsRef<LeaderboardEntry> for LeaderboardEntry {
+impl AsRef<LeaderboardUser> for LeaderboardUser {
     fn as_ref(&self) -> &Self {
         self
     }
