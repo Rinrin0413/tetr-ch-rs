@@ -85,7 +85,7 @@ pub struct LeagueData {
     /// dip below them to go down a rank. -1 if unranked (or the worst rank).
     pub prev_at: Option<i32>,
     /// An object mapping past season IDs to past season final placement information.
-    pub past: HashMap<String, PastSeason>,
+    pub past: HashMap<String, PastUser>,
 }
 
 impl LeagueData {
@@ -119,10 +119,10 @@ impl AsRef<LeagueData> for LeagueData {
     }
 }
 
-/// Past season final placement information.
+/// Past season final placement information of a user.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct PastSeason {
+pub struct PastUser {
     /// The season ID.
     pub season: String,
     /// The username the user had at the time.
@@ -161,7 +161,7 @@ pub struct PastSeason {
     pub vs: f64,
 }
 
-impl PastSeason {
+impl PastUser {
     /// Returns the national flag URL of the user's country.
     pub fn national_flag_url(&self) -> Option<String> {
         self.country
@@ -170,7 +170,7 @@ impl PastSeason {
     }
 }
 
-impl AsRef<PastSeason> for PastSeason {
+impl AsRef<PastUser> for PastUser {
     fn as_ref(&self) -> &Self {
         self
     }
