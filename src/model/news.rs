@@ -8,9 +8,15 @@
 use crate::{
     client::{error::RspErr, Client},
     model::{
-        cache::CacheData, error_response::ErrorResponse, league_rank::Rank, user::UserResponse,
-        util::{badge_id::BadgeId, gamemode::Gamemode, news_stream::NewsStream, replay_id::ReplayId, timestamp::Timestamp},
-    }
+        cache::CacheData,
+        error_response::ErrorResponse,
+        league_rank::Rank,
+        user::UserResponse,
+        util::{
+            badge_id::BadgeId, gamemode::Gamemode, news_stream::NewsStream, replay_id::ReplayId,
+            timestamp::Timestamp,
+        },
+    },
 };
 use serde::Deserialize;
 

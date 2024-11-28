@@ -4,7 +4,11 @@
 
 use crate::{
     client::{error::RspErr, param::pagination::Prisecter},
-    model::{league_rank::Rank, user::UserResponse, util::{replay_id::ReplayId, user_id::UserId}},
+    model::{
+        league_rank::Rank,
+        user::UserResponse,
+        util::{replay_id::ReplayId, user_id::UserId},
+    },
     util::to_unix_ts,
 };
 use serde::Deserialize;
