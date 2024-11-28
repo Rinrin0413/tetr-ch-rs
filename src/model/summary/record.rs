@@ -7,7 +7,7 @@ use crate::{
     model::{
         league_rank::Rank,
         user::UserResponse,
-        util::{replay_id::ReplayId, user_id::UserId},
+        util::{gamemode::Gamemode, replay_id::ReplayId, user_id::UserId},
     },
     util::to_unix_ts,
 };
@@ -33,7 +33,7 @@ pub struct Record {
     pub is_stub: bool,
     /// The played game mode.
     #[serde(rename = "gamemode")]
-    pub game_mode: String,
+    pub game_mode: Gamemode,
     /// Whether this is the user's current personal best in the game mode.
     #[serde(rename = "pb")]
     pub is_personal_best: bool,
