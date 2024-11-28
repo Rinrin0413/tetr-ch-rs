@@ -6,11 +6,8 @@
 use crate::{
     client::error::RspErr,
     model::{
-        achievement::Achievement,
-        cache::CacheData,
-        error_response::ErrorResponse,
-        role::Role,
-        user::{UserId, UserResponse},
+        achievement::Achievement, cache::CacheData, error_response::ErrorResponse, role::Role,
+        user::UserResponse, util::user_id::UserId,
     },
 };
 use serde::Deserialize;

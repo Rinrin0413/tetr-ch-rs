@@ -6,9 +6,7 @@
 use crate::{
     client::{error::RspErr, Client},
     model::{
-        cache::CacheData,
-        error_response::ErrorResponse,
-        user::{UserId, UserResponse},
+        cache::CacheData, error_response::ErrorResponse, user::UserResponse, util::user_id::UserId,
     },
 };
 use serde::Deserialize;

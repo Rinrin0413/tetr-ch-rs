@@ -4,17 +4,15 @@
 //! see the [API document](https://tetr.io/about/api/#usersuser).
 
 use crate::{
-    client::{error::RspErr, Client},
     model::{
         cache::CacheData,
         error_response::ErrorResponse,
         role::Role,
-        util::{badge_id::BadgeId, timestamp::Timestamp},
+        util::{badge_id::BadgeId, timestamp::Timestamp, user_id::UserId},
     },
     util::{deserialize_from_non_str_to_none, max_f64},
 };
 use serde::Deserialize;
-use std::fmt;
 
 /// A struct for the response for the endpoint "User Info".
 #[derive(Clone, Debug, Deserialize)]
@@ -434,47 +432,5 @@ pub struct AchievementRatingCounts {
 impl AsRef<AchievementRatingCounts> for AchievementRatingCounts {
     fn as_ref(&self) -> &Self {
         self
-    }
-}
-
-/// A user's internal ID.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
-pub struct UserId(pub String);
-
-impl UserId {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.to_string()).await
-    }
-
-    /// Returns the user's internal ID.
-    #[deprecated(since = "0.6.0", note = "please use the `.to_string()` method instead")]
-    pub fn id(&self) -> &str {
-        &self.0
-    }
-}
-
-impl AsRef<UserId> for UserId {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-impl fmt::Display for UserId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
     }
 }

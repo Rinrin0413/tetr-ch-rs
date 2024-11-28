@@ -12,7 +12,8 @@ use crate::{
         error_response::ErrorResponse,
         league_rank::Rank,
         role::Role,
-        user::{AchievementRatingCounts, UserId, UserResponse},
+        user::{AchievementRatingCounts, UserResponse},
+        util::user_id::UserId,
     },
     util::{max_f64, to_unix_ts},
 };
