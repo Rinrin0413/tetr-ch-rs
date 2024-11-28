@@ -9,7 +9,7 @@ use crate::{
     client::{error::RspErr, Client},
     model::{
         cache::CacheData, error_response::ErrorResponse, league_rank::Rank, user::UserResponse,
-        util::{gamemode::Gamemode, news_stream::NewsStream, timestamp::Timestamp},
+        util::{gamemode::Gamemode, news_stream::NewsStream, replay_id::ReplayId, timestamp::Timestamp},
     }
 };
 use serde::Deserialize;
@@ -170,7 +170,7 @@ pub struct LeaderboardNews {
     pub result: f64,
     /// The replay's shortID.
     #[serde(rename = "replayid")]
-    pub replay_id: String,
+    pub replay_id: ReplayId,
 }
 
 impl LeaderboardNews {
@@ -199,7 +199,7 @@ impl LeaderboardNews {
 
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
-        format!("https://tetr.io/#R:{}", self.replay_id)
+        self.replay_id.replay_url()
     }
 }
 
