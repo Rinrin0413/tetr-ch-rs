@@ -4,7 +4,7 @@ use serde::Deserialize;
 use std::fmt;
 
 /// A user role.
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
 pub enum Role {
     /// A normal user.
     #[serde(rename = "user")]

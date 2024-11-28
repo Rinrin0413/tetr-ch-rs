@@ -10,11 +10,10 @@ use crate::{
     model::{
         cache::CacheData,
         error_response::ErrorResponse,
-        league_rank::Rank,
-        role::Role,
-        user::{AchievementRatingCounts, UserId, UserResponse},
+        user::{AchievementRatingCounts, UserResponse},
+        util::{league_rank::Rank, role::Role, timestamp::Timestamp, user_id::UserId},
     },
-    util::{max_f64, to_unix_ts},
+    util::max_f64,
 };
 use serde::Deserialize;
 
@@ -68,7 +67,7 @@ pub struct LeaderboardUser {
     /// When the user account was created.
     /// If not set, this account was created before join dates were recorded.
     #[serde(rename = "ts")]
-    pub account_created_at: Option<String>,
+    pub account_created_at: Option<Timestamp>,
     /// The user's XP in points.
     pub xp: f64,
     /// The user's ISO 3166-1 country code, or `None` if hidden/unknown.
@@ -192,7 +191,7 @@ impl LeaderboardUser {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn account_created_at(&self) -> Option<i64> {
-        self.account_created_at.as_ref().map(|ts| to_unix_ts(ts))
+        self.account_created_at.as_ref().map(|ts| ts.unix_ts())
     }
 
     /// Returns the national flag URL of the user's country.

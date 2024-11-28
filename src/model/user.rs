@@ -1,15 +1,17 @@
-//! Models for the endpoint "User Info", and its related types.
+//! Models for the endpoint "User Info".
 //!
 //! About the endpoint "User Info",
 //! see the [API document](https://tetr.io/about/api/#usersuser).
 
 use crate::{
-    client::{error::RspErr, Client},
-    model::{cache::CacheData, error_response::ErrorResponse, role::Role},
-    util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
+    model::{
+        cache::CacheData,
+        error_response::ErrorResponse,
+        util::{badge_id::BadgeId, role::Role, timestamp::Timestamp, user_id::UserId},
+    },
+    util::{deserialize_from_non_str_to_none, max_f64},
 };
 use serde::Deserialize;
-use std::fmt;
 
 /// A struct for the response for the endpoint "User Info".
 #[derive(Clone, Debug, Deserialize)]
@@ -46,7 +48,7 @@ pub struct User {
     /// When the user account was created.
     /// If not set, this account was created before join dates were recorded.
     #[serde(rename = "ts")]
-    pub created_at: Option<String>,
+    pub created_at: Option<Timestamp>,
     /// If this user is a bot, the bot's operator.
     #[serde(rename = "botmaster")]
     pub bot_master: Option<String>,
@@ -176,7 +178,7 @@ impl User {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn created_at(&self) -> Option<i64> {
-        self.created_at.as_ref().map(|ts| to_unix_ts(ts))
+        self.created_at.as_ref().map(|ts| ts.unix_ts())
     }
 
     /// Whether the user has any badges.
@@ -254,7 +256,7 @@ pub struct Badge {
     /// Note that badge IDs may include forward slashes.
     /// Please do not encode them!
     /// Follow the folder structure.
-    pub id: String,
+    pub id: BadgeId,
     /// The badge's group ID.
     /// If multiple badges have the same group ID, they are rendered together.
     pub group: Option<String>,
@@ -271,13 +273,13 @@ pub struct Badge {
         deserialize_with = "deserialize_from_non_str_to_none",
         default
     )]
-    pub received_at: Option<String>,
+    pub received_at: Option<Timestamp>,
 }
 
 impl Badge {
     /// Returns the badge icon URL.
     pub fn badge_icon_url(&self) -> String {
-        format!("https://tetr.io/res/badges/{}.png", self.id)
+        self.id.icon_url()
     }
 
     /// Returns a UNIX timestamp when the badge was achieved.
@@ -286,7 +288,7 @@ impl Badge {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn received_at(&self) -> Option<i64> {
-        self.received_at.as_ref().map(|ts| to_unix_ts(ts))
+        self.received_at.as_ref().map(|ts| ts.unix_ts())
     }
 }
 
@@ -429,47 +431,5 @@ pub struct AchievementRatingCounts {
 impl AsRef<AchievementRatingCounts> for AchievementRatingCounts {
     fn as_ref(&self) -> &Self {
         self
-    }
-}
-
-/// A user's internal ID.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
-pub struct UserId(pub String);
-
-impl UserId {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.to_string()).await
-    }
-
-    /// Returns the user's internal ID.
-    #[deprecated(since = "0.6.0", note = "please use the `.to_string()` method instead")]
-    pub fn id(&self) -> &str {
-        &self.0
-    }
-}
-
-impl AsRef<UserId> for UserId {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-impl fmt::Display for UserId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
     }
 }

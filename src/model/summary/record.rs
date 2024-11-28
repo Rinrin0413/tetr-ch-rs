@@ -5,10 +5,12 @@
 use crate::{
     client::{error::RspErr, param::pagination::Prisecter},
     model::{
-        league_rank::Rank,
-        user::{UserId, UserResponse},
+        user::UserResponse,
+        util::{
+            gamemode::Gamemode, league_rank::Rank, record_leaderboard::RecordLeaderboard,
+            replay_id::ReplayId, timestamp::Timestamp, user_id::UserId,
+        },
     },
-    util::to_unix_ts,
 };
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -26,13 +28,13 @@ pub struct Record {
     pub id: String,
     /// The Record's ReplayID.
     #[serde(rename = "replayid")]
-    pub replay_id: String,
+    pub replay_id: ReplayId,
     /// Whether the Replay has been pruned.
     #[serde(rename = "stub")]
     pub is_stub: bool,
     /// The played game mode.
     #[serde(rename = "gamemode")]
-    pub game_mode: String,
+    pub game_mode: Gamemode,
     /// Whether this is the user's current personal best in the game mode.
     #[serde(rename = "pb")]
     pub is_personal_best: bool,
@@ -41,7 +43,7 @@ pub struct Record {
     pub has_been_personal_best: bool,
     /// The time the Record was submitted.
     #[serde(rename = "ts")]
-    pub submitted_at: String,
+    pub submitted_at: Timestamp,
     /// If revolved away, the revolution it belongs to.
     pub revolution: Option<String>,
     /// The user owning the Record.
@@ -55,7 +57,7 @@ pub struct Record {
     /// The leaderboards this Record is mentioned in.
     ///
     /// e.g. `["40l_global", "40l_country_JP"]`
-    pub leaderboards: Vec<String>,
+    pub leaderboards: Vec<RecordLeaderboard>,
     /// Whether this Record is disputed.
     #[serde(rename = "disputed")]
     pub is_disputed: bool,
@@ -75,7 +77,7 @@ pub struct Record {
 impl Record {
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
-        format!("https://tetr.io/#R:{}", self.replay_id)
+        self.replay_id.replay_url()
     }
 
     /// Returns a UNIX timestamp when the record was submitted.
@@ -84,7 +86,7 @@ impl Record {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn submitted_at(&self) -> i64 {
-        to_unix_ts(&self.submitted_at)
+        self.submitted_at.unix_ts()
     }
 }
 

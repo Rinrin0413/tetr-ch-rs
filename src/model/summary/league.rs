@@ -3,7 +3,7 @@
 //! About the endpoint "User Summary: TETRA LEAGUE",
 //! see the [API document](https://tetr.io/about/api/#usersusersummariesleague).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse, league_rank::Rank};
+use crate::model::{cache::CacheData, error_response::ErrorResponse, util::league_rank::Rank};
 use serde::Deserialize;
 use std::collections::HashMap;
 

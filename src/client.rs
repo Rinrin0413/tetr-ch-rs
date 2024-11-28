@@ -3,7 +3,7 @@
 use self::{
     error::RspErr,
     param::{
-        news_stream::NewsStream,
+        news_stream::ToNewsStreamParam,
         record::{self, Gamemode},
         record_leaderboard::{self, RecordsLeaderboardId},
         search_user::SocialConnection,
@@ -918,9 +918,9 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_news_latest(
+    pub async fn get_news_latest<S: ToNewsStreamParam>(
         self,
-        stream: NewsStream,
+        stream: S,
         limit: u8,
     ) -> RspErr<NewsLatestResponse> {
         validate_limit(limit);

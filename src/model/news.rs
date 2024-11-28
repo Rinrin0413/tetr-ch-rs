@@ -10,10 +10,12 @@ use crate::{
     model::{
         cache::CacheData,
         error_response::ErrorResponse,
-        league_rank::Rank,
         user::UserResponse,
+        util::{
+            badge_id::BadgeId, gamemode::Gamemode, league_rank::Rank, news_stream::NewsStream,
+            replay_id::ReplayId, timestamp::Timestamp,
+        },
     },
-    util::to_unix_ts,
 };
 use serde::Deserialize;
 
@@ -60,14 +62,14 @@ pub struct News {
     #[serde(rename = "_id")]
     pub id: String,
     /// The item's stream.
-    pub stream: String,
+    pub stream: NewsStream,
     /// The item's type.
     pub r#type: String,
     /// The item's records.
     pub data: NewsData,
     /// The item's creation date.
     #[serde(rename = "ts")]
-    pub created_at: String,
+    pub created_at: Timestamp,
 }
 
 impl News {
@@ -77,7 +79,7 @@ impl News {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn created_at(&self) -> i64 {
-        to_unix_ts(&self.created_at)
+        self.created_at.unix_ts()
     }
 }
 
@@ -166,14 +168,14 @@ pub struct LeaderboardNews {
     /// The username of the person who got the leaderboard spot.
     pub username: String,
     /// The game mode played.
-    pub gametype: String,
+    pub gametype: Gamemode,
     /// The global rank achieved.
     pub rank: u32,
     /// The result (score or time) achieved.
     pub result: f64,
     /// The replay's shortID.
     #[serde(rename = "replayid")]
-    pub replay_id: String,
+    pub replay_id: ReplayId,
 }
 
 impl LeaderboardNews {
@@ -202,7 +204,7 @@ impl LeaderboardNews {
 
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
-        format!("https://tetr.io/#R:{}", self.replay_id)
+        self.replay_id.replay_url()
     }
 }
 
@@ -219,12 +221,12 @@ pub struct PersonalBestNews {
     /// The username of the player.
     pub username: String,
     /// The game mode played.
-    pub gametype: String,
+    pub gametype: Gamemode,
     /// The result (score or time) achieved.
     pub result: f64,
     /// The replay's shortID.
     #[serde(rename = "replayid")]
-    pub replay_id: String,
+    pub replay_id: ReplayId,
 }
 
 impl PersonalBestNews {
@@ -253,7 +255,7 @@ impl PersonalBestNews {
 
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
-        format!("https://tetr.io/#R:{}", self.replay_id)
+        self.replay_id.replay_url()
     }
 }
 
@@ -272,7 +274,7 @@ pub struct BadgeNews {
     /// The badge's internal ID, and the filename of the badge icon
     /// (all PNGs within `/res/badges/`)
     #[serde(rename = "type")]
-    pub id: String,
+    pub id: BadgeId,
     /// The badge's label.
     pub label: String,
 }
@@ -303,7 +305,7 @@ impl BadgeNews {
 
     /// Returns the badge icon URL.
     pub fn badge_icon_url(&self) -> String {
-        format!("https://tetr.io/res/badges/{}.png", self.id)
+        self.id.icon_url()
     }
 }
 
