@@ -1,5 +1,6 @@
 //! Utilities for tetr-ch-rs.
 
+use crate::model::util::timestamp::Timestamp;
 use chrono::DateTime;
 use serde::Deserialize;
 use serde_json::Value;
@@ -24,19 +25,19 @@ pub(crate) fn max_f64(v1: f64, v2: f64) -> f64 {
     }
 }
 
-/// Deserialize from the given value to `Option<String>`.
+/// Deserializes from the given value to `Option<Timestamp>`.
 ///
-/// If the given value is string, returns `Some(String)`.
+/// If the given value is string, returns `Some(Timestamp)`.
 /// Otherwise, returns `None`.
 pub(crate) fn deserialize_from_non_str_to_none<'de, D>(
     deserializer: D,
-) -> Result<Option<String>, D::Error>
+) -> Result<Option<Timestamp>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
     let value: Value = Deserialize::deserialize(deserializer)?;
     if let Some(received_at) = value.as_str() {
-        Ok(Some(received_at.to_owned()))
+        Ok(Some(Timestamp::new(received_at.to_owned())))
     } else {
         Ok(None)
     }

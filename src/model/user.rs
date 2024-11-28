@@ -11,7 +11,7 @@ use crate::{
         role::Role,
         util::{badge_id::BadgeId, timestamp::Timestamp},
     },
-    util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
+    util::{deserialize_from_non_str_to_none, max_f64},
 };
 use serde::Deserialize;
 use std::fmt;
@@ -276,7 +276,7 @@ pub struct Badge {
         deserialize_with = "deserialize_from_non_str_to_none",
         default
     )]
-    pub received_at: Option<String>,
+    pub received_at: Option<Timestamp>,
 }
 
 impl Badge {
@@ -291,7 +291,7 @@ impl Badge {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn received_at(&self) -> Option<i64> {
-        self.received_at.as_ref().map(|ts| to_unix_ts(ts))
+        self.received_at.as_ref().map(|ts| ts.unix_ts())
     }
 }
 
