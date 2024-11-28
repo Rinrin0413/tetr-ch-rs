@@ -11,9 +11,8 @@ use crate::{
         cache::CacheData,
         error_response::ErrorResponse,
         league_rank::Rank,
-        role::Role,
         user::{AchievementRatingCounts, UserResponse},
-        util::{timestamp::Timestamp, user_id::UserId},
+        util::{role::Role, timestamp::Timestamp, user_id::UserId},
     },
     util::max_f64,
 };

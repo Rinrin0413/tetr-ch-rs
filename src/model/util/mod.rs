@@ -5,5 +5,6 @@ pub mod gamemode;
 pub mod news_stream;
 pub mod record_leaderboard;
 pub mod replay_id;
+pub mod role;
 pub mod timestamp;
 pub mod user_id;
