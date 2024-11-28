@@ -9,7 +9,7 @@ use crate::{
     client::{error::RspErr, Client},
     model::{
         cache::CacheData, error_response::ErrorResponse, league_rank::Rank, user::UserResponse,
-        util::{news_stream::NewsStream, timestamp::Timestamp},
+        util::{gamemode::Gamemode, news_stream::NewsStream, timestamp::Timestamp},
     }
 };
 use serde::Deserialize;
@@ -163,7 +163,7 @@ pub struct LeaderboardNews {
     /// The username of the person who got the leaderboard spot.
     pub username: String,
     /// The game mode played.
-    pub gametype: String,
+    pub gametype: Gamemode,
     /// The global rank achieved.
     pub rank: u32,
     /// The result (score or time) achieved.
