@@ -9,6 +9,7 @@ use crate::{
     client::{error::RspErr, Client},
     model::{
         cache::CacheData, error_response::ErrorResponse, league_rank::Rank, user::UserResponse,
+        util::news_stream::NewsStream,
     },
     util::to_unix_ts,
 };
@@ -57,7 +58,7 @@ pub struct News {
     #[serde(rename = "_id")]
     pub id: String,
     /// The item's stream.
-    pub stream: String,
+    pub stream: NewsStream,
     /// The item's type.
     pub r#type: String,
     /// The item's records.
