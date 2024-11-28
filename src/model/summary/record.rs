@@ -5,11 +5,10 @@
 use crate::{
     client::{error::RspErr, param::pagination::Prisecter},
     model::{
-        league_rank::Rank,
         user::UserResponse,
         util::{
-            gamemode::Gamemode, record_leaderboard::RecordLeaderboard, replay_id::ReplayId,
-            timestamp::Timestamp, user_id::UserId,
+            gamemode::Gamemode, league_rank::Rank, record_leaderboard::RecordLeaderboard,
+            replay_id::ReplayId, timestamp::Timestamp, user_id::UserId,
         },
     },
 };

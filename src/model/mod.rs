@@ -6,7 +6,6 @@ pub mod cache;
 pub mod error_response;
 pub mod labs;
 pub mod leaderboard;
-pub mod league_rank;
 pub mod news;
 pub mod records_leaderboard;
 pub mod searched_record;

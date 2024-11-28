@@ -10,9 +10,8 @@ use crate::{
     model::{
         cache::CacheData,
         error_response::ErrorResponse,
-        league_rank::Rank,
         user::{AchievementRatingCounts, UserResponse},
-        util::{role::Role, timestamp::Timestamp, user_id::UserId},
+        util::{league_rank::Rank, role::Role, timestamp::Timestamp, user_id::UserId},
     },
     util::max_f64,
 };
