@@ -5,7 +5,7 @@
 
 use crate::{
     client::{error::RspErr, Client},
-    model::{cache::CacheData, error_response::ErrorResponse, role::Role},
+    model::{cache::CacheData, error_response::ErrorResponse, role::Role, util::timestamp::Timestamp},
     util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
 };
 use serde::Deserialize;
@@ -46,7 +46,7 @@ pub struct User {
     /// When the user account was created.
     /// If not set, this account was created before join dates were recorded.
     #[serde(rename = "ts")]
-    pub created_at: Option<String>,
+    pub created_at: Option<Timestamp>,
     /// If this user is a bot, the bot's operator.
     #[serde(rename = "botmaster")]
     pub bot_master: Option<String>,
@@ -176,7 +176,7 @@ impl User {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn created_at(&self) -> Option<i64> {
-        self.created_at.as_ref().map(|ts| to_unix_ts(ts))
+        self.created_at.as_ref().map(|ts| ts.unix_ts())
     }
 
     /// Whether the user has any badges.
