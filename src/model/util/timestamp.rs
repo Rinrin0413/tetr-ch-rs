@@ -10,6 +10,11 @@ use std::fmt;
 pub struct Timestamp(String);
 
 impl Timestamp {
+    /// Creates a new `Timestamp`.
+    pub(crate) fn new(ts: String) -> Self {
+        Self(ts)
+    }
+
     /// Returns the UNIX timestamp.
     ///
     /// # Panics
