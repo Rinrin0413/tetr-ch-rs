@@ -1,4 +1,4 @@
-//! Models for the endpoint "User Info", and its related types.
+//! Models for the endpoint "User Info".
 //!
 //! About the endpoint "User Info",
 //! see the [API document](https://tetr.io/about/api/#usersuser).
