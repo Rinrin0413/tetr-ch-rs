@@ -1,5 +1,6 @@
 //! Utility models for the models.
 
+pub mod achievement;
 pub mod badge_id;
 pub mod gamemode;
 pub mod league_rank;
