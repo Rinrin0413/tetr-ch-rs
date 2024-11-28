@@ -7,7 +7,10 @@ use crate::{
     model::{
         league_rank::Rank,
         user::UserResponse,
-        util::{gamemode::Gamemode, replay_id::ReplayId, timestamp::Timestamp, user_id::UserId},
+        util::{
+            gamemode::Gamemode, record_leaderboard::RecordLeaderboard, replay_id::ReplayId,
+            timestamp::Timestamp, user_id::UserId,
+        },
     },
 };
 use serde::Deserialize;
@@ -55,7 +58,7 @@ pub struct Record {
     /// The leaderboards this Record is mentioned in.
     ///
     /// e.g. `["40l_global", "40l_country_JP"]`
-    pub leaderboards: Vec<String>,
+    pub leaderboards: Vec<RecordLeaderboard>,
     /// Whether this Record is disputed.
     #[serde(rename = "disputed")]
     pub is_disputed: bool,
