@@ -9,7 +9,7 @@ use crate::{
     client::{error::RspErr, Client},
     model::{
         cache::CacheData, error_response::ErrorResponse, league_rank::Rank, user::UserResponse,
-        util::{gamemode::Gamemode, news_stream::NewsStream, replay_id::ReplayId, timestamp::Timestamp},
+        util::{badge_id::BadgeId, gamemode::Gamemode, news_stream::NewsStream, replay_id::ReplayId, timestamp::Timestamp},
     }
 };
 use serde::Deserialize;
@@ -269,7 +269,7 @@ pub struct BadgeNews {
     /// The badge's internal ID, and the filename of the badge icon
     /// (all PNGs within `/res/badges/`)
     #[serde(rename = "type")]
-    pub id: String,
+    pub id: BadgeId,
     /// The badge's label.
     pub label: String,
 }
@@ -300,7 +300,7 @@ impl BadgeNews {
 
     /// Returns the badge icon URL.
     pub fn badge_icon_url(&self) -> String {
-        format!("https://tetr.io/res/badges/{}.png", self.id)
+        self.id.icon_url()
     }
 }
 
