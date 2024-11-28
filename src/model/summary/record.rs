@@ -4,7 +4,7 @@
 
 use crate::{
     client::{error::RspErr, param::pagination::Prisecter},
-    model::{league_rank::Rank, user::UserResponse, util::user_id::UserId},
+    model::{league_rank::Rank, user::UserResponse, util::{replay_id::ReplayId, user_id::UserId}},
     util::to_unix_ts,
 };
 use serde::Deserialize;
@@ -23,7 +23,7 @@ pub struct Record {
     pub id: String,
     /// The Record's ReplayID.
     #[serde(rename = "replayid")]
-    pub replay_id: String,
+    pub replay_id: ReplayId,
     /// Whether the Replay has been pruned.
     #[serde(rename = "stub")]
     pub is_stub: bool,
@@ -72,7 +72,7 @@ pub struct Record {
 impl Record {
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
-        format!("https://tetr.io/#R:{}", self.replay_id)
+        self.replay_id.replay_url()
     }
 
     /// Returns a UNIX timestamp when the record was submitted.
