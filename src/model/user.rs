@@ -6,7 +6,10 @@
 use crate::{
     client::{error::RspErr, Client},
     model::{
-        cache::CacheData, error_response::ErrorResponse, role::Role, util::timestamp::Timestamp,
+        cache::CacheData,
+        error_response::ErrorResponse,
+        role::Role,
+        util::{badge_id::BadgeId, timestamp::Timestamp},
     },
     util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
 };
@@ -256,7 +259,7 @@ pub struct Badge {
     /// Note that badge IDs may include forward slashes.
     /// Please do not encode them!
     /// Follow the folder structure.
-    pub id: String,
+    pub id: BadgeId,
     /// The badge's group ID.
     /// If multiple badges have the same group ID, they are rendered together.
     pub group: Option<String>,
@@ -279,7 +282,7 @@ pub struct Badge {
 impl Badge {
     /// Returns the badge icon URL.
     pub fn badge_icon_url(&self) -> String {
-        format!("https://tetr.io/res/badges/{}.png", self.id)
+        self.id.icon_url()
     }
 
     /// Returns a UNIX timestamp when the badge was achieved.
