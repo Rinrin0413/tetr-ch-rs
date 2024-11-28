@@ -221,7 +221,7 @@ pub struct PersonalBestNews {
     pub result: f64,
     /// The replay's shortID.
     #[serde(rename = "replayid")]
-    pub replay_id: String,
+    pub replay_id: ReplayId,
 }
 
 impl PersonalBestNews {
@@ -250,7 +250,7 @@ impl PersonalBestNews {
 
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
-        format!("https://tetr.io/#R:{}", self.replay_id)
+        self.replay_id.replay_url()
     }
 }
 
