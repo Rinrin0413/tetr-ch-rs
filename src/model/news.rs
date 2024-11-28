@@ -216,7 +216,7 @@ pub struct PersonalBestNews {
     /// The username of the player.
     pub username: String,
     /// The game mode played.
-    pub gametype: String,
+    pub gametype: Gamemode,
     /// The result (score or time) achieved.
     pub result: f64,
     /// The replay's shortID.
