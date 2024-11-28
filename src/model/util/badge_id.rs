@@ -1,4 +1,4 @@
-//! A model for the badge's internal IDs.
+//! A model for badge's internal IDs.
 
 use serde::Deserialize;
 use std::fmt;

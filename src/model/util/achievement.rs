@@ -1,4 +1,4 @@
-//! A model for the achievement data.
+//! A model for achievements.
 //!
 //! For more details, see the [API document](https://tetr.io/about/api/#achievementdata).
 

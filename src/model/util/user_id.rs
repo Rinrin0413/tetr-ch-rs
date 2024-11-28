@@ -1,4 +1,4 @@
-//! A model for the user IDs,
+//! A model for user IDs,
 
 use crate::{
     client::{error::RspErr, Client},
