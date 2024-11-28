@@ -8,10 +8,7 @@
 use crate::{
     client::{error::RspErr, Client},
     model::{
-        cache::CacheData,
-        error_response::ErrorResponse,
-        league_rank::Rank,
-        user::UserResponse,
+        cache::CacheData, error_response::ErrorResponse, league_rank::Rank, user::UserResponse,
     },
     util::to_unix_ts,
 };

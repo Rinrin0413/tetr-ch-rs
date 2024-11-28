@@ -5,7 +5,9 @@
 
 use crate::{
     client::{error::RspErr, Client},
-    model::{cache::CacheData, error_response::ErrorResponse, role::Role, util::timestamp::Timestamp},
+    model::{
+        cache::CacheData, error_response::ErrorResponse, role::Role, util::timestamp::Timestamp,
+    },
     util::{deserialize_from_non_str_to_none, max_f64, to_unix_ts},
 };
 use serde::Deserialize;
