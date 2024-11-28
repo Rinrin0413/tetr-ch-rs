@@ -9,9 +9,8 @@ use crate::{
     client::{error::RspErr, Client},
     model::{
         cache::CacheData, error_response::ErrorResponse, league_rank::Rank, user::UserResponse,
-        util::news_stream::NewsStream,
-    },
-    util::to_unix_ts,
+        util::{news_stream::NewsStream, timestamp::Timestamp},
+    }
 };
 use serde::Deserialize;
 
@@ -65,7 +64,7 @@ pub struct News {
     pub data: NewsData,
     /// The item's creation date.
     #[serde(rename = "ts")]
-    pub created_at: String,
+    pub created_at: Timestamp,
 }
 
 impl News {
@@ -75,7 +74,7 @@ impl News {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn created_at(&self) -> i64 {
-        to_unix_ts(&self.created_at)
+        self.created_at.unix_ts()
     }
 }
 
