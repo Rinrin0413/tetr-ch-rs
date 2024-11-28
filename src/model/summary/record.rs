@@ -7,9 +7,8 @@ use crate::{
     model::{
         league_rank::Rank,
         user::UserResponse,
-        util::{gamemode::Gamemode, replay_id::ReplayId, user_id::UserId},
+        util::{gamemode::Gamemode, replay_id::ReplayId, timestamp::Timestamp, user_id::UserId},
     },
-    util::to_unix_ts,
 };
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -42,7 +41,7 @@ pub struct Record {
     pub has_been_personal_best: bool,
     /// The time the Record was submitted.
     #[serde(rename = "ts")]
-    pub submitted_at: String,
+    pub submitted_at: Timestamp,
     /// If revolved away, the revolution it belongs to.
     pub revolution: Option<String>,
     /// The user owning the Record.
@@ -85,7 +84,7 @@ impl Record {
     ///
     /// Panics if failed to parse the timestamp.
     pub fn submitted_at(&self) -> i64 {
-        to_unix_ts(&self.submitted_at)
+        self.submitted_at.unix_ts()
     }
 }
 
