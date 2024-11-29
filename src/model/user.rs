@@ -278,7 +278,7 @@ pub struct Badge {
 
 impl Badge {
     /// Returns the badge icon URL.
-    pub fn badge_icon_url(&self) -> String {
+    pub fn icon_url(&self) -> String {
         self.id.icon_url()
     }
 
