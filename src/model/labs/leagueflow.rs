@@ -33,7 +33,7 @@ impl AsRef<LabsLeagueflowResponse> for LabsLeagueflowResponse {
 pub struct LabsLeagueflow {
     /// The timestamp of the oldest record found.
     #[serde(rename = "startTime")]
-    pub oldest_record_ts: f64,
+    pub oldest_record_ts: i64,
     /// The points in the chart.
     ///
     /// - 0: The timestamp offset.
