@@ -72,10 +72,7 @@ pub struct Record {
 }
 
 impl Record {
-    /// Returns the replay URL.
-    pub fn replay_url(&self) -> String {
-        self.replay_id.replay_url()
-    }
+    impl_for_replay_id!();
 
     /// Returns a UNIX timestamp when the record was submitted.
     ///

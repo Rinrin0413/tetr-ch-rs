@@ -187,3 +187,25 @@ macro_rules! impl_for_id_badge_id {
         }
     };
 }
+
+/// A macro to implement the method for `replay_id` field.
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn replay_url(&self) -> String
+/// ```
+///
+/// # Dependencies
+///
+/// - `replay_id: ReplayId` field
+///
+/// Go to [ReplayId](crate::model::util::replay_id::ReplayId)
+macro_rules! impl_for_replay_id {
+    () => {
+        /// Returns the replay URL.
+        pub fn replay_url(&self) -> String {
+            self.replay_id.replay_url()
+        }
+    };
+}

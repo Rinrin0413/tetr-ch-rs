@@ -170,11 +170,7 @@ pub struct LeaderboardNews {
 impl LeaderboardNews {
     impl_get_user!(username);
     impl_for_username!();
-
-    /// Returns the replay URL.
-    pub fn replay_url(&self) -> String {
-        self.replay_id.replay_url()
-    }
+    impl_for_replay_id!();
 }
 
 impl AsRef<LeaderboardNews> for LeaderboardNews {
@@ -201,11 +197,7 @@ pub struct PersonalBestNews {
 impl PersonalBestNews {
     impl_get_user!(username);
     impl_for_username!();
-
-    /// Returns the replay URL.
-    pub fn replay_url(&self) -> String {
-        self.replay_id.replay_url()
-    }
+    impl_for_replay_id!();
 }
 
 impl AsRef<PersonalBestNews> for PersonalBestNews {
