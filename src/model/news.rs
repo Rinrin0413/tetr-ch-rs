@@ -293,11 +293,7 @@ impl BadgeNews {
     }
 
     impl_for_username!();
-
-    /// Returns the badge icon URL.
-    pub fn badge_icon_url(&self) -> String {
-        self.id.icon_url()
-    }
+    impl_for_id_badge_id!();
 }
 
 impl AsRef<BadgeNews> for BadgeNews {

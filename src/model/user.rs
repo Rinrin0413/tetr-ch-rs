@@ -169,10 +169,7 @@ pub struct Badge {
 }
 
 impl Badge {
-    /// Returns the badge icon URL.
-    pub fn icon_url(&self) -> String {
-        self.id.icon_url()
-    }
+    impl_for_id_badge_id!();
 
     /// Returns a UNIX timestamp when the badge was achieved.
     ///

@@ -162,3 +162,25 @@ macro_rules! impl_for_banner_revision {
         }
     };
 }
+
+/// A macro to implement the methods for `id: BadgeId` field.
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn icon_url(&self) -> String
+/// ```
+///
+/// # Dependencies
+///
+/// - `id: BadgeId` field
+///
+/// Go to [BadgeId](crate::model::util::badge_id::BadgeId)
+macro_rules! impl_for_id_badge_id {
+    () => {
+        /// Returns the badge icon URL.
+        pub fn icon_url(&self) -> String {
+            self.id.icon_url()
+        }
+    };
+}
