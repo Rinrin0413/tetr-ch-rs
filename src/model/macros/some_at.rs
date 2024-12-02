@@ -25,3 +25,29 @@ macro_rules! impl_for_created_at {
         }
     };
 }
+
+/// A macro to implement the methods for `received_at` field. (badge)
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn received_at(&self) -> Option<i64>
+/// ```
+///
+/// # Dependencies
+///
+/// - `received_at: Option<Timestamp>` field
+macro_rules! impl_for_received_at {
+    () => {
+        /// Returns a UNIX timestamp when the badge was achieved.
+        ///
+        /// If the badge was shown, `None` is returned.
+        ///
+        /// # Panics
+        ///
+        /// Panics if failed to parse the timestamp.
+        pub fn received_at(&self) -> Option<i64> {
+            self.received_at.as_ref().map(|ts| ts.unix_ts())
+        }
+    };
+}

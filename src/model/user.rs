@@ -170,15 +170,7 @@ pub struct Badge {
 
 impl Badge {
     impl_for_id_badge_id!();
-
-    /// Returns a UNIX timestamp when the badge was achieved.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn received_at(&self) -> Option<i64> {
-        self.received_at.as_ref().map(|ts| ts.unix_ts())
-    }
+    impl_for_received_at!();
 }
 
 impl AsRef<Badge> for Badge {
