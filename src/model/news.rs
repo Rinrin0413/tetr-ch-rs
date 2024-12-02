@@ -69,14 +69,7 @@ pub struct News {
 }
 
 impl News {
-    /// Returns a UNIX timestamp when the news item was created.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn created_at(&self) -> i64 {
-        self.created_at.unix_ts()
-    }
+    impl_for_news_created_at!();
 }
 
 impl AsRef<News> for News {

@@ -51,3 +51,27 @@ macro_rules! impl_for_received_at {
         }
     };
 }
+
+/// A macro to implement the methods for `created_at` field. (news item)
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn created_at(&self) -> i64
+/// ```
+///
+/// # Dependencies
+///
+/// - `created_at: Timestamp` field
+macro_rules! impl_for_news_created_at {
+    () => {
+        /// Returns a UNIX timestamp when the news item was created.
+        ///
+        /// # Panics
+        ///
+        /// Panics if failed to parse the timestamp.
+        pub fn created_at(&self) -> i64 {
+            self.created_at.unix_ts()
+        }
+    };
+}
