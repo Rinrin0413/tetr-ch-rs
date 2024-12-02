@@ -3,13 +3,10 @@
 //! For more details, see the [API document](https://tetr.io/about/api/#recorddata).
 
 use crate::{
-    client::{error::RspErr, param::pagination::Prisecter},
-    model::{
-        user::UserResponse,
-        util::{
-            gamemode::Gamemode, league_rank::Rank, record_leaderboard::RecordLeaderboard,
-            replay_id::ReplayId, timestamp::Timestamp, user_id::UserId,
-        },
+    client::param::pagination::Prisecter,
+    model::util::{
+        gamemode::Gamemode, league_rank::Rank, record_leaderboard::RecordLeaderboard,
+        replay_id::ReplayId, timestamp::Timestamp, user_id::UserId,
     },
 };
 use serde::Deserialize;
@@ -118,24 +115,7 @@ pub struct PartialUser {
 }
 
 impl PartialUser {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
+    impl_get_user!(id);
     impl_for_username!();
     impl_for_avatar_revision!();
     impl_for_banner_revision!();
@@ -246,24 +226,7 @@ pub struct PlayerStats {
 }
 
 impl PlayerStats {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
+    impl_get_user!(id);
     impl_for_username!();
 }
 
@@ -295,24 +258,7 @@ pub struct PlayerStatsRound {
 }
 
 impl PlayerStatsRound {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
+    impl_get_user!(id);
     impl_for_username!();
 }
 

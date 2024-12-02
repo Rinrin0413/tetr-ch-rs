@@ -6,11 +6,11 @@
 //! see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
 
 use crate::{
-    client::{error::RspErr, param::pagination::Prisecter},
+    client::param::pagination::Prisecter,
     model::{
         cache::CacheData,
         error_response::ErrorResponse,
-        user::{AchievementRatingCounts, UserResponse},
+        user::AchievementRatingCounts,
         util::{league_rank::Rank, role::Role, timestamp::Timestamp, user_id::UserId},
     },
     util::max_f64,
@@ -106,24 +106,7 @@ pub struct LeaderboardUser {
 }
 
 impl LeaderboardUser {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
+    impl_get_user!(id);
     impl_for_xp!();
     impl_for_username!();
     impl_for_role!();
@@ -266,23 +249,7 @@ pub struct PastUserWithPrisecter {
 }
 
 impl PastUserWithPrisecter {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
+    impl_get_user!(id);
     impl_for_country!();
 }
 

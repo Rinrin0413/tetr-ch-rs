@@ -13,6 +13,9 @@
 //! }
 //! ```
 
+/// Includes a macro to implement the method `get_user`.
+#[macro_use]
+mod get_user;
 /// Includes a macro to implement the methods for `role` field.
 #[macro_use]
 mod role;
