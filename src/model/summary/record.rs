@@ -136,10 +136,7 @@ impl PartialUser {
         self.id.get_user().await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 
     /// Returns the user's avatar URL.
     ///
@@ -312,10 +309,7 @@ impl PlayerStats {
         self.id.get_user().await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 }
 
 impl AsRef<PlayerStats> for PlayerStats {
@@ -364,10 +358,7 @@ impl PlayerStatsRound {
         self.id.get_user().await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 }
 
 impl AsRef<PlayerStatsRound> for PlayerStatsRound {

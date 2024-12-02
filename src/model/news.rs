@@ -197,10 +197,7 @@ impl LeaderboardNews {
         Client::new().get_user(&self.username).await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
@@ -248,10 +245,7 @@ impl PersonalBestNews {
         Client::new().get_user(&self.username).await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 
     /// Returns the replay URL.
     pub fn replay_url(&self) -> String {
@@ -298,10 +292,7 @@ impl BadgeNews {
         Client::new().get_user(&self.username).await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 
     /// Returns the badge icon URL.
     pub fn badge_icon_url(&self) -> String {
@@ -344,10 +335,7 @@ impl RankUpNews {
         Client::new().get_user(&self.username).await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 }
 
 impl AsRef<RankUpNews> for RankUpNews {
@@ -383,10 +371,7 @@ impl SupporterNews {
         Client::new().get_user(&self.username).await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 }
 
 impl AsRef<SupporterNews> for SupporterNews {
@@ -422,10 +407,7 @@ impl SupporterGiftNews {
         Client::new().get_user(&self.username).await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 }
 
 /// A struct for the response for the endpoint "Latest News".

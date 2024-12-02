@@ -14,6 +14,28 @@
 //! }
 //! ```
 
+/// A macro to implement the methods for `username` field.
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn profile_url(&self) -> String
+/// ```
+///
+/// # Dependencies
+///
+/// - `username: String` field
+///
+/// Go to [String]
+macro_rules! impl_for_username {
+    () => {
+        /// Returns the user's TETRA CHANNEL profile URL.
+        pub fn profile_url(&self) -> String {
+            format!("https://ch.tetr.io/u/{}", self.username)
+        }
+    };
+}
+
 /// A macro to implement the methods for `xp` field.
 ///
 /// # Methods

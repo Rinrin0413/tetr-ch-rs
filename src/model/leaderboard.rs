@@ -125,11 +125,7 @@ impl LeaderboardUser {
     }
 
     impl_for_xp!();
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 
     /// Whether the user is a normal user.
     pub fn is_normal_user(&self) -> bool {

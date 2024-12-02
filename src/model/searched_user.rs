@@ -80,10 +80,7 @@ impl UserInfo {
         Client::new().get_user(&self.id.to_string()).await
     }
 
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_for_username!();
 }
 
 impl AsRef<UserInfo> for UserInfo {
