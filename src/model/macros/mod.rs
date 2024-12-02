@@ -100,3 +100,39 @@ macro_rules! impl_for_avatar_revision {
         }
     };
 }
+
+/// A macro to implement the methods for `banner_revision` field.
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn banner_url(&self) -> Option<String>
+/// ```
+///
+/// # Dependencies
+///
+/// - `banner_revision: Option<u64>` field
+macro_rules! impl_for_banner_revision {
+    () => {
+        /// Returns the user's banner URL.
+        ///
+        /// If the user does not have a banner, `None` is returned.
+        ///
+        /// ***Ignore the returned value if the user is not a supporter.
+        /// Because even if the user is not currently a supporter,
+        /// `Some<String>` may be returned if the banner was once set.**
+        pub fn banner_url(&self) -> Option<String> {
+            if let Some(br) = self.banner_revision {
+                if br == 0 {
+                    return None;
+                }
+                Some(format!(
+                    "https://tetr.io/user-content/banners/{}.jpg?rv={}",
+                    self.id, br
+                ))
+            } else {
+                None
+            }
+        }
+    };
+}
