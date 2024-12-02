@@ -1,5 +1,8 @@
 //! Easy-to-use models of the various objects received from the API.
 
+#[macro_use]
+mod macros;
+
 pub mod achievement_info;
 pub mod cache;
 pub mod error_response;
