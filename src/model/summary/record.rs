@@ -139,15 +139,7 @@ impl PartialUser {
     impl_for_username!();
     impl_for_avatar_revision!();
     impl_for_banner_revision!();
-
-    /// Returns the national flag URL of the user's country.
-    ///
-    /// If the user's country is hidden or unknown, `None` is returned.
-    pub fn national_flag_url(&self) -> Option<String> {
-        self.country
-            .as_ref()
-            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
+    impl_for_country!();
 }
 
 impl AsRef<PartialUser> for PartialUser {

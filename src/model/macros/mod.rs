@@ -42,6 +42,32 @@ macro_rules! impl_for_username {
     };
 }
 
+/// A macro to implement the methods for `country` field.
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn national_flag_url(&self) -> Option<String>
+/// ```
+///
+/// # Dependencies
+///
+/// - `country: Option<String>` field
+///
+/// Go to [Option] | [String]
+macro_rules! impl_for_country {
+    () => {
+        /// Returns the national flag URL of the user's country.
+        ///
+        /// If the user's country is hidden or unknown, `None` is returned.
+        pub fn national_flag_url(&self) -> Option<String> {
+            self.country
+                .as_ref()
+                .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
+        }
+    };
+}
+
 /// A macro to implement the methods for `xp` field.
 ///
 /// # Methods
