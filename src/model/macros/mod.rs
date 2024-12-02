@@ -1,4 +1,3 @@
-
 //! Macros to implement methods for the models.
 //!
 //! # Examples
