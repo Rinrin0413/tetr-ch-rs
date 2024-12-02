@@ -110,7 +110,7 @@ impl LeaderboardUser {
     impl_for_xp!();
     impl_for_username!();
     impl_for_role!();
-    impl_for_created_at!();
+    impl_for_account_created_at!();
     impl_for_country!();
 }
 

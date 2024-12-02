@@ -115,7 +115,7 @@ impl User {
     impl_for_xp!();
     impl_for_username!();
     impl_for_role!();
-    impl_for_created_at!();
+    impl_for_account_created_at!();
 
     /// Whether the user has any badges.
     pub fn has_badge(&self) -> bool {

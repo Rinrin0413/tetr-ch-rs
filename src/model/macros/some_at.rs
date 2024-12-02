@@ -11,7 +11,7 @@
 /// - `created_at: Option<Timestamp>` field
 ///
 /// Go to [Option] | [Timestamp](crate::model::util::timestamp::Timestamp)
-macro_rules! impl_for_created_at {
+macro_rules! impl_for_account_created_at {
     () => {
         /// Returns a UNIX timestamp when the user's account created.
         ///
