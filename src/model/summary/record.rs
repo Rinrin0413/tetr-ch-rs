@@ -137,24 +137,7 @@ impl PartialUser {
     }
 
     impl_for_username!();
-
-    /// Returns the user's avatar URL.
-    ///
-    /// If the user does not have an avatar, the anonymous's avatar URL is returned.
-    pub fn avatar_url(&self) -> String {
-        let default = "https://tetr.io/res/avatar.png".to_string();
-        if let Some(ar) = self.avatar_revision {
-            if ar == 0 {
-                return default;
-            }
-            format!(
-                "https://tetr.io/user-content/avatars/{}.jpg?rv={}",
-                self.id, ar
-            )
-        } else {
-            default
-        }
-    }
+    impl_for_avatar_revision!();
 
     /// Returns the user's banner URL.
     ///
