@@ -20,7 +20,7 @@ mod role;
 #[macro_use]
 mod some_at;
 
-/// A macro to implement the methods for `username` field.
+/// A macro to implement the method for `username` field.
 ///
 /// # Methods
 ///
@@ -42,7 +42,7 @@ macro_rules! impl_for_username {
     };
 }
 
-/// A macro to implement the methods for `country` field.
+/// A macro to implement the method for `country` field.
 ///
 /// # Methods
 ///
@@ -68,7 +68,7 @@ macro_rules! impl_for_country {
     };
 }
 
-/// A macro to implement the methods for `xp` field.
+/// A macro to implement the method for `xp` field.
 ///
 /// # Methods
 ///
@@ -92,7 +92,7 @@ macro_rules! impl_for_xp {
     };
 }
 
-/// A macro to implement the methods for `avatar_revision` field.
+/// A macro to implement the method for `avatar_revision` field.
 ///
 /// # Methods
 ///
@@ -127,7 +127,7 @@ macro_rules! impl_for_avatar_revision {
     };
 }
 
-/// A macro to implement the methods for `banner_revision` field.
+/// A macro to implement the method for `banner_revision` field.
 ///
 /// # Methods
 ///
@@ -163,7 +163,7 @@ macro_rules! impl_for_banner_revision {
     };
 }
 
-/// A macro to implement the methods for `id: BadgeId` field.
+/// A macro to implement the method for `id: BadgeId` field.
 ///
 /// # Methods
 ///
