@@ -13,6 +13,10 @@
 //! }
 //! ```
 
+/// Includes a macro to implement the methods for `role` field.
+#[macro_use]
+mod role;
+
 /// A macro to implement the methods for `username` field.
 ///
 /// # Methods
