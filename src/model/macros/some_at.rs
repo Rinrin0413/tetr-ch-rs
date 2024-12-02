@@ -75,3 +75,27 @@ macro_rules! impl_for_news_created_at {
         }
     };
 }
+
+/// A macro to implement the methods for `submitted_at` field. (record)
+///
+/// # Methods
+///
+/// ```ignore
+/// pub fn submitted_at(&self) -> i64
+/// ```
+///
+/// # Dependencies
+///
+/// - `submitted_at: Timestamp` field
+macro_rules! impl_for_submitted_at {
+    () => {
+        /// Returns a UNIX timestamp when the record was submitted.
+        ///
+        /// # Panics
+        ///
+        /// Panics if failed to parse the timestamp.
+        pub fn submitted_at(&self) -> i64 {
+            self.submitted_at.unix_ts()
+        }
+    };
+}

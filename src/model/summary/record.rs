@@ -73,15 +73,7 @@ pub struct Record {
 
 impl Record {
     impl_for_replay_id!();
-
-    /// Returns a UNIX timestamp when the record was submitted.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn submitted_at(&self) -> i64 {
-        self.submitted_at.unix_ts()
-    }
+    impl_for_submitted_at!();
 }
 
 impl AsRef<Record> for Record {
