@@ -115,17 +115,7 @@ impl User {
     impl_for_xp!();
     impl_for_username!();
     impl_for_role!();
-
-    /// Returns a UNIX timestamp when the user's account created.
-    ///
-    /// If the account was created before join dates were recorded, `None` is returned.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn created_at(&self) -> Option<i64> {
-        self.created_at.as_ref().map(|ts| ts.unix_ts())
-    }
+    impl_for_created_at!();
 
     /// Whether the user has any badges.
     pub fn has_badge(&self) -> bool {

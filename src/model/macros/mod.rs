@@ -16,6 +16,9 @@
 /// Includes a macro to implement the methods for `role` field.
 #[macro_use]
 mod role;
+/// Includes macros to implement the methods for `*_at` fields.
+#[macro_use]
+mod some_at;
 
 /// A macro to implement the methods for `username` field.
 ///

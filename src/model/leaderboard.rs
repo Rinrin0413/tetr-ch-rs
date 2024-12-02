@@ -67,7 +67,7 @@ pub struct LeaderboardUser {
     /// When the user account was created.
     /// If not set, this account was created before join dates were recorded.
     #[serde(rename = "ts")]
-    pub account_created_at: Option<Timestamp>,
+    pub created_at: Option<Timestamp>,
     /// The user's XP in points.
     pub xp: f64,
     /// The user's ISO 3166-1 country code, or `None` if hidden/unknown.
@@ -127,18 +127,7 @@ impl LeaderboardUser {
     impl_for_xp!();
     impl_for_username!();
     impl_for_role!();
-
-    /// Returns a UNIX timestamp when the user account was created.
-    ///
-    /// If this account was created before join dates were recorded,
-    /// `None` is returned.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn account_created_at(&self) -> Option<i64> {
-        self.account_created_at.as_ref().map(|ts| ts.unix_ts())
-    }
+    impl_for_created_at!();
 
     /// Returns the national flag URL of the user's country.
     ///
