@@ -44,7 +44,9 @@ pub struct Record {
     /// If revolved away, the revolution it belongs to.
     pub revolution: Option<String>,
     /// The user owning the Record.
-    pub user: Option<PartialUser>, // EXCEPTION
+    ///
+    /// ***The API document does not say this field is optional.**
+    pub user: Option<PartialUser>,
     /// Other users mentioned in the Record.
     ///
     /// If not empty, this is a multiplayer game

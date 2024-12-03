@@ -20,8 +20,10 @@ pub struct Achievement {
     /// The flavor text of the achievement.
     pub desc: String,
     /// The order of this achievement in its category.
+    ///
+    /// ***The API document does not say this field is optional.**
     #[serde(rename = "o")]
-    pub order: Option<u32>, // EXCEPTION
+    pub order: Option<u32>,
     /// The rank type of this achievement.
     ///
     /// - 1 = PERCENTILE — ranked by percentile cutoffs (5% Diamond, 10% Platinum, 30% Gold, 50% Silver, 70% Bronze)

@@ -97,7 +97,9 @@ pub struct User {
     /// This user's third party connections.
     pub connections: Connections,
     /// The amount of players who have added this user to their friends list.
-    pub friend_count: Option<u32>, // EXCEPTION
+    ///
+    /// ***The API document does not say this field is optional.**
+    pub friend_count: Option<u32>,
     // This user's distinguishment banner.
     pub distinguishment: Option<Distinguishment>,
     /// This user's featured achievements.
@@ -155,7 +157,9 @@ pub struct Badge {
     /// The badge's label, shown when hovered.
     pub label: String,
     /// Extra flavor text for the badge, shown when hovered.
-    pub desc: Option<String>, // EXCEPTION
+    ///
+    /// ***The API document does not say this field is optional.**
+    pub desc: Option<String>,
     /// The badge's timestamp, if shown.
     ///
     /// Why it uses `deserialize_with` attribute?
@@ -254,11 +258,17 @@ pub struct Distinguishment {
     #[serde(rename = "type")]
     pub _type: String,
     /// The detail of distinguishment banner.
-    pub detail: Option<String>, // EXCEPTION
+    ///
+    /// ***The API document does not say about this field.**
+    pub detail: Option<String>,
     /// The header of distinguishment banner.
-    pub header: Option<String>, // EXCEPTION
+    ///
+    /// ***The API document does not say about this field.**
+    pub header: Option<String>,
     /// The footer of distinguishment banner.
-    pub footer: Option<String>, // EXCEPTION
+    ///
+    /// ***The API document does not say about this field.**
+    pub footer: Option<String>,
 }
 
 impl AsRef<Distinguishment> for Distinguishment {
