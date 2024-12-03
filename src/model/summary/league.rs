@@ -162,12 +162,7 @@ pub struct PastUser {
 }
 
 impl PastUser {
-    /// Returns the national flag URL of the user's country.
-    pub fn national_flag_url(&self) -> Option<String> {
-        self.country
-            .as_ref()
-            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
+    impl_for_country!();
 }
 
 impl AsRef<PastUser> for PastUser {

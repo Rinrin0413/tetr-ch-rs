@@ -5,16 +5,12 @@
 //! - About the endpoint "Latest News",
 //! see the [API document](https://tetr.io/about/api/#newsstream).
 
-use crate::{
-    client::{error::RspErr, Client},
-    model::{
-        cache::CacheData,
-        error_response::ErrorResponse,
-        user::UserResponse,
-        util::{
-            badge_id::BadgeId, gamemode::Gamemode, league_rank::Rank, news_stream::NewsStream,
-            replay_id::ReplayId, timestamp::Timestamp,
-        },
+use crate::model::{
+    cache::CacheData,
+    error_response::ErrorResponse,
+    util::{
+        badge_id::BadgeId, gamemode::Gamemode, league_rank::Rank, news_stream::NewsStream,
+        replay_id::ReplayId, timestamp::Timestamp,
     },
 };
 use serde::Deserialize;
@@ -73,14 +69,7 @@ pub struct News {
 }
 
 impl News {
-    /// Returns a UNIX timestamp when the news item was created.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn created_at(&self) -> i64 {
-        self.created_at.unix_ts()
-    }
+    impl_for_news_created_at!();
 }
 
 impl AsRef<News> for News {
@@ -179,33 +168,9 @@ pub struct LeaderboardNews {
 }
 
 impl LeaderboardNews {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.username).await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
-
-    /// Returns the replay URL.
-    pub fn replay_url(&self) -> String {
-        self.replay_id.replay_url()
-    }
+    impl_get_user!(username);
+    impl_for_username!();
+    impl_for_replay_id!();
 }
 
 impl AsRef<LeaderboardNews> for LeaderboardNews {
@@ -230,33 +195,9 @@ pub struct PersonalBestNews {
 }
 
 impl PersonalBestNews {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.username).await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
-
-    /// Returns the replay URL.
-    pub fn replay_url(&self) -> String {
-        self.replay_id.replay_url()
-    }
+    impl_get_user!(username);
+    impl_for_username!();
+    impl_for_replay_id!();
 }
 
 impl AsRef<PersonalBestNews> for PersonalBestNews {
@@ -280,33 +221,9 @@ pub struct BadgeNews {
 }
 
 impl BadgeNews {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.username).await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
-
-    /// Returns the badge icon URL.
-    pub fn badge_icon_url(&self) -> String {
-        self.id.icon_url()
-    }
+    impl_get_user!(username);
+    impl_for_username!();
+    impl_for_id_badge_id!();
 }
 
 impl AsRef<BadgeNews> for BadgeNews {
@@ -326,28 +243,8 @@ pub struct RankUpNews {
 }
 
 impl RankUpNews {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.username).await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_get_user!(username);
+    impl_for_username!();
 }
 
 impl AsRef<RankUpNews> for RankUpNews {
@@ -365,28 +262,8 @@ pub struct SupporterNews {
 }
 
 impl SupporterNews {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.username).await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_get_user!(username);
+    impl_for_username!();
 }
 
 impl AsRef<SupporterNews> for SupporterNews {
@@ -404,28 +281,8 @@ pub struct SupporterGiftNews {
 }
 
 impl SupporterGiftNews {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        Client::new().get_user(&self.username).await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_get_user!(username);
+    impl_for_username!();
 }
 
 /// A struct for the response for the endpoint "Latest News".

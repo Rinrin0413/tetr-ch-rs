@@ -112,74 +112,10 @@ pub struct User {
 }
 
 impl User {
-    /// Returns the level of the user.
-    pub fn level(&self) -> u32 {
-        let xp = self.xp;
-        // (xp/500)^0.6 + (xp / (5000 + max(0, xp-4000000) / 5000)) + 1
-        ((xp / 500.).powf(0.6) + (xp / (5000. + max_f64(0., xp - 4000000.) / 5000.)) + 1.).floor()
-            as u32
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
-
-    /// Whether the user is a normal user.
-    pub fn is_normal_user(&self) -> bool {
-        self.role.is_normal_user()
-    }
-
-    /// Whether the user is an anonymous.
-    pub fn is_anon(&self) -> bool {
-        self.role.is_anon()
-    }
-
-    /// Whether the user is a bot.
-    pub fn is_bot(&self) -> bool {
-        self.role.is_bot()
-    }
-
-    /// Whether the user is a SYSOP.
-    pub fn is_sysop(&self) -> bool {
-        self.role.is_sysop()
-    }
-
-    /// Whether the user is an administrator.
-    pub fn is_admin(&self) -> bool {
-        self.role.is_admin()
-    }
-
-    /// Whether the user is a moderator.
-    pub fn is_mod(&self) -> bool {
-        self.role.is_mod()
-    }
-
-    /// Whether the user is a community moderator.
-    pub fn is_halfmod(&self) -> bool {
-        self.role.is_halfmod()
-    }
-
-    /// Whether the user is banned.
-    pub fn is_banned(&self) -> bool {
-        self.role.is_banned()
-    }
-
-    /// Whether the user is hidden.
-    pub fn is_hidden(&self) -> bool {
-        self.role.is_hidden()
-    }
-
-    /// Returns a UNIX timestamp when the user's account created.
-    ///
-    /// If the account was created before join dates were recorded, `None` is returned.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn created_at(&self) -> Option<i64> {
-        self.created_at.as_ref().map(|ts| ts.unix_ts())
-    }
+    impl_for_xp!();
+    impl_for_username!();
+    impl_for_role!();
+    impl_for_account_created_at!();
 
     /// Whether the user has any badges.
     pub fn has_badge(&self) -> bool {
@@ -191,53 +127,9 @@ impl User {
         self.badges.len()
     }
 
-    /// Returns the user's avatar URL.
-    ///
-    /// If the user does not have an avatar, the anonymous's avatar URL is returned.
-    pub fn avatar_url(&self) -> String {
-        let default = "https://tetr.io/res/avatar.png".to_string();
-        if let Some(ar) = self.avatar_revision {
-            if ar == 0 {
-                return default;
-            }
-            format!(
-                "https://tetr.io/user-content/avatars/{}.jpg?rv={}",
-                self.id, ar
-            )
-        } else {
-            default
-        }
-    }
-
-    /// Returns the user's banner URL.
-    ///
-    /// If the user does not have a banner, `None` is returned.
-    ///
-    /// ***Ignore the returned value if the user is not a supporter.
-    /// Because even if the user is not currently a supporter,
-    /// `Some<String>` may be returned if the banner was once set.**
-    pub fn banner_url(&self) -> Option<String> {
-        if let Some(br) = self.banner_revision {
-            if br == 0 {
-                return None;
-            }
-            Some(format!(
-                "https://tetr.io/user-content/banners/{}.jpg?rv={}",
-                self.id, br
-            ))
-        } else {
-            None
-        }
-    }
-
-    /// Returns the national flag URL of the user's country.
-    ///
-    /// If the user's country is hidden or unknown, `None` is returned.
-    pub fn national_flag_url(&self) -> Option<String> {
-        self.country
-            .as_ref()
-            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
+    impl_for_avatar_revision!();
+    impl_for_banner_revision!();
+    impl_for_country!();
 }
 
 impl AsRef<User> for User {
@@ -277,19 +169,8 @@ pub struct Badge {
 }
 
 impl Badge {
-    /// Returns the badge icon URL.
-    pub fn icon_url(&self) -> String {
-        self.id.icon_url()
-    }
-
-    /// Returns a UNIX timestamp when the badge was achieved.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn received_at(&self) -> Option<i64> {
-        self.received_at.as_ref().map(|ts| ts.unix_ts())
-    }
+    impl_for_id_badge_id!();
+    impl_for_received_at!();
 }
 
 impl AsRef<Badge> for Badge {

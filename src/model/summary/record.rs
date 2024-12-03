@@ -3,13 +3,10 @@
 //! For more details, see the [API document](https://tetr.io/about/api/#recorddata).
 
 use crate::{
-    client::{error::RspErr, param::pagination::Prisecter},
-    model::{
-        user::UserResponse,
-        util::{
-            gamemode::Gamemode, league_rank::Rank, record_leaderboard::RecordLeaderboard,
-            replay_id::ReplayId, timestamp::Timestamp, user_id::UserId,
-        },
+    client::param::pagination::Prisecter,
+    model::util::{
+        gamemode::Gamemode, league_rank::Rank, record_leaderboard::RecordLeaderboard,
+        replay_id::ReplayId, timestamp::Timestamp, user_id::UserId,
     },
 };
 use serde::Deserialize;
@@ -75,19 +72,8 @@ pub struct Record {
 }
 
 impl Record {
-    /// Returns the replay URL.
-    pub fn replay_url(&self) -> String {
-        self.replay_id.replay_url()
-    }
-
-    /// Returns a UNIX timestamp when the record was submitted.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn submitted_at(&self) -> i64 {
-        self.submitted_at.unix_ts()
-    }
+    impl_for_replay_id!();
+    impl_for_submitted_at!();
 }
 
 impl AsRef<Record> for Record {
@@ -118,76 +104,11 @@ pub struct PartialUser {
 }
 
 impl PartialUser {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
-
-    /// Returns the user's avatar URL.
-    ///
-    /// If the user does not have an avatar, the anonymous's avatar URL is returned.
-    pub fn avatar_url(&self) -> String {
-        let default = "https://tetr.io/res/avatar.png".to_string();
-        if let Some(ar) = self.avatar_revision {
-            if ar == 0 {
-                return default;
-            }
-            format!(
-                "https://tetr.io/user-content/avatars/{}.jpg?rv={}",
-                self.id, ar
-            )
-        } else {
-            default
-        }
-    }
-
-    /// Returns the user's banner URL.
-    ///
-    /// If the user does not have a banner, `None` is returned.
-    ///
-    /// ***Ignore the returned value if the user is not a supporter.
-    /// Because even if the user is not currently a supporter,
-    /// `Some<String>` may be returned if the banner was once set.**
-    pub fn banner_url(&self) -> Option<String> {
-        if let Some(br) = self.banner_revision {
-            if br == 0 {
-                return None;
-            }
-            Some(format!(
-                "https://tetr.io/user-content/banners/{}.jpg?rv={}",
-                self.id, br
-            ))
-        } else {
-            None
-        }
-    }
-
-    /// Returns the national flag URL of the user's country.
-    ///
-    /// If the user's country is hidden or unknown, `None` is returned.
-    pub fn national_flag_url(&self) -> Option<String> {
-        self.country
-            .as_ref()
-            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
+    impl_get_user!(id);
+    impl_for_username!();
+    impl_for_avatar_revision!();
+    impl_for_banner_revision!();
+    impl_for_country!();
 }
 
 impl AsRef<PartialUser> for PartialUser {
@@ -294,28 +215,8 @@ pub struct PlayerStats {
 }
 
 impl PlayerStats {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_get_user!(id);
+    impl_for_username!();
 }
 
 impl AsRef<PlayerStats> for PlayerStats {
@@ -346,28 +247,8 @@ pub struct PlayerStatsRound {
 }
 
 impl PlayerStatsRound {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
+    impl_get_user!(id);
+    impl_for_username!();
 }
 
 impl AsRef<PlayerStatsRound> for PlayerStatsRound {

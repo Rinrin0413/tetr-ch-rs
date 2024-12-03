@@ -6,11 +6,11 @@
 //! see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
 
 use crate::{
-    client::{error::RspErr, param::pagination::Prisecter},
+    client::param::pagination::Prisecter,
     model::{
         cache::CacheData,
         error_response::ErrorResponse,
-        user::{AchievementRatingCounts, UserResponse},
+        user::AchievementRatingCounts,
         util::{league_rank::Rank, role::Role, timestamp::Timestamp, user_id::UserId},
     },
     util::max_f64,
@@ -67,7 +67,7 @@ pub struct LeaderboardUser {
     /// When the user account was created.
     /// If not set, this account was created before join dates were recorded.
     #[serde(rename = "ts")]
-    pub account_created_at: Option<Timestamp>,
+    pub created_at: Option<Timestamp>,
     /// The user's XP in points.
     pub xp: f64,
     /// The user's ISO 3166-1 country code, or `None` if hidden/unknown.
@@ -106,102 +106,12 @@ pub struct LeaderboardUser {
 }
 
 impl LeaderboardUser {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
-    /// Returns the level of the user.
-    pub fn level(&self) -> u32 {
-        let xp = self.xp;
-        // (xp/500)^0.6 + (xp / (5000 + max(0, xp-4000000) / 5000)) + 1
-        ((xp / 500.).powf(0.6) + (xp / (5000. + max_f64(0., xp - 4000000.) / 5000.)) + 1.).floor()
-            as u32
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
-
-    /// Whether the user is a normal user.
-    pub fn is_normal_user(&self) -> bool {
-        self.role.is_normal_user()
-    }
-
-    /// Whether the user is an anonymous.
-    pub fn is_anon(&self) -> bool {
-        self.role.is_anon()
-    }
-
-    /// Whether the user is a bot.
-    pub fn is_bot(&self) -> bool {
-        self.role.is_bot()
-    }
-
-    /// Whether the user is a SYSOP.
-    pub fn is_sysop(&self) -> bool {
-        self.role.is_sysop()
-    }
-
-    /// Whether the user is an administrator.
-    pub fn is_admin(&self) -> bool {
-        self.role.is_admin()
-    }
-
-    /// Whether the user is a moderator.
-    pub fn is_mod(&self) -> bool {
-        self.role.is_mod()
-    }
-
-    /// Whether the user is a community moderator.
-    pub fn is_halfmod(&self) -> bool {
-        self.role.is_halfmod()
-    }
-
-    /// Whether the user is banned.
-    pub fn is_banned(&self) -> bool {
-        self.role.is_banned()
-    }
-
-    /// Whether the user is hidden.
-    pub fn is_hidden(&self) -> bool {
-        self.role.is_hidden()
-    }
-
-    /// Returns a UNIX timestamp when the user account was created.
-    ///
-    /// If this account was created before join dates were recorded,
-    /// `None` is returned.
-    ///
-    /// # Panics
-    ///
-    /// Panics if failed to parse the timestamp.
-    pub fn account_created_at(&self) -> Option<i64> {
-        self.account_created_at.as_ref().map(|ts| ts.unix_ts())
-    }
-
-    /// Returns the national flag URL of the user's country.
-    ///
-    /// If the user's country is hidden or unknown, `None` is returned.
-    pub fn national_flag_url(&self) -> Option<String> {
-        self.country
-            .as_ref()
-            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
+    impl_get_user!(id);
+    impl_for_xp!();
+    impl_for_username!();
+    impl_for_role!();
+    impl_for_account_created_at!();
+    impl_for_country!();
 }
 
 impl AsRef<LeaderboardUser> for LeaderboardUser {
@@ -339,32 +249,8 @@ pub struct PastUserWithPrisecter {
 }
 
 impl PastUserWithPrisecter {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
-    /// Returns the national flag URL of the user's country.
-    ///
-    /// If the user's country is hidden or unknown, `None` is returned.
-    pub fn national_flag_url(&self) -> Option<String> {
-        self.country
-            .as_ref()
-            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
+    impl_get_user!(id);
+    impl_for_country!();
 }
 
 impl AsRef<PastUserWithPrisecter> for PastUserWithPrisecter {

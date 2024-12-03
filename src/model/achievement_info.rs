@@ -3,14 +3,10 @@
 //! About the endpoint "Achievement Info",
 //! see the [API document](https://tetr.io/about/api/#achievementsk).
 
-use crate::{
-    client::error::RspErr,
-    model::{
-        cache::CacheData,
-        error_response::ErrorResponse,
-        user::UserResponse,
-        util::{achievement::Achievement, role::Role, user_id::UserId},
-    },
+use crate::model::{
+    cache::CacheData,
+    error_response::ErrorResponse,
+    util::{achievement::Achievement, role::Role, user_id::UserId},
 };
 use serde::Deserialize;
 
@@ -98,82 +94,10 @@ pub struct PartialUser {
 }
 
 impl PartialUser {
-    /// Gets the detailed information about the user.
-    ///
-    /// # Errors
-    ///
-    /// - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    /// if the request failed.
-    /// - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    /// if the response did not match the expected format but the HTTP request succeeded.
-    /// There may be defectives in this wrapper or the TETRA CHANNEL API document.
-    /// - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    /// if the HTTP request failed and the response did not match the expected format.
-    /// Even if the HTTP request failed,
-    /// it may be possible to deserialize the response containing an error message,
-    /// so the deserialization will be tried before returning this error.
-    pub async fn get_user(&self) -> RspErr<UserResponse> {
-        self.id.get_user().await
-    }
-
-    /// Returns the user's TETRA CHANNEL profile URL.
-    pub fn profile_url(&self) -> String {
-        format!("https://ch.tetr.io/u/{}", self.username)
-    }
-
-    /// Whether the user is a normal user.
-    pub fn is_normal_user(&self) -> bool {
-        self.role.is_normal_user()
-    }
-
-    /// Whether the user is an anonymous.
-    pub fn is_anon(&self) -> bool {
-        self.role.is_anon()
-    }
-
-    /// Whether the user is a bot.
-    pub fn is_bot(&self) -> bool {
-        self.role.is_bot()
-    }
-
-    /// Whether the user is a SYSOP.
-    pub fn is_sysop(&self) -> bool {
-        self.role.is_sysop()
-    }
-
-    /// Whether the user is an administrator.
-    pub fn is_admin(&self) -> bool {
-        self.role.is_admin()
-    }
-
-    /// Whether the user is a moderator.
-    pub fn is_mod(&self) -> bool {
-        self.role.is_mod()
-    }
-
-    /// Whether the user is a community moderator.
-    pub fn is_halfmod(&self) -> bool {
-        self.role.is_halfmod()
-    }
-
-    /// Whether the user is banned.
-    pub fn is_banned(&self) -> bool {
-        self.role.is_banned()
-    }
-
-    /// Whether the user is hidden.
-    pub fn is_hidden(&self) -> bool {
-        self.role.is_hidden()
-    }
-
-    /// Returns the national flag URL of the user's country.
-    ///
-    /// If the user's country is not public, `None` is returned.
-    pub fn national_flag_url(&self) -> Option<String> {
-        self.country
-            .as_ref()
-            .map(|cc| format!("https://tetr.io/res/flags/{}.png", cc.to_lowercase()))
-    }
+    impl_get_user!(id);
+    impl_for_username!();
+    impl_for_role!();
+    impl_for_country!();
 }
 
 impl AsRef<PartialUser> for PartialUser {
