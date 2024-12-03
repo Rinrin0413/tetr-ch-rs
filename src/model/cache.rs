@@ -53,6 +53,7 @@ impl AsRef<CacheData> for CacheData {
 
 /// A status of the cache.
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
 #[non_exhaustive]
 pub enum Status {
     Hit,
