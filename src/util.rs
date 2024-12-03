@@ -5,6 +5,22 @@ use chrono::DateTime;
 use serde::Deserialize;
 use serde_json::Value;
 
+/// Converts the given XP to the level.
+pub fn xp_to_level(xp: f64) -> u32 {
+    // (xp/500)^0.6 + (xp / (5000 + max(0, xp-4000000) / 5000)) + 1
+    ((xp / 500.).powf(0.6) + (xp / (5000. + max_f64(0., xp - 4000000.) / 5000.)) + 1.).floor()
+        as u32
+}
+
+/// Compares and returns the maximum of two 64bit floats`.
+fn max_f64(v1: f64, v2: f64) -> f64 {
+    if v1 < v2 {
+        v2
+    } else {
+        v1
+    }
+}
+
 /// Parses an RFC 3339 and ISO 8601 date and time string into a UNIX timestamp.
 ///
 /// # Panics
@@ -14,15 +30,6 @@ pub(crate) fn to_unix_ts(ts: &str) -> i64 {
     DateTime::parse_from_rfc3339(ts)
         .expect("Failed to parse the given string.")
         .timestamp()
-}
-
-/// Compares and returns the maximum of two 64bit floats`.
-pub(crate) fn max_f64(v1: f64, v2: f64) -> f64 {
-    if v1 < v2 {
-        v2
-    } else {
-        v1
-    }
 }
 
 /// Deserializes from the given value to `Option<Timestamp>`.

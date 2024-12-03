@@ -13,7 +13,6 @@ use crate::{
         user::AchievementRatingCounts,
         util::{league_rank::Rank, role::Role, timestamp::Timestamp, user_id::UserId},
     },
-    util::max_f64,
 };
 use serde::Deserialize;
 

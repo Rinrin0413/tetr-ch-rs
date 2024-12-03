@@ -9,7 +9,7 @@ use crate::{
         error_response::ErrorResponse,
         util::{badge_id::BadgeId, role::Role, timestamp::Timestamp, user_id::UserId},
     },
-    util::{deserialize_from_non_str_to_none, max_f64},
+    util::deserialize_from_non_str_to_none,
 };
 use serde::Deserialize;
 

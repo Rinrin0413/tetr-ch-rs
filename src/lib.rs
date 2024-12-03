@@ -64,4 +64,4 @@ pub mod client;
 pub mod constants;
 pub mod model;
 
-pub(crate) mod util;
+pub mod util;
