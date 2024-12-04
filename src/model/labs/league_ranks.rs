@@ -3,8 +3,7 @@
 //! About the endpoint "Labs League Ranks",
 //! see the [API document](https://tetr.io/about/api/#labsleagueranks).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "Labs League Ranks".
 #[derive(Clone, Debug, Deserialize)]

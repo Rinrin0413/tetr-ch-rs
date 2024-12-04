@@ -1,7 +1,6 @@
 //! A model for user IDs,
 
-use serde::Deserialize;
-use std::fmt;
+use crate::model::prelude::*;
 
 /// A user's internal ID.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]

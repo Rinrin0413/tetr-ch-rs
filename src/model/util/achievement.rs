@@ -2,7 +2,7 @@
 //!
 //! For more details, see the [API document](https://tetr.io/about/api/#achievementdata).
 
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// An achievement.
 #[derive(Clone, Debug, Deserialize)]

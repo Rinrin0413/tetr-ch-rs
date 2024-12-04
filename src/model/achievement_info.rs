@@ -3,12 +3,7 @@
 //! About the endpoint "Achievement Info",
 //! see the [API document](https://tetr.io/about/api/#achievementsk).
 
-use crate::model::{
-    cache::CacheData,
-    error_response::ErrorResponse,
-    util::{Achievement, Role, UserId},
-};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "Achievement Info".
 #[derive(Clone, Debug, Deserialize)]

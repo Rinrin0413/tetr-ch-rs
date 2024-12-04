@@ -5,16 +5,7 @@
 //! - About the endpoint "Historical User Leaderboard",
 //! see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
 
-use crate::{
-    client::param::pagination::Prisecter,
-    model::{
-        cache::CacheData,
-        error_response::ErrorResponse,
-        user::AchievementRatingCounts,
-        util::{Rank, Role, Timestamp, UserId},
-    },
-};
-use serde::Deserialize;
+use crate::model::{prelude::*, user::AchievementRatingCounts};
 
 /// A struct for the response for the endpoint "User Leaderboard".
 #[derive(Clone, Debug, Deserialize)]

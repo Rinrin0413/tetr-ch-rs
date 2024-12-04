@@ -1,8 +1,9 @@
 //! A model for the game modes.
 
-use crate::client::param::record::{self, Gamemode as RecordGm};
-use serde::Deserialize;
-use std::fmt;
+use crate::{
+    client::param::record::{self, Gamemode as RecordGm},
+    model::prelude::*,
+};
 
 /// A game mode.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]

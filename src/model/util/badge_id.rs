@@ -1,7 +1,6 @@
 //! A model for badge's internal IDs.
 
-use serde::Deserialize;
-use std::fmt;
+use crate::model::prelude::*;
 
 /// A badge's internal ID.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]

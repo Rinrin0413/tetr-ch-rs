@@ -5,12 +5,7 @@
 //! - About the endpoint "Latest News",
 //! see the [API document](https://tetr.io/about/api/#newsstream).
 
-use crate::model::{
-    cache::CacheData,
-    error_response::ErrorResponse,
-    util::{BadgeId, Gamemode, NewsStream, Rank, ReplayId, Timestamp},
-};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "All Latest News".
 #[derive(Clone, Debug, Deserialize)]
@@ -55,7 +50,7 @@ pub struct News {
     #[serde(rename = "_id")]
     pub id: String,
     /// The item's stream.
-    pub stream: NewsStream,
+    pub stream: NewsStreamModel,
     /// The item's type.
     pub r#type: String,
     /// The item's records.

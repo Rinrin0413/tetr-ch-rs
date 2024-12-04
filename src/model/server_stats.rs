@@ -3,8 +3,7 @@
 //! About the endpoint "Server Statistics",
 //! see the [API document](https://tetr.io/about/api/#generalstats).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "Server Statistics".
 #[derive(Clone, Debug, Deserialize)]

@@ -3,8 +3,7 @@
 //! About the endpoint "User Personal Records",
 //! see the [API document](https://tetr.io/about/api/#usersuserrecordsgamemodeleaderboard).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse, summary::record::Record};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "User Personal Records".
 #[derive(Clone, Debug, Deserialize)]

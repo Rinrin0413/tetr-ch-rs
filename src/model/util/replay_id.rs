@@ -1,7 +1,6 @@
 //! A model for replay IDs.
 
-use serde::Deserialize;
-use std::fmt;
+use crate::model::prelude::*;
 
 /// A replay's shortID.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]

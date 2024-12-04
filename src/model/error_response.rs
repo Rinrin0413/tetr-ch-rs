@@ -1,6 +1,6 @@
 //! A model for the error response.
 
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// An error response.
 #[derive(Clone, Debug, Deserialize)]

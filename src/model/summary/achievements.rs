@@ -3,8 +3,7 @@
 //! About the endpoint "User Summary: Achievements",
 //! see the [API document](https://tetr.io/about/api/#usersusersummariesachievements).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse, util::Achievement};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "User Summary: Achievements".
 #[derive(Clone, Debug, Deserialize)]

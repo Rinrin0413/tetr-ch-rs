@@ -3,8 +3,7 @@
 //! About the endpoint "Labs Scoreflow",
 //! see the [API document](https://tetr.io/about/api/#labsscoreflowusergamemode).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "Labs Scoreflow".
 #[derive(Clone, Debug, Deserialize)]

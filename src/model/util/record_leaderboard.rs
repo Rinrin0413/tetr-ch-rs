@@ -1,8 +1,7 @@
 //! A model for the record leaderboards.
 
 use crate::client::param::record_leaderboard::{RecordsLeaderboardId, Scope};
-use serde::Deserialize;
-use std::fmt;
+use crate::model::prelude::*;
 
 /// A record leaderboard.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]

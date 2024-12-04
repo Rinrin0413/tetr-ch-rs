@@ -3,8 +3,7 @@
 //! About the endpoint "Labs Leagueflow",
 //! see the [API document](https://tetr.io/about/api/#labsleagueflowuser).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "Labs Leagueflow".
 #[derive(Clone, Debug, Deserialize)]

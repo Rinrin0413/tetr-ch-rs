@@ -3,8 +3,7 @@
 //! About the endpoint "User Summary: TETRA LEAGUE",
 //! see the [API document](https://tetr.io/about/api/#usersusersummariesleague).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse, util::Rank};
-use serde::Deserialize;
+use crate::model::prelude::*;
 use std::collections::HashMap;
 
 /// A struct for the response for the endpoint "User Summary: TETRA LEAGUE".

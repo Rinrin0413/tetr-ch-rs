@@ -3,15 +3,7 @@
 //! About the endpoint "User Info",
 //! see the [API document](https://tetr.io/about/api/#usersuser).
 
-use crate::{
-    model::{
-        cache::CacheData,
-        error_response::ErrorResponse,
-        util::{BadgeId, Role, Timestamp, UserId},
-    },
-    util::deserialize_from_non_str_to_none,
-};
-use serde::Deserialize;
+use crate::{model::prelude::*, util::deserialize_from_non_str_to_none};
 
 /// A struct for the response for the endpoint "User Info".
 #[derive(Clone, Debug, Deserialize)]

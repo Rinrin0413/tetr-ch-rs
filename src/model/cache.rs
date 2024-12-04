@@ -2,8 +2,7 @@
 //!
 //! For more details, see the [API document](https://tetr.io/about/api/#cachedata).
 
-use serde::Deserialize;
-use std::fmt;
+use crate::model::prelude::*;
 
 /// Data about how a request was cached.
 #[derive(Clone, Debug, Deserialize)]

@@ -3,8 +3,7 @@
 //! About the endpoint "User Summary: BLITZ",
 //! see the [API document](https://tetr.io/about/api/#usersusersummariesblitz).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse, summary::record::Record};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "User Summary: BLITZ".
 #[derive(Clone, Debug, Deserialize)]

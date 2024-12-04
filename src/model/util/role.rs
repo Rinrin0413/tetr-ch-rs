@@ -1,7 +1,6 @@
 //! A model for the user roles.
 
-use serde::Deserialize;
-use std::fmt;
+use crate::model::prelude::*;
 
 /// A user role.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]

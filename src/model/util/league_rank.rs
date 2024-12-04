@@ -1,7 +1,6 @@
 //! A model for the ranks in TETRA LEAGUE.
 
-use serde::Deserialize;
-use std::fmt::{self, Display, Formatter};
+use crate::model::prelude::*;
 
 /// An enum for the ranks in TETRA LEAGUE.
 #[derive(Clone, Debug, Deserialize)]
@@ -299,8 +298,8 @@ impl AsRef<Rank> for Rank {
     }
 }
 
-impl Display for Rank {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Rank {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Rank::D => write!(f, "d"),
             Rank::DPlus => write!(f, "d+"),

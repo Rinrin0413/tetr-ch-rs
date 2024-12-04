@@ -1,8 +1,6 @@
 //! A model for timestamp.
 
-use crate::util::to_unix_ts;
-use serde::Deserialize;
-use std::fmt;
+use crate::{model::prelude::*, util::to_unix_ts};
 
 /// A timestamp string.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]

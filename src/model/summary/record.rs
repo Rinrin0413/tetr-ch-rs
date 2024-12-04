@@ -2,11 +2,7 @@
 //!
 //! For more details, see the [API document](https://tetr.io/about/api/#recorddata).
 
-use crate::{
-    client::param::pagination::Prisecter,
-    model::util::{Gamemode, Rank, RecordLeaderboard, ReplayId, Timestamp, UserId},
-};
-use serde::Deserialize;
+use crate::model::prelude::*;
 use std::collections::HashMap;
 
 /// A record data.
@@ -53,7 +49,7 @@ pub struct Record {
     /// The leaderboards this Record is mentioned in.
     ///
     /// e.g. `["40l_global", "40l_country_JP"]`
-    pub leaderboards: Vec<RecordLeaderboard>,
+    pub leaderboards: Vec<RecordLeaderboardModel>,
     /// Whether this Record is disputed.
     #[serde(rename = "disputed")]
     pub is_disputed: bool,

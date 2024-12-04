@@ -3,8 +3,7 @@
 //! About the endpoint "Record Search",
 //! see the [API document](https://tetr.io/about/api/#recordsreverse).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse, summary::record::Record};
-use serde::Deserialize;
+use crate::model::prelude::*;
 
 /// A struct for the response for the endpoint "Record Search".
 #[derive(Clone, Debug, Deserialize)]

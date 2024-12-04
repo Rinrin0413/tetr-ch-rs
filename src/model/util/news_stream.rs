@@ -2,10 +2,8 @@
 
 use crate::{
     client::{error::RspErr, param::news_stream::ToNewsStreamParam, Client},
-    model::news::NewsLatestResponse,
+    model::{news::NewsLatestResponse, prelude::*},
 };
-use serde::Deserialize;
-use std::fmt;
 
 /// A news stream.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
