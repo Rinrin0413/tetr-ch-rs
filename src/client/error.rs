@@ -40,5 +40,26 @@ impl From<ResponseError> for std::io::Error {
 
 pub(crate) type RspErr<T> = Result<T, ResponseError>;
 
+/// An enum for the client creation errors.
+#[derive(Debug)]
+pub enum ClientCreationError {
+    /// A TLS backend cannot be initialized, or the resolver cannot load the system configuration.
+    BuildErr(reqwest::Error),
+    /// The client contains invalid header value characters.
+    /// Only visible ASCII characters (32-127) are permitted.
+    InvalidHeaderValue(String),
+}
+
+impl std::error::Error for ClientCreationError {}
+
+impl fmt::Display for ClientCreationError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ClientCreationError::BuildErr(err) => write!(f, "{}", err),
+            ClientCreationError::InvalidHeaderValue(v) => write!(f, "failed to parse header value `{}`", v),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {}
