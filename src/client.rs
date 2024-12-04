@@ -1,7 +1,7 @@
 //! A module for the [`Client`] struct and supporting types.
 
 use self::{
-    error::RspErr,
+    error::{ClientCreationError, RspErr},
     param::{
         news_stream::ToNewsStreamParam,
         record::{self, Gamemode},
@@ -39,7 +39,8 @@ use crate::{
     },
     util::validate_limit,
 };
-use reqwest::{self};
+use reqwest::header;
+use uuid::Uuid;
 
 const API_URL: &str = "https://ch.tetr.io/api/";
 
@@ -99,6 +100,54 @@ impl Client {
         Self {
             client: reqwest::Client::new(),
             x_session_id: None,
+        }
+    }
+
+    /// Creates a new [`Client`] with the specified `X-Session-ID`.
+    ///
+    /// # Arguments
+    ///
+    /// - `session_id` - The session ID to set in the `X-Session-ID` header.
+    /// If `None`, a new session ID is automatically generated.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use tetr_ch::client::Client;
+    ///
+    /// # fn main() -> Result<(), tetr_ch::client::error::ClientCreationError> {
+    /// // Create a new client with a session ID.
+    /// let client = Client::with_session_id(None)?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// - A [`ClientCreationError::InvalidHeaderValue`] is returned,
+    /// if the session ID contains invalid characters.
+    /// Only visible ASCII characters (32-127) are permitted.
+    /// - A [`ClientCreationError::BuildErr`] is returned,
+    /// if failed to build the client.
+    pub fn with_session_id(session_id: Option<&str>) -> Result<Self, ClientCreationError> {
+        let session_id = if let Some(id) = session_id {
+            id.to_string()
+        } else {
+            Uuid::new_v4().to_string()
+        };
+        match header::HeaderValue::from_str(&session_id) {
+            Ok(hv) => {
+                let mut headers = header::HeaderMap::new();
+                headers.insert("X-Session-ID", hv);
+                match reqwest::Client::builder().default_headers(headers).build() {
+                    Ok(client) => Ok(Self {
+                        client,
+                        x_session_id: Some(session_id),
+                    }),
+                    Err(e) => Err(ClientCreationError::BuildErr(e)),
+                }
+            }
+            Err(_) => Err(ClientCreationError::InvalidHeaderValue(session_id)),
         }
     }
 

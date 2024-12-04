@@ -56,7 +56,9 @@ impl fmt::Display for ClientCreationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ClientCreationError::BuildErr(err) => write!(f, "{}", err),
-            ClientCreationError::InvalidHeaderValue(v) => write!(f, "failed to parse header value `{}`", v),
+            ClientCreationError::InvalidHeaderValue(v) => {
+                write!(f, "failed to parse header value `{}`", v)
+            }
         }
     }
 }
