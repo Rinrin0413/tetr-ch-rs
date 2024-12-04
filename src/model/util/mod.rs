@@ -10,3 +10,9 @@ pub mod replay_id;
 pub mod role;
 pub mod timestamp;
 pub mod user_id;
+
+pub use self::{
+    achievement::Achievement, badge_id::BadgeId, gamemode::Gamemode, league_rank::Rank,
+    news_stream::NewsStream, record_leaderboard::RecordLeaderboard, replay_id::ReplayId,
+    role::Role, timestamp::Timestamp, user_id::UserId,
+};
