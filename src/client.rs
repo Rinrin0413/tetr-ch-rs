@@ -66,6 +66,7 @@ const API_URL: &str = "https://ch.tetr.io/api/";
 #[derive(Default)]
 pub struct Client {
     client: reqwest::Client,
+    x_session_id: Option<String>,
 }
 
 impl Client {
@@ -97,6 +98,7 @@ impl Client {
     pub fn new() -> Self {
         Self {
             client: reqwest::Client::new(),
+            x_session_id: None,
         }
     }
 
