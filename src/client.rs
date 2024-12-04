@@ -151,6 +151,11 @@ impl Client {
         }
     }
 
+    /// Returns the session ID.
+    pub fn session_id(&self) -> Option<&str> {
+        self.x_session_id.as_deref()
+    }
+
     /// Gets the detailed information about the specified user.
     ///
     /// About the endpoint "User Info",
