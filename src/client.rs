@@ -51,7 +51,7 @@ const API_URL: &str = "https://ch.tetr.io/api/";
 /// Creating a new [`Client`] instance and getting information about the user "RINRIN-RS".
 ///
 /// ```no_run
-/// use tetr_ch::client::Client;
+/// use tetr_ch::prelude::*;
 ///
 /// # async fn run() -> std::io::Result<()> {
 /// // Create a new client.
@@ -91,7 +91,7 @@ impl Client {
     /// # Examples
     ///
     /// ```
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// // Create a new client.
     /// let client = Client::new();
@@ -113,7 +113,7 @@ impl Client {
     /// # Examples
     ///
     /// ```
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # fn main() -> Result<(), tetr_ch::client::error::ClientCreationError> {
     /// // Create a new client with a session ID.
@@ -168,7 +168,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -197,7 +197,7 @@ impl Client {
     /// Searches for an account by Discord ID `724976600873041940`.
     ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, param::search_user::SocialConnection};
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -237,7 +237,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -264,7 +264,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -291,7 +291,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -318,7 +318,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -345,7 +345,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -376,7 +376,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -403,7 +403,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -430,7 +430,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -471,10 +471,7 @@ impl Client {
     /// - Filter by Japan
     ///
     /// ```no_run
-    /// use tetr_ch::client::{
-    ///     Client,
-    ///     param::user_leaderboard::{self, LeaderboardType}
-    /// };
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -489,7 +486,7 @@ impl Client {
     ///
     /// // Get the user leaderboard.
     /// let user = client.get_leaderboard(
-    ///     LeaderboardType::League,
+    ///     UserLeaderboardType::League,
     ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
@@ -501,10 +498,7 @@ impl Client {
     /// Panics if the search criteria `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// # use tetr_ch::client::{
-    /// #     Client,
-    /// #     param::user_leaderboard::{self, LeaderboardType}
-    /// # };
+    /// # use tetr_ch::prelude::*;
     /// # async fn run() -> std::io::Result<()> {
     /// # let client = Client::new();
     /// let criteria = user_leaderboard::SearchCriteria {
@@ -515,7 +509,7 @@ impl Client {
     ///
     /// // Panics!
     /// let user = client.get_leaderboard(
-    ///     LeaderboardType::League,
+    ///     UserLeaderboardType::League,
     ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
@@ -559,10 +553,7 @@ impl Client {
     /// - Filter by Japan
     ///
     /// ```no_run
-    /// use tetr_ch::client::{
-    ///     Client,
-    ///     param::user_leaderboard::{self, LeaderboardType}
-    /// };
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -590,10 +581,7 @@ impl Client {
     /// Panics if the search criteria `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// # use tetr_ch::client::{
-    /// #     Client,
-    /// #     param::user_leaderboard::{self, LeaderboardType}
-    /// # };
+    /// # use tetr_ch::prelude::*;
     /// # async fn run() -> std::io::Result<()> {
     /// # let client = Client::new();
     /// let criteria = user_leaderboard::SearchCriteria {
@@ -654,10 +642,7 @@ impl Client {
     /// - Three entries
     ///
     /// ```no_run
-    /// use tetr_ch::client::{
-    ///     Client,
-    ///     param::record::{self, Gamemode, LeaderboardType}
-    /// };
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -674,9 +659,9 @@ impl Client {
     ///     // Record of the user "RINRIN-RS"
     ///     "rinrin-rs",
     ///     // 40 LINES
-    ///     Gamemode::FortyLines,
+    ///     record::Gamemode::FortyLines,
     ///     // Top score leaderboard
-    ///     LeaderboardType::Top,
+    ///     record::LeaderboardType::Top,
     ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
@@ -688,10 +673,7 @@ impl Client {
     /// Panics if the search criteria `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// # use tetr_ch::client::{
-    /// #     Client,
-    /// #     param::record::{self, Gamemode, LeaderboardType}
-    /// # };
+    /// # use tetr_ch::prelude::*;
     /// # async fn run() -> std::io::Result<()> {
     /// # let client = Client::new();
     /// let criteria = record::SearchCriteria {
@@ -703,8 +685,8 @@ impl Client {
     /// // Panics!
     /// let user = client.get_user_records(
     ///     "rinrin-rs",
-    ///     Gamemode::FortyLines,
-    ///     LeaderboardType::Top,
+    ///     record::Gamemode::FortyLines,
+    ///     record::LeaderboardType::Top,
     ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
@@ -757,10 +739,7 @@ impl Client {
     /// - Revolution ID: `@2024w31`
     ///
     /// ```no_run
-    /// use tetr_ch::client::{
-    ///     Client,
-    ///     param::record_leaderboard::{self, RecordsLeaderboardId, Scope}
-    /// };
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -794,10 +773,7 @@ impl Client {
     /// Panics if the search criteria `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// # use tetr_ch::client::{
-    /// #     Client,
-    /// #     param::record_leaderboard::{self, RecordsLeaderboardId, Scope}
-    /// # };
+    /// # use tetr_ch::prelude::*;
     /// # async fn run() -> std::io::Result<()> {
     /// # let client = Client::new();
     /// let criteria = record_leaderboard::SearchCriteria {
@@ -856,7 +832,7 @@ impl Client {
     /// - Timestamp: `1680053762145` (`2023-03-29T01:36:02.145Z`)
     ///
     /// ```no_run
-    /// use tetr_ch::client::{param::record::Gamemode, Client};
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -866,7 +842,7 @@ impl Client {
     ///     // User ID: `621db46d1d638ea850be2aa0`
     ///     "621db46d1d638ea850be2aa0",
     ///     // Gamemode: `blitz` (BLITZ)
-    ///     Gamemode::Blitz,
+    ///     RecordGamemode::Blitz,
     ///     // Timestamp: `1680053762145` (`2023-03-29T01:36:02.145Z`)
     ///     1680053762145
     /// ).await?;
@@ -901,7 +877,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -917,7 +893,7 @@ impl Client {
     /// Panics if the argument `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// # use tetr_ch::client::Client;
+    /// # use tetr_ch::prelude::*;
     /// # async fn run() -> std::io::Result<()> {
     /// # let client = Client::new();
     /// // Panics!
@@ -953,7 +929,7 @@ impl Client {
     /// Gets three latest news of the user `621db46d1d638ea850be2aa0`.
     ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, param::news_stream::NewsStream};
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -961,7 +937,7 @@ impl Client {
     /// // Get the latest news.
     /// let user = client.get_news_latest(
     ///     // News of the user `621db46d1d638ea850be2aa0`
-    ///     NewsStream::User("621db46d1d638ea850be2aa0".to_string()),
+    ///     NewsStreamParam::User("621db46d1d638ea850be2aa0".to_string()),
     ///     // Three news
     ///     3,
     /// ).await?;
@@ -974,12 +950,12 @@ impl Client {
     /// Panics if the argument `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// # use tetr_ch::client::{Client, param::news_stream::NewsStream};
+    /// # use tetr_ch::prelude::*;
     /// # async fn run() -> std::io::Result<()> {
     /// # let client = Client::new();
     /// // Panics!
     /// let user = client.get_news_latest(
-    ///     NewsStream::Global,
+    ///     NewsStreamParam::Global,
     ///     // 101 news (out of bounds)
     ///     101,
     /// ).await?;
@@ -1005,7 +981,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -1028,7 +1004,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -1058,7 +1034,7 @@ impl Client {
     /// Gets the graph of the 40 LINES records of the user `RINRIN-RS`.
     ///
     /// ```no_run
-    /// use tetr_ch::client::{param::record::Gamemode, Client};
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -1068,7 +1044,7 @@ impl Client {
     ///     // Records of the user "RINRIN-RS"
     ///     "rinrin-rs",
     ///     // 40 LINES records
-    ///     Gamemode::FortyLines
+    ///     RecordGamemode::FortyLines
     /// ).await?;
     /// # Ok(())
     /// # }
@@ -1100,7 +1076,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -1124,7 +1100,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
@@ -1152,7 +1128,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
+    /// use tetr_ch::prelude::*;
     ///
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
