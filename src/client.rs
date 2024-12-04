@@ -1,7 +1,7 @@
 //! A module for the [`Client`] struct and supporting types.
 
 use self::{
-    error::RspErr,
+    error::{ClientCreationError, RspErr},
     param::{
         news_stream::ToNewsStreamParam,
         record::{self, Gamemode},
@@ -39,7 +39,8 @@ use crate::{
     },
     util::validate_limit,
 };
-use reqwest::{self};
+use reqwest::header;
+use uuid::Uuid;
 
 const API_URL: &str = "https://ch.tetr.io/api/";
 
@@ -66,6 +67,7 @@ const API_URL: &str = "https://ch.tetr.io/api/";
 #[derive(Default)]
 pub struct Client {
     client: reqwest::Client,
+    x_session_id: Option<String>,
 }
 
 impl Client {
@@ -97,7 +99,61 @@ impl Client {
     pub fn new() -> Self {
         Self {
             client: reqwest::Client::new(),
+            x_session_id: None,
         }
+    }
+
+    /// Creates a new [`Client`] with the specified `X-Session-ID`.
+    ///
+    /// # Arguments
+    ///
+    /// - `session_id` - The session ID to set in the `X-Session-ID` header.
+    /// If `None`, a new session ID is automatically generated.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use tetr_ch::client::Client;
+    ///
+    /// # fn main() -> Result<(), tetr_ch::client::error::ClientCreationError> {
+    /// // Create a new client with a session ID.
+    /// let client = Client::with_session_id(None)?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// - A [`ClientCreationError::InvalidHeaderValue`] is returned,
+    /// if the session ID contains invalid characters.
+    /// Only visible ASCII characters (32-127) are permitted.
+    /// - A [`ClientCreationError::BuildErr`] is returned,
+    /// if failed to build the client.
+    pub fn with_session_id(session_id: Option<&str>) -> Result<Self, ClientCreationError> {
+        let session_id = if let Some(id) = session_id {
+            id.to_string()
+        } else {
+            Uuid::new_v4().to_string()
+        };
+        match header::HeaderValue::from_str(&session_id) {
+            Ok(hv) => {
+                let mut headers = header::HeaderMap::new();
+                headers.insert("X-Session-ID", hv);
+                match reqwest::Client::builder().default_headers(headers).build() {
+                    Ok(client) => Ok(Self {
+                        client,
+                        x_session_id: Some(session_id),
+                    }),
+                    Err(e) => Err(ClientCreationError::BuildErr(e)),
+                }
+            }
+            Err(_) => Err(ClientCreationError::InvalidHeaderValue(session_id)),
+        }
+    }
+
+    /// Returns the session ID.
+    pub fn session_id(&self) -> Option<&str> {
+        self.x_session_id.as_deref()
     }
 
     /// Gets the detailed information about the specified user.
@@ -121,7 +177,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user(self, user: &str) -> RspErr<UserResponse> {
+    pub async fn get_user(&self, user: &str) -> RspErr<UserResponse> {
         let url = format!("{}users/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -157,7 +213,7 @@ impl Client {
     /// # tokio_test::block_on(run());
     /// ```
     pub async fn search_user(
-        self,
+        &self,
         social_connection: SocialConnection,
     ) -> RspErr<SearchedUserResponse> {
         let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
@@ -190,7 +246,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_all_summaries(self, user: &str) -> RspErr<AllSummariesResponse> {
+    pub async fn get_user_all_summaries(&self, user: &str) -> RspErr<AllSummariesResponse> {
         let url = format!("{}users/{}/summaries", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -217,7 +273,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_40l(self, user: &str) -> RspErr<FortyLinesResponse> {
+    pub async fn get_user_40l(&self, user: &str) -> RspErr<FortyLinesResponse> {
         let url = format!("{}users/{}/summaries/40l", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -244,7 +300,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_blitz(self, user: &str) -> RspErr<BlitzResponse> {
+    pub async fn get_user_blitz(&self, user: &str) -> RspErr<BlitzResponse> {
         let url = format!("{}users/{}/summaries/blitz", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -271,7 +327,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zenith(self, user: &str) -> RspErr<ZenithResponse> {
+    pub async fn get_user_zenith(&self, user: &str) -> RspErr<ZenithResponse> {
         let url = format!("{}users/{}/summaries/zenith", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -298,7 +354,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zenith_ex(self, user: &str) -> RspErr<ZenithExResponse> {
+    pub async fn get_user_zenith_ex(&self, user: &str) -> RspErr<ZenithExResponse> {
         let url = format!(
             "{}users/{}/summaries/zenithex",
             API_URL,
@@ -329,7 +385,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_league(self, user: &str) -> RspErr<LeagueResponse> {
+    pub async fn get_user_league(&self, user: &str) -> RspErr<LeagueResponse> {
         let url = format!("{}users/{}/summaries/league", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -356,7 +412,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zen(self, user: &str) -> RspErr<ZenResponse> {
+    pub async fn get_user_zen(&self, user: &str) -> RspErr<ZenResponse> {
         let url = format!("{}users/{}/summaries/zen", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -383,7 +439,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_achievements(self, user: &str) -> RspErr<AchievementsResponse> {
+    pub async fn get_user_achievements(&self, user: &str) -> RspErr<AchievementsResponse> {
         let url = format!(
             "{}users/{}/summaries/achievements",
             API_URL,
@@ -394,6 +450,9 @@ impl Client {
     }
 
     /// Gets the user leaderboard fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](user_leaderboard::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
     ///
     /// About the endpoint "User Leaderboard",
     /// see the [API document](https://tetr.io/about/api/#usersbyleaderboard).
@@ -463,7 +522,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_leaderboard(
-        self,
+        &self,
         leaderboard: LeaderboardType,
         search_criteria: Option<user_leaderboard::SearchCriteria>,
     ) -> RspErr<LeaderboardResponse> {
@@ -478,6 +537,9 @@ impl Client {
     }
 
     /// Gets the array of the historical user blobs fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](user_leaderboard::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
     ///
     /// About the endpoint "Historical User Leaderboard",
     /// see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
@@ -549,7 +611,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_historical_league_leaderboard(
-        self,
+        &self,
         season: &str,
         search_criteria: Option<user_leaderboard::SearchCriteria>,
     ) -> RspErr<HistoricalLeaderboardResponse> {
@@ -570,6 +632,9 @@ impl Client {
 
     /// Gets the personal record leaderboard of the specified user,
     /// fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](record::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
     ///
     /// About the endpoint "User Personal Records",
     /// see the [API document](https://tetr.io/about/api/#usersuserrecordsgamemodeleaderboard).
@@ -646,7 +711,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_records(
-        self,
+        &self,
         user: &str,
         gamemode: Gamemode,
         leaderboard: record::LeaderboardType,
@@ -669,6 +734,9 @@ impl Client {
     }
 
     /// Gets the record leaderboard fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](record_leaderboard::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
     ///
     /// About the endpoint "Records Leaderboard",
     /// see the [API document](https://tetr.io/about/api/#recordsleaderboard).
@@ -751,7 +819,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_records_leaderboard(
-        self,
+        &self,
         leaderboard: RecordsLeaderboardId,
         search_criteria: Option<record_leaderboard::SearchCriteria>,
     ) -> RspErr<RecordsLeaderboardResponse> {
@@ -806,7 +874,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn search_record(
-        self,
+        &self,
         user_id: &str,
         gamemode: Gamemode,
         timestamp: i64,
@@ -858,7 +926,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_news_all(self, limit: u8) -> RspErr<NewsAllResponse> {
+    pub async fn get_news_all(&self, limit: u8) -> RspErr<NewsAllResponse> {
         validate_limit(limit);
         let url = format!("{}news/", API_URL);
         let res = self
@@ -919,7 +987,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_news_latest<S: ToNewsStreamParam>(
-        self,
+        &self,
         stream: S,
         limit: u8,
     ) -> RspErr<NewsLatestResponse> {
@@ -946,7 +1014,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_server_stats(self) -> RspErr<ServerStatsResponse> {
+    pub async fn get_server_stats(&self) -> RspErr<ServerStatsResponse> {
         let url = format!("{}general/stats", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -969,7 +1037,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
+    pub async fn get_server_activity(&self) -> RspErr<ServerActivityResponse> {
         let url = format!("{}general/activity", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1006,7 +1074,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_labs_scoreflow(
-        self,
+        &self,
         user: &str,
         gamemode: Gamemode,
     ) -> RspErr<LabsScoreflowResponse> {
@@ -1042,7 +1110,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_labs_leagueflow(self, user: &str) -> RspErr<LabsLeagueflowResponse> {
+    pub async fn get_labs_leagueflow(&self, user: &str) -> RspErr<LabsLeagueflowResponse> {
         let url = format!("{}labs/leagueflow/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1066,7 +1134,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_labs_league_ranks(self) -> RspErr<LabsLeagueRanksResponse> {
+    pub async fn get_labs_league_ranks(&self) -> RspErr<LabsLeagueRanksResponse> {
         let url = format!("{}labs/league_ranks", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1095,7 +1163,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_achievement_info(
-        self,
+        &self,
         achievement_id: &str,
     ) -> RspErr<AchievementInfoResponse> {
         let url = format!("{}achievements/{}", API_URL, achievement_id);
