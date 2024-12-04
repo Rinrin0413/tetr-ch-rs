@@ -177,7 +177,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user(self, user: &str) -> RspErr<UserResponse> {
+    pub async fn get_user(&self, user: &str) -> RspErr<UserResponse> {
         let url = format!("{}users/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -213,7 +213,7 @@ impl Client {
     /// # tokio_test::block_on(run());
     /// ```
     pub async fn search_user(
-        self,
+        &self,
         social_connection: SocialConnection,
     ) -> RspErr<SearchedUserResponse> {
         let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
@@ -246,7 +246,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_all_summaries(self, user: &str) -> RspErr<AllSummariesResponse> {
+    pub async fn get_user_all_summaries(&self, user: &str) -> RspErr<AllSummariesResponse> {
         let url = format!("{}users/{}/summaries", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -273,7 +273,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_40l(self, user: &str) -> RspErr<FortyLinesResponse> {
+    pub async fn get_user_40l(&self, user: &str) -> RspErr<FortyLinesResponse> {
         let url = format!("{}users/{}/summaries/40l", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -300,7 +300,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_blitz(self, user: &str) -> RspErr<BlitzResponse> {
+    pub async fn get_user_blitz(&self, user: &str) -> RspErr<BlitzResponse> {
         let url = format!("{}users/{}/summaries/blitz", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -327,7 +327,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zenith(self, user: &str) -> RspErr<ZenithResponse> {
+    pub async fn get_user_zenith(&self, user: &str) -> RspErr<ZenithResponse> {
         let url = format!("{}users/{}/summaries/zenith", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -354,7 +354,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zenith_ex(self, user: &str) -> RspErr<ZenithExResponse> {
+    pub async fn get_user_zenith_ex(&self, user: &str) -> RspErr<ZenithExResponse> {
         let url = format!(
             "{}users/{}/summaries/zenithex",
             API_URL,
@@ -385,7 +385,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_league(self, user: &str) -> RspErr<LeagueResponse> {
+    pub async fn get_user_league(&self, user: &str) -> RspErr<LeagueResponse> {
         let url = format!("{}users/{}/summaries/league", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -412,7 +412,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zen(self, user: &str) -> RspErr<ZenResponse> {
+    pub async fn get_user_zen(&self, user: &str) -> RspErr<ZenResponse> {
         let url = format!("{}users/{}/summaries/zen", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -439,7 +439,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_achievements(self, user: &str) -> RspErr<AchievementsResponse> {
+    pub async fn get_user_achievements(&self, user: &str) -> RspErr<AchievementsResponse> {
         let url = format!(
             "{}users/{}/summaries/achievements",
             API_URL,
@@ -522,7 +522,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_leaderboard(
-        self,
+        &self,
         leaderboard: LeaderboardType,
         search_criteria: Option<user_leaderboard::SearchCriteria>,
     ) -> RspErr<LeaderboardResponse> {
@@ -611,7 +611,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_historical_league_leaderboard(
-        self,
+        &self,
         season: &str,
         search_criteria: Option<user_leaderboard::SearchCriteria>,
     ) -> RspErr<HistoricalLeaderboardResponse> {
@@ -711,7 +711,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_records(
-        self,
+        &self,
         user: &str,
         gamemode: Gamemode,
         leaderboard: record::LeaderboardType,
@@ -819,7 +819,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_records_leaderboard(
-        self,
+        &self,
         leaderboard: RecordsLeaderboardId,
         search_criteria: Option<record_leaderboard::SearchCriteria>,
     ) -> RspErr<RecordsLeaderboardResponse> {
@@ -874,7 +874,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn search_record(
-        self,
+        &self,
         user_id: &str,
         gamemode: Gamemode,
         timestamp: i64,
@@ -926,7 +926,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_news_all(self, limit: u8) -> RspErr<NewsAllResponse> {
+    pub async fn get_news_all(&self, limit: u8) -> RspErr<NewsAllResponse> {
         validate_limit(limit);
         let url = format!("{}news/", API_URL);
         let res = self
@@ -987,7 +987,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_news_latest<S: ToNewsStreamParam>(
-        self,
+        &self,
         stream: S,
         limit: u8,
     ) -> RspErr<NewsLatestResponse> {
@@ -1014,7 +1014,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_server_stats(self) -> RspErr<ServerStatsResponse> {
+    pub async fn get_server_stats(&self) -> RspErr<ServerStatsResponse> {
         let url = format!("{}general/stats", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1037,7 +1037,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
+    pub async fn get_server_activity(&self) -> RspErr<ServerActivityResponse> {
         let url = format!("{}general/activity", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1074,7 +1074,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_labs_scoreflow(
-        self,
+        &self,
         user: &str,
         gamemode: Gamemode,
     ) -> RspErr<LabsScoreflowResponse> {
@@ -1110,7 +1110,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_labs_leagueflow(self, user: &str) -> RspErr<LabsLeagueflowResponse> {
+    pub async fn get_labs_leagueflow(&self, user: &str) -> RspErr<LabsLeagueflowResponse> {
         let url = format!("{}labs/leagueflow/{}", API_URL, user.to_lowercase());
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1134,7 +1134,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_labs_league_ranks(self) -> RspErr<LabsLeagueRanksResponse> {
+    pub async fn get_labs_league_ranks(&self) -> RspErr<LabsLeagueRanksResponse> {
         let url = format!("{}labs/league_ranks", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1163,7 +1163,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_achievement_info(
-        self,
+        &self,
         achievement_id: &str,
     ) -> RspErr<AchievementInfoResponse> {
         let url = format!("{}achievements/{}", API_URL, achievement_id);
