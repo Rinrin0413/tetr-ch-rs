@@ -63,5 +63,25 @@
 pub mod client;
 pub mod constants;
 pub mod model;
-
 pub mod util;
+
+/// A prelude for the tetr-ch-rs.
+///
+/// # Example
+///
+/// ```
+/// use tetr_ch::prelude::*;
+/// ```
+pub mod prelude {
+    pub use crate::client::{
+        param::{
+            news_stream::NewsStream as NewsStreamParam,
+            record::Gamemode as RecordGamemode,
+            record_leaderboard::{RecordsLeaderboardId, Scope},
+            search_user::SocialConnection,
+            user_leaderboard::LeaderboardType as UserLeaderboardType,
+            *,
+        },
+        Client,
+    };
+}
