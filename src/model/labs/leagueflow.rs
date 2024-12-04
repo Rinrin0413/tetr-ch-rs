@@ -36,7 +36,7 @@ pub struct LabsLeagueflow {
     /// The points in the chart.
     ///
     /// - 0: The timestamp offset.
-    /// Add the [`LabsLeagueflow::oldest_record_ts`] to get the true timestamp.
+    ///   Add the [`LabsLeagueflow::oldest_record_ts`] to get the true timestamp.
     /// - 1: The result of the match, where:
     ///     - 1: victory
     ///     - 2: defeat
@@ -47,7 +47,7 @@ pub struct LabsLeagueflow {
     ///     - 7: match nullified
     /// - 2: The user's TR after the match.
     /// - 3: The opponent's TR before the match.
-    /// (If the opponent was unranked, same as 2.)
+    ///   (If the opponent was unranked, same as 2.)
     pub points: Vec<[i64; 4]>,
 }
 

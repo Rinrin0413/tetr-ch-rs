@@ -102,7 +102,7 @@ impl SearchCriteria {
     /// # Arguments
     ///
     /// - `bound` -: The upper bound to paginate downwards:
-    /// take the lowest seen prisecter and pass that back through this field to continue scrolling.
+    ///   take the lowest seen prisecter and pass that back through this field to continue scrolling.
     ///
     /// A **prisecter** is consisting of three floats.
     /// The `prisecter` field in a response data allows you to continue paginating.
@@ -128,9 +128,9 @@ impl SearchCriteria {
     /// # Arguments
     ///
     /// - `bound` - The lower bound to paginate upwards:
-    /// take the highest seen prisecter and pass that back through this field to continue scrolling.
-    /// If use this, the search order is reversed
-    /// (returning the lowest items that match the query)
+    ///   take the highest seen prisecter and pass that back through this field to continue scrolling.
+    ///   If use this, the search order is reversed
+    ///   (returning the lowest items that match the query)
     ///
     /// A **prisecter** is consisting of three floats.
     /// The `prisecter` field in a response data allows you to continue paginating.
@@ -156,7 +156,7 @@ impl SearchCriteria {
     /// # Arguments
     ///
     /// - `limit` - The amount of entries to return.
-    /// Between 1 and 100. 25 by default.
+    ///   Between 1 and 100. 25 by default.
     ///
     /// # Examples
     ///

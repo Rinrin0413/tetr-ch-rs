@@ -36,9 +36,9 @@ pub struct LabsScoreflow {
     /// The points in the chart.
     ///
     /// - 0: The timestamp offset.
-    /// Add the [`LabsScoreflow::oldest_record_ts`] to get the true timestamp.
+    ///   Add the [`LabsScoreflow::oldest_record_ts`] to get the true timestamp.
     /// - 1: Whether the score set was a Personal Best.
-    /// 0 = not a Personal Best, 1 = Personal Best.
+    ///   0 = not a Personal Best, 1 = Personal Best.
     /// - 2: The score achieved. (For 40 LINES, this is negative.)
     pub points: Vec<[i64; 3]>,
 }

@@ -1,9 +1,9 @@
 //! Models for the endpoints "User Summary: QUICK PLAY", "User Summary: EXPERT QUICK PLAY".
 //!
 //! - About the endpoint "User Summary: QUICK PLAY",
-//! see the [API document](https://tetr.io/about/api/#usersusersummarieszenith).
+//!   see the [API document](https://tetr.io/about/api/#usersusersummarieszenith).
 //! - About the endpoint "User Summary: EXPERT QUICK PLAY",
-//! see the [API document](https://tetr.io/about/api/#usersusersummarieszenithex).
+//!   see the [API document](https://tetr.io/about/api/#usersusersummarieszenithex).
 
 use crate::model::prelude::*;
 

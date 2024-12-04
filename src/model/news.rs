@@ -1,9 +1,9 @@
 //! Models for the TETRA NEWS endpoints.
 //!
 //! - About the endpoint "All Latest News",
-//! see the [API document](https://tetr.io/about/api/#newsall).
+//!   see the [API document](https://tetr.io/about/api/#newsall).
 //! - About the endpoint "Latest News",
-//! see the [API document](https://tetr.io/about/api/#newsstream).
+//!   see the [API document](https://tetr.io/about/api/#newsstream).
 
 use crate::model::prelude::*;
 

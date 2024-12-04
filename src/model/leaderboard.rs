@@ -1,9 +1,9 @@
 //! Models for the endpoints "User Leaderboard", "Historical User Leaderboard".
 //!
 //! - About the endpoint "User Leaderboard",
-//! see the [API document](https://tetr.io/about/api/#usersbyleaderboard).
+//!   see the [API document](https://tetr.io/about/api/#usersbyleaderboard).
 //! - About the endpoint "Historical User Leaderboard",
-//! see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
+//!   see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
 
 use crate::model::{prelude::*, user::AchievementRatingCounts};
 

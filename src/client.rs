@@ -76,15 +76,15 @@ impl Client {
     //! The `get_*` methods and `search_*` methods return a `Result<T, ResponseError>`.
     //!
     //! - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
-    //! if the request failed.
+    //!   if the request failed.
     //! - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
-    //! if the response did not match the expected format but the HTTP request succeeded.
-    //! There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    //!   if the response did not match the expected format but the HTTP request succeeded.
+    //!   There may be defectives in this wrapper or the TETRA CHANNEL API document.
     //! - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
-    //! if the HTTP request failed and the response did not match the expected format.
-    //! Even if the HTTP request failed,
-    //! it may be possible to deserialize the response containing an error message,
-    //! so the deserialization will be tried before returning this error.
+    //!   if the HTTP request failed and the response did not match the expected format.
+    //!   Even if the HTTP request failed,
+    //!   it may be possible to deserialize the response containing an error message,
+    //!   so the deserialization will be tried before returning this error.
 
     /// Creates a new [`Client`].
     ///
@@ -108,7 +108,7 @@ impl Client {
     /// # Arguments
     ///
     /// - `session_id` - The session ID to set in the `X-Session-ID` header.
-    /// If `None`, a new session ID is automatically generated.
+    ///   If `None`, a new session ID is automatically generated.
     ///
     /// # Examples
     ///
@@ -125,10 +125,10 @@ impl Client {
     /// # Errors
     ///
     /// - A [`ClientCreationError::InvalidHeaderValue`] is returned,
-    /// if the session ID contains invalid characters.
-    /// Only visible ASCII characters (32-127) are permitted.
+    ///   if the session ID contains invalid characters.
+    ///   Only visible ASCII characters (32-127) are permitted.
     /// - A [`ClientCreationError::BuildErr`] is returned,
-    /// if failed to build the client.
+    ///   if failed to build the client.
     pub fn with_session_id(session_id: Option<&str>) -> Result<Self, ClientCreationError> {
         let session_id = if let Some(id) = session_id {
             id.to_string()
