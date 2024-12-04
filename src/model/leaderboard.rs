@@ -11,7 +11,7 @@ use crate::{
         cache::CacheData,
         error_response::ErrorResponse,
         user::AchievementRatingCounts,
-        util::{league_rank::Rank, role::Role, timestamp::Timestamp, user_id::UserId},
+        util::{Rank, Role, Timestamp, UserId},
     },
 };
 use serde::Deserialize;

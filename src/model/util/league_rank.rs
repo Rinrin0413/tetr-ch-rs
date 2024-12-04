@@ -71,7 +71,7 @@ impl Rank {
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::util::league_rank::Rank;
+    /// # use tetr_ch::model::util::Rank;
     /// assert_eq!(Rank::D.name(), "D");
     /// assert_eq!(Rank::DPlus.name(), "D+");
     /// assert_eq!(Rank::CMinus.name(), "C-");
@@ -121,7 +121,7 @@ impl Rank {
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::util::league_rank::Rank;
+    /// # use tetr_ch::model::util::Rank;
     /// assert!(!Rank::D.is_unranked());
     /// assert!(!Rank::A.is_unranked());
     /// assert!(!Rank::X.is_unranked());
@@ -136,7 +136,7 @@ impl Rank {
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::util::league_rank::Rank;
+    /// # use tetr_ch::model::util::Rank;
     /// assert_eq!(Rank::D.icon_url(), "https://tetr.io/res/league-ranks/d.png");
     /// assert_eq!(Rank::DPlus.icon_url(), "https://tetr.io/res/league-ranks/d+.png");
     /// assert_eq!(Rank::CMinus.icon_url(), "https://tetr.io/res/league-ranks/c-.png");
@@ -166,7 +166,7 @@ impl Rank {
     /// # Examples
     ///
     /// ```
-    /// # use tetr_ch::model::util::league_rank::Rank;
+    /// # use tetr_ch::model::util::Rank;
     /// assert_eq!(Rank::D.color(), 0x907591);
     /// assert_eq!(Rank::DPlus.color(), 0x8e6091);
     /// assert_eq!(Rank::CMinus.color(), 0x79558c);

@@ -1,6 +1,6 @@
 //! Utilities for tetr-ch-rs.
 
-use crate::model::util::timestamp::Timestamp;
+use crate::model::util::Timestamp;
 use chrono::DateTime;
 use serde::Deserialize;
 use serde_json::Value;

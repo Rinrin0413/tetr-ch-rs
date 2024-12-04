@@ -8,10 +8,7 @@
 use crate::model::{
     cache::CacheData,
     error_response::ErrorResponse,
-    util::{
-        badge_id::BadgeId, gamemode::Gamemode, league_rank::Rank, news_stream::NewsStream,
-        replay_id::ReplayId, timestamp::Timestamp,
-    },
+    util::{BadgeId, Gamemode, NewsStream, Rank, ReplayId, Timestamp},
 };
 use serde::Deserialize;
 

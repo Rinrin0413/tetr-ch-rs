@@ -6,7 +6,7 @@
 use crate::model::{
     cache::CacheData,
     error_response::ErrorResponse,
-    util::{achievement::Achievement, role::Role, user_id::UserId},
+    util::{Achievement, Role, UserId},
 };
 use serde::Deserialize;
 

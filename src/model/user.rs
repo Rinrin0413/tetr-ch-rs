@@ -7,7 +7,7 @@ use crate::{
     model::{
         cache::CacheData,
         error_response::ErrorResponse,
-        util::{badge_id::BadgeId, role::Role, timestamp::Timestamp, user_id::UserId},
+        util::{BadgeId, Role, Timestamp, UserId},
     },
     util::deserialize_from_non_str_to_none,
 };

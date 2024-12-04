@@ -4,10 +4,7 @@
 
 use crate::{
     client::param::pagination::Prisecter,
-    model::util::{
-        gamemode::Gamemode, league_rank::Rank, record_leaderboard::RecordLeaderboard,
-        replay_id::ReplayId, timestamp::Timestamp, user_id::UserId,
-    },
+    model::util::{Gamemode, Rank, RecordLeaderboard, ReplayId, Timestamp, UserId},
 };
 use serde::Deserialize;
 use std::collections::HashMap;

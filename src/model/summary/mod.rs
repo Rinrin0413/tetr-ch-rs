@@ -1,8 +1,6 @@
 //! Easy-to-use models of the various objects received from the User Summaries API endpoints.
 
-use crate::model::{
-    cache::CacheData, error_response::ErrorResponse, util::achievement::Achievement,
-};
+use crate::model::{cache::CacheData, error_response::ErrorResponse, util::Achievement};
 use serde::Deserialize;
 
 pub mod achievements;

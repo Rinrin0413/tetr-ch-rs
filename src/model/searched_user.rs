@@ -3,7 +3,7 @@
 //! About the endpoint "User Search",
 //! see the [API document](https://tetr.io/about/api/#userssearchquery).
 
-use crate::model::{cache::CacheData, error_response::ErrorResponse, util::user_id::UserId};
+use crate::model::{cache::CacheData, error_response::ErrorResponse, util::UserId};
 use serde::Deserialize;
 
 /// A struct for the response for the endpoint "User Search".
