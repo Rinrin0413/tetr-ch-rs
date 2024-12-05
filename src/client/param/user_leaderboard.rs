@@ -51,7 +51,7 @@ impl LeaderboardType {
 ///     .country("jp");
 ///
 /// // Lower bound is `[15200, 0, 0]`.
-/// // Also the search order is reversed.
+/// // The leaderboard order is reversed.
 /// let c3 = user_leaderboard::SearchCriteria::new()
 ///     .before([15200., 0., 0.]);
 ///

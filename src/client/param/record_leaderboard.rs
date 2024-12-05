@@ -87,7 +87,7 @@ pub enum Scope {
 ///     .limit(3);
 ///
 /// // Lower bound is `[500000, 0, 0]`.
-/// // Also the search order is reversed.
+/// // The leaderboard order is reversed.
 /// let c3 = record_leaderboard::SearchCriteria::new()
 ///     .before([500000., 0., 0.]);
 ///
