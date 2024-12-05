@@ -127,8 +127,9 @@ impl SearchCriteria {
     /// let mut criteria = SearchCriteria::new();
     /// criteria.init();
     /// ```
-    pub fn init(self) -> Self {
-        Self::default()
+    pub fn init(&mut self) {
+        self.bound = None;
+        self.limit = Some(25);
     }
 
     /// Sets the upper bound.

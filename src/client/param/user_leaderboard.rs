@@ -94,8 +94,10 @@ impl SearchCriteria {
     /// let mut criteria = SearchCriteria::new().country("us");
     /// criteria.init();
     /// ```
-    pub fn init(self) -> Self {
-        Self::default()
+    pub fn init(&mut self) {
+        self.bound = None;
+        self.limit = None;
+        self.country = None;
     }
 
     /// Sets the upper bound.
