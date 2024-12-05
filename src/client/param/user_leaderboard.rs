@@ -4,6 +4,7 @@ use super::pagination::Bound;
 use crate::util::validate_limit;
 
 /// A user leaderboard type.
+#[derive(Clone, Debug)]
 pub enum LeaderboardType {
     /// A TETRA LEAGUE leaderboard.
     League,

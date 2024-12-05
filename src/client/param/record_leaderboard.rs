@@ -4,6 +4,7 @@ use super::pagination::Bound;
 use crate::util::validate_limit;
 
 /// A record leaderboard ID.
+#[derive(Clone, Debug)]
 pub struct RecordsLeaderboardId {
     /// The game mode. e.g. `40l`.
     pub gamemode: String,
@@ -60,6 +61,7 @@ impl RecordsLeaderboardId {
 }
 
 /// A scope of record leaderboards.
+#[derive(Clone, Debug)]
 pub enum Scope {
     /// Global scope.
     Global,

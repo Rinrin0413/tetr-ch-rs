@@ -4,6 +4,7 @@ use super::pagination::Bound;
 use crate::util::validate_limit;
 
 /// A game mode of a record.
+#[derive(Clone, Debug)]
 pub enum Gamemode {
     /// 40 LINES.
     FortyLines,
@@ -48,6 +49,7 @@ impl Gamemode {
 }
 
 /// A record leaderboard type.
+#[derive(Clone, Debug)]
 pub enum LeaderboardType {
     /// Top scores.
     Top,

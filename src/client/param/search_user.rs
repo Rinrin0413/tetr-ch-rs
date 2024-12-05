@@ -3,6 +3,7 @@
 /// A social connection.
 ///
 /// [API document](https://tetr.io/about/api/#userssearchquery) says searching for the other social links will be added in the near future.
+#[derive(Clone, Debug)]
 pub enum SocialConnection {
     /// A Discord ID.
     Discord(String),

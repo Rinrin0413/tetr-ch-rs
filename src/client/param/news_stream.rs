@@ -1,6 +1,7 @@
 //! Features for news streams.
 
 /// A news stream.
+#[derive(Clone, Debug)]
 pub enum NewsStream {
     /// A global news stream.
     Global,
