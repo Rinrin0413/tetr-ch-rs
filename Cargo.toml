@@ -31,4 +31,5 @@ version = "1.11.0"
 features = ["v4"]
 
 [dev-dependencies]
+tokio = { version = "1", features = ["full"] }
 tokio-test = "0.4.2"
