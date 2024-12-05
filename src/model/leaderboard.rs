@@ -128,18 +128,28 @@ pub struct PartialLeagueData {
     /// This user's rank.
     pub rank: Rank,
     /// This user's highest achieved rank this season.
+    ///
+    /// ***The API document does not say this field is optional.**
     #[serde(rename = "bestrank")]
-    pub best_rank: Rank,
+    pub best_rank: Option<Rank>,
     /// This user's Glicko-2 rating.
     pub glicko: f64,
     /// This user's Glicko-2 Rating Deviation.
-    pub rd: f64,
+    ///
+    /// ***The API document does not say this field is optional.**
+    pub rd: Option<f64>,
     /// This user's average APM (attack per minute) over the last 10 games.
-    pub apm: f64,
+    ///
+    /// ***The API document does not say this field is optional.**
+    pub apm: Option<f64>,
     /// This user's average PPS (pieces per second) over the last 10 games.
-    pub pps: f64,
+    ///
+    /// ***The API document does not say this field is optional.**
+    pub pps: Option<f64>,
     /// This user's average VS (versus score) over the last 10 games.
-    pub vs: f64,
+    ///
+    /// ***The API document does not say this field is optional.**
+    pub vs: Option<f64>,
     /// Whether this user's RD is rising (has not played in the last week).
     #[serde(rename = "decaying")]
     pub is_decaying: bool,
