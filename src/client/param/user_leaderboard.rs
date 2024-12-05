@@ -39,24 +39,24 @@ impl LeaderboardType {
 /// # Examples
 ///
 /// ```
-/// use tetr_ch::client::param::user_leaderboard::SearchCriteria;
+/// use tetr_ch::prelude::*;
 ///
 /// // Default search criteria.
-/// let c1 = SearchCriteria::new();
+/// let c1 = user_leaderboard::SearchCriteria::new();
 ///
 /// // Upper bound is `[15200, 0, 0]`, three entries, filter by Japan.
-/// let c2 = SearchCriteria::new()
+/// let c2 = user_leaderboard::SearchCriteria::new()
 ///     .after([15200., 0., 0.])
 ///     .limit(3)
 ///     .country("jp");
 ///
 /// // Lower bound is `[15200, 0, 0]`.
 /// // Also the search order is reversed.
-/// let c3 = SearchCriteria::new()
+/// let c3 = user_leaderboard::SearchCriteria::new()
 ///     .before([15200., 0., 0.]);
 ///
 /// // You can initialize the search criteria to default as follows:
-/// let mut c4 = SearchCriteria::new().country("us");
+/// let mut c4 = user_leaderboard::SearchCriteria::new().country("us");
 /// c4.init();
 /// ```
 #[derive(Clone, Debug, Default)]

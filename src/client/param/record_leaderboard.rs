@@ -76,23 +76,23 @@ pub enum Scope {
 /// # Examples
 ///
 /// ```
-/// use tetr_ch::client::param::record_leaderboard::SearchCriteria;
+/// use tetr_ch::prelude::*;
 ///
 /// // Default search criteria.
-/// let c1 = SearchCriteria::new();
+/// let c1 = record_leaderboard::SearchCriteria::new();
 ///
 /// // Upper bound is `[500000, 0, 0]`, three entries.
-/// let c2 = SearchCriteria::new()
+/// let c2 = record_leaderboard::SearchCriteria::new()
 ///     .after([500000., 0., 0.])
 ///     .limit(3);
 ///
 /// // Lower bound is `[500000, 0, 0]`.
 /// // Also the search order is reversed.
-/// let c3 = SearchCriteria::new()
+/// let c3 = record_leaderboard::SearchCriteria::new()
 ///     .before([500000., 0., 0.]);
 ///
 /// // You can initialize the search criteria to default as follows:
-/// let mut c4 = SearchCriteria::new().limit(10);
+/// let mut c4 = record_leaderboard::SearchCriteria::new().limit(10);
 /// c4.init();
 /// ```
 #[derive(Clone, Debug, Default)]
