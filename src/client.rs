@@ -452,7 +452,9 @@ impl Client {
     /// Gets the user leaderboard fulfilling the search criteria.
     ///
     /// Want to paginate over this data using the [`SearchCriteria::bound`](user_leaderboard::SearchCriteria)?
-    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
     ///
     /// About the endpoint "User Leaderboard",
     /// see the [API document](https://tetr.io/about/api/#usersbyleaderboard).
@@ -533,7 +535,9 @@ impl Client {
     /// Gets the array of the historical user blobs fulfilling the search criteria.
     ///
     /// Want to paginate over this data using the [`SearchCriteria::bound`](user_leaderboard::SearchCriteria)?
-    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
     ///
     /// About the endpoint "Historical User Leaderboard",
     /// see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
@@ -622,7 +626,9 @@ impl Client {
     /// fulfilling the search criteria.
     ///
     /// Want to paginate over this data using the [`SearchCriteria::bound`](record::SearchCriteria)?
-    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
     ///
     /// About the endpoint "User Personal Records",
     /// see the [API document](https://tetr.io/about/api/#usersuserrecordsgamemodeleaderboard).
@@ -718,7 +724,9 @@ impl Client {
     /// Gets the record leaderboard fulfilling the search criteria.
     ///
     /// Want to paginate over this data using the [`SearchCriteria::bound`](record_leaderboard::SearchCriteria)?
-    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
     ///
     /// About the endpoint "Records Leaderboard",
     /// see the [API document](https://tetr.io/about/api/#recordsleaderboard).

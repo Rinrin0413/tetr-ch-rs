@@ -1,4 +1,9 @@
 //! Features for pagination.
+//!
+//! Want to paginate over some data?
+//! Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`](crate::client::Client::with_session_id) to ensure data consistency.  
+//! For more details, see the example in
+//! [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
 
 use serde::Deserialize;
 
@@ -6,6 +11,11 @@ use serde::Deserialize;
 ///
 /// A **prisecter** is consisting of three floats.
 /// It allows you to continue paginating.
+///
+/// Want to paginate over some data?
+/// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`](crate::client::Client::with_session_id) to ensure data consistency.  
+/// For more details, see the example in
+/// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
 #[derive(Clone, Debug, Deserialize)]
 pub struct Prisecter {
     /// The primary sort key.
@@ -32,6 +42,11 @@ impl AsRef<Prisecter> for Prisecter {
 }
 
 /// A bound to paginate.
+///
+/// Want to paginate over some data?
+/// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`](crate::client::Client::with_session_id) to ensure data consistency.  
+/// For more details, see the example in
+/// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
 #[derive(Clone, Debug)]
 pub enum Bound {
     /// An upper bound.
