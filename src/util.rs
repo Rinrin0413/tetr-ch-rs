@@ -2,6 +2,7 @@
 
 use crate::model::util::Timestamp;
 use chrono::DateTime;
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -60,6 +61,11 @@ pub(crate) fn validate_limit(value: u8) {
         "The limit must be between 1 and 100, but got {}.",
         value
     );
+}
+
+/// Encode the given string for URLs.
+pub(crate) fn encode(input: impl ToString) -> String {
+    utf8_percent_encode(&input.to_string().replace('.', " "), NON_ALPHANUMERIC).to_string()
 }
 
 #[cfg(test)]

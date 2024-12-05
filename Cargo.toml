@@ -11,6 +11,7 @@ edition = "2021"
 
 [dependencies]
 http = "0.2.8"
+percent-encoding = "2.3.1"
 serde_json = "1.0.108"
 
 [dependencies.reqwest]

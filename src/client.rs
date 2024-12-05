@@ -37,7 +37,7 @@ use crate::{
         user::UserResponse,
         user_records::UserRecordsResponse,
     },
-    util::validate_limit,
+    util::{encode, validate_limit},
 };
 use reqwest::header;
 use uuid::Uuid;
@@ -178,7 +178,8 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user(&self, user: &str) -> RspErr<UserResponse> {
-        let url = format!("{}users/{}", API_URL, user.to_lowercase());
+        dbg!(encode(user.to_lowercase()));
+        let url = format!("{}users/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -216,7 +217,11 @@ impl Client {
         &self,
         social_connection: SocialConnection,
     ) -> RspErr<SearchedUserResponse> {
-        let url = format!("{}users/search/{}", API_URL, social_connection.to_param());
+        let url = format!(
+            "{}users/search/{}",
+            API_URL,
+            encode(social_connection.to_param())
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -247,7 +252,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_all_summaries(&self, user: &str) -> RspErr<AllSummariesResponse> {
-        let url = format!("{}users/{}/summaries", API_URL, user.to_lowercase());
+        let url = format!("{}users/{}/summaries", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -274,7 +279,11 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_40l(&self, user: &str) -> RspErr<FortyLinesResponse> {
-        let url = format!("{}users/{}/summaries/40l", API_URL, user.to_lowercase());
+        let url = format!(
+            "{}users/{}/summaries/40l",
+            API_URL,
+            encode(user.to_lowercase())
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -301,7 +310,11 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_blitz(&self, user: &str) -> RspErr<BlitzResponse> {
-        let url = format!("{}users/{}/summaries/blitz", API_URL, user.to_lowercase());
+        let url = format!(
+            "{}users/{}/summaries/blitz",
+            API_URL,
+            encode(user.to_lowercase())
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -328,7 +341,11 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_zenith(&self, user: &str) -> RspErr<ZenithResponse> {
-        let url = format!("{}users/{}/summaries/zenith", API_URL, user.to_lowercase());
+        let url = format!(
+            "{}users/{}/summaries/zenith",
+            API_URL,
+            encode(user.to_lowercase())
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -358,7 +375,7 @@ impl Client {
         let url = format!(
             "{}users/{}/summaries/zenithex",
             API_URL,
-            user.to_lowercase()
+            encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
         response(res).await
@@ -386,7 +403,11 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_league(&self, user: &str) -> RspErr<LeagueResponse> {
-        let url = format!("{}users/{}/summaries/league", API_URL, user.to_lowercase());
+        let url = format!(
+            "{}users/{}/summaries/league",
+            API_URL,
+            encode(user.to_lowercase())
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -413,7 +434,11 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user_zen(&self, user: &str) -> RspErr<ZenResponse> {
-        let url = format!("{}users/{}/summaries/zen", API_URL, user.to_lowercase());
+        let url = format!(
+            "{}users/{}/summaries/zen",
+            API_URL,
+            encode(user.to_lowercase())
+        );
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -443,7 +468,7 @@ impl Client {
         let url = format!(
             "{}users/{}/summaries/achievements",
             API_URL,
-            user.to_lowercase()
+            encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
         response(res).await
@@ -527,7 +552,7 @@ impl Client {
             criteria.validate_limit();
             query_params = criteria.build();
         }
-        let url = format!("{}users/by/{}", API_URL, leaderboard.to_param());
+        let url = format!("{}users/by/{}", API_URL, encode(leaderboard.to_param()));
         let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
     }
@@ -616,7 +641,7 @@ impl Client {
             "{}users/history/{}/{}",
             API_URL,
             LeaderboardType::League.to_param(),
-            season
+            encode(season)
         );
         let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
@@ -713,7 +738,7 @@ impl Client {
         let url = format!(
             "{}users/{}/records/{}/{}",
             API_URL,
-            user.to_lowercase(),
+            encode(user.to_lowercase()),
             gamemode.to_param(),
             leaderboard.to_param()
         );
@@ -812,7 +837,7 @@ impl Client {
             criteria.validate_limit();
             query_params = criteria.build();
         }
-        let url = format!("{}records/{}", API_URL, leaderboard.to_param());
+        let url = format!("{}records/{}", API_URL, encode(leaderboard.to_param()));
         let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
     }
@@ -976,7 +1001,7 @@ impl Client {
         limit: u8,
     ) -> RspErr<NewsLatestResponse> {
         validate_limit(limit);
-        let url = format!("{}news/{}", API_URL, stream.to_param());
+        let url = format!("{}news/{}", API_URL, encode(stream.to_param()));
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
         response(res).await
     }
@@ -1065,7 +1090,7 @@ impl Client {
         let url = format!(
             "{}labs/scoreflow/{}/{}",
             API_URL,
-            user.to_lowercase(),
+            encode(user.to_lowercase()),
             gamemode.to_param()
         );
         let res = self.client.get(url).send().await;
@@ -1095,7 +1120,7 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_labs_leagueflow(&self, user: &str) -> RspErr<LabsLeagueflowResponse> {
-        let url = format!("{}labs/leagueflow/{}", API_URL, user.to_lowercase());
+        let url = format!("{}labs/leagueflow/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
     }
@@ -1150,7 +1175,7 @@ impl Client {
         &self,
         achievement_id: &str,
     ) -> RspErr<AchievementInfoResponse> {
-        let url = format!("{}achievements/{}", API_URL, achievement_id);
+        let url = format!("{}achievements/{}", API_URL, encode(achievement_id));
         let res = self.client.get(url).send().await;
         response(res).await
     }

@@ -1,7 +1,7 @@
 //! Features for user leaderboards.
 
 use super::pagination::Bound;
-use crate::util::validate_limit;
+use crate::util::{encode, validate_limit};
 
 /// A user leaderboard type.
 #[derive(Clone, Debug)]
@@ -241,7 +241,7 @@ impl SearchCriteria {
             result.push(("limit".to_string(), l.to_string()));
         }
         if let Some(c) = self.country {
-            result.push(("country".to_string(), c.to_uppercase()));
+            result.push(("country".to_string(), encode(c.to_uppercase())));
         }
         result
     }
