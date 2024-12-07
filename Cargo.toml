@@ -1,12 +1,12 @@
 [package]
 name = "tetr_ch"
-description = "A library for the TETRA CHANNEL API."
-version = "0.5.1"
+description = "A Rust wrapper for the TETRA CHANNEL API. "
+version = "0.6.0"
 authors = ["Rinrin.rs <rinrin0413.valley@gmail.com>"]
 license-file = "LICENSE"
 repository = "https://github.com/Rinrin0413/tetr-ch-rs.git"
 readme = "README.md"
-keywords = ["tetrio", "tetr-io", "tetr_io", "tetra-channel-api", "tetra_channel_api"]
+keywords = ["tetrio", "tetr-io", "tetr_io", "tetra-channel-api", "wrapper"]
 edition = "2021"
 
 [dependencies]
