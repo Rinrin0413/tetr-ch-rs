@@ -1,8 +1,37 @@
+# v0.6.0 2024-12-07
+
+## Breaking Changes
+
+- 💥 [TETR.IO BETA 1.2.0](https://tetr.io/about/patchnotes/#chlog_BETA_1_2_0)+ are now supported. [#15]
+	- ✨ Added new methods of the [`Client`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html) struct for the new API endpoints.
+		- 🔥 Removed the methods and elements for the discontinued endpoints. [#64]
+	- ✨ Added support for the new rank X+. [#61]
+
+## Features
+
+- ✨ The [`Client`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html) struct now supports `X-Session-ID` header. [#97]
+	- Use [`Client::with_session_id`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html#method.with_session_id).
+- ✨ Added two prelude modules [`tetr_ch::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/prelude/index.html) and [`tetr_ch::model::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/model/util/index.html).
+- ✨ Added [`xp_to_level`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/util/fn.xp_to_level.html) function.
+
+## Improvements
+
+- 🛠️ Parameters that are used in the URL are now encoded.
+- 📚 Improved the documentation.
+
+## Other Changes
+
+- 🛠️ The enumerators of the [`ResponseError`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/error/enum.ResponseError.html) enum now have each error type. [#89]
+
+---
+
 # v0.5.1 (hotfix) 2023-12-01
 
 ## Fixes
 
 - Decoding error when the property `ts` of the object "badges" was not present
+
+---
 
 # v0.5.0 2023-11-30
 
@@ -31,6 +60,8 @@
 
 - Update `.gitignore`
 
+---
+
 # v0.4.0 2023-06-29
 
 ## Changes
@@ -47,6 +78,8 @@ This has significantly changed the structure around records.
 
 - Make `ResponseError` a standard error type by [@jlkn](https://github.com/jlkn) in [[#2](https://github.com/Rinrin0413/tetr-ch-rs/pull/2)]
 
+---
+
 # v0.3.5 2023-05-23
 
 ## Improvements
@@ -57,9 +90,15 @@ This has significantly changed the structure around records.
 
 - Fixed redundant and raggedly named functions.
 
+---
+
 # v0.3.4 2022-12-18
 
+---
+
 # v0.3.3 2022-12-12
+
+---
 
 # v0.3.2 2022-10-28
 
