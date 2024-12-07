@@ -4,6 +4,8 @@
 
 - Decoding error when the property `ts` of the object "badges" was not present
 
+---
+
 # v0.5.0 2023-11-30
 
 ## Fixes
@@ -31,6 +33,8 @@
 
 - Update `.gitignore`
 
+---
+
 # v0.4.0 2023-06-29
 
 ## Changes
@@ -47,6 +51,8 @@ This has significantly changed the structure around records.
 
 - Make `ResponseError` a standard error type by [@jlkn](https://github.com/jlkn) in [[#2](https://github.com/Rinrin0413/tetr-ch-rs/pull/2)]
 
+---
+
 # v0.3.5 2023-05-23
 
 ## Improvements
@@ -57,9 +63,15 @@ This has significantly changed the structure around records.
 
 - Fixed redundant and raggedly named functions.
 
+---
+
 # v0.3.4 2022-12-18
 
+---
+
 # v0.3.3 2022-12-12
+
+---
 
 # v0.3.2 2022-10-28
 
