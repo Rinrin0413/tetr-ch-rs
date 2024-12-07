@@ -13,7 +13,7 @@ pub struct Gamemode(String);
 impl Gamemode {
     /// Converts into a [`crate::client::param::record::Gamemode`].
     /// If failed, returns the game mode as is as `Err<String>`.
-    pub fn into_record_gamemode(&self) -> Result<record::Gamemode, String> {
+    pub fn to_record_gamemode(&self) -> Result<record::Gamemode, String> {
         match self.0.as_str() {
             "40l" => Ok(RecordGm::FortyLines),
             "blitz" => Ok(RecordGm::Blitz),
