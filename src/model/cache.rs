@@ -1,15 +1,17 @@
-//! The cache-related data.
+//! A model for the cache data.
+//!
+//! For more details, see the [API document](https://tetr.io/about/api/#cachedata).
 
-use serde::Deserialize;
+use crate::model::prelude::*;
 
-/// Data about how this request was cached.
+/// Data about how a request was cached.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct CacheData {
     /// Whether the cache was hit.
     /// Either `"hit"`, `"miss"`, or `"awaited"`.
     /// `"awaited"` means resource was already being requested by another client.
-    pub status: String,
+    pub status: Status,
     /// When this resource was cached.
     pub cached_at: u64,
     /// When this resource's cache expires.
@@ -48,6 +50,33 @@ impl AsRef<CacheData> for CacheData {
     }
 }
 
+/// A status of the cache.
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+#[non_exhaustive]
+pub enum Status {
+    Hit,
+    Miss,
+    /// Resource was already being requested by another client.
+    Awaited,
+}
+
+impl AsRef<Status> for Status {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+impl fmt::Display for Status {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Status::Hit => write!(f, "hit"),
+            Status::Miss => write!(f, "miss"),
+            Status::Awaited => write!(f, "awaited"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -55,7 +84,7 @@ mod tests {
     #[test]
     fn get_cached_at_and_cached_until() {
         let cache_data = CacheData {
-            status: "hit".to_string(),
+            status: Status::Hit,
             cached_at: 1661710769000,
             cached_until: 1661710844000,
         };
@@ -66,11 +95,11 @@ mod tests {
     #[test]
     fn cache_data_as_ref() {
         let cache_data = CacheData {
-            status: "hit".to_string(),
+            status: Status::Hit,
             cached_at: 1661710769000,
             cached_until: 1661710844000,
         };
-        assert_eq!(cache_data.as_ref().status, "hit");
+        assert_eq!(cache_data.as_ref().status, Status::Hit);
         assert_eq!(cache_data.as_ref().cached_at(), 1661710769);
         assert_eq!(cache_data.as_ref().cached_until(), 1661710844);
     }

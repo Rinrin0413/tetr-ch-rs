@@ -1,1417 +1,1189 @@
-//! Client for API requests.
+//! A module for the [`Client`] struct and supporting types.
 
+use self::{
+    error::{ClientCreationError, RspErr},
+    param::{
+        news_stream::ToNewsStreamParam,
+        record::{self, Gamemode},
+        record_leaderboard::{self, RecordsLeaderboardId},
+        search_user::SocialConnection,
+        user_leaderboard::{self, LeaderboardType},
+    },
+    response::response,
+};
 use crate::{
-    error::{ResponseError, Status},
     model::{
-        latest_news::LatestNewsResponse,
-        league_leaderboard::{self, LeagueLeaderboardResponse},
+        achievement_info::AchievementInfoResponse,
+        labs::{
+            league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
+            scoreflow::LabsScoreflowResponse,
+        },
+        leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
+        news::{NewsAllResponse, NewsLatestResponse},
+        records_leaderboard::RecordsLeaderboardResponse,
+        searched_record::SearchedRecordResponse,
         searched_user::SearchedUserResponse,
         server_activity::ServerActivityResponse,
         server_stats::ServerStatsResponse,
-        stream::StreamResponse,
-        user::{UserRecordsResponse, UserResponse},
-        xp_leaderboard::{self, XPLeaderboardResponse},
+        summary::{
+            achievements::AchievementsResponse,
+            blitz::BlitzResponse,
+            forty_lines::FortyLinesResponse,
+            league::LeagueResponse,
+            zen::ZenResponse,
+            zenith::{ZenithExResponse, ZenithResponse},
+            AllSummariesResponse,
+        },
+        user::UserResponse,
+        user_records::UserRecordsResponse,
     },
+    util::{encode, validate_limit},
 };
-use http::status::StatusCode;
-use reqwest::{self, Error, Response};
-use serde::Deserialize;
+use reqwest::header;
+use uuid::Uuid;
 
 const API_URL: &str = "https://ch.tetr.io/api/";
 
-/// Client for API requests.
+/// A client for API requests.
 ///
 /// # Examples
 ///
-/// Creating a Client instance and getting some objects:
+/// Creating a new [`Client`] instance and getting information about the user "RINRIN-RS".
 ///
 /// ```no_run
-/// use tetr_ch::client::Client;
-/// # use std::io;
+/// use tetr_ch::prelude::*;
 ///
-/// # async fn run() -> io::Result<()> {
+/// # async fn run() -> std::io::Result<()> {
+/// // Create a new client.
 /// let client = Client::new();
-/// // For example, get information for user `RINRIN-RS`.
+/// // Get the user information.
 /// let user = client.get_user("rinrin-rs").await?;
 /// # Ok(())
 /// # }
 /// ```
 ///
-/// [See more examples](https://github.com/Rinrin0413/tetr-ch-rs/examples/)
+/// [See more examples](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples)
 #[non_exhaustive]
 #[derive(Default)]
 pub struct Client {
     client: reqwest::Client,
+    x_session_id: Option<String>,
 }
 
-type RspErr<T> = Result<T, ResponseError>;
-
 impl Client {
-    /// Create a new [`Client`].
+    //! # Errors
+    //!
+    //! The `get_*` methods and `search_*` methods return a `Result<T, ResponseError>`.
+    //!
+    //! - A [`ResponseError::RequestErr`](crate::client::error::ResponseError::RequestErr) is returned,
+    //!   if the request failed.
+    //! - A [`ResponseError::DeserializeErr`](crate::client::error::ResponseError::DeserializeErr) is returned,
+    //!   if the response did not match the expected format but the HTTP request succeeded.
+    //!   There may be defectives in this wrapper or the TETRA CHANNEL API document.
+    //! - A [`ResponseError::HttpErr`](crate::client::error::ResponseError::HttpErr) is returned,
+    //!   if the HTTP request failed and the response did not match the expected format.
+    //!   Even if the HTTP request failed,
+    //!   it may be possible to deserialize the response containing an error message,
+    //!   so the deserialization will be tried before returning this error.
+
+    /// Creates a new [`Client`].
     ///
     /// # Examples
     ///
-    /// Creating a Client instance:
-    ///
     /// ```
-    /// use tetr_ch::client;
+    /// use tetr_ch::prelude::*;
     ///
-    /// let client = client::Client::new();
+    /// // Create a new client.
+    /// let client = Client::new();
     /// ```
     pub fn new() -> Self {
         Self {
             client: reqwest::Client::new(),
+            x_session_id: None,
         }
     }
 
-    /// Returns the user model.
+    /// Creates a new [`Client`] with the specified `X-Session-ID`.
+    ///
+    /// # Arguments
+    ///
+    /// - `session_id` - The session ID to set in the `X-Session-ID` header.
+    ///   If `None`, a new session ID is automatically generated.
     ///
     /// # Examples
     ///
-    /// Getting a user object:
+    /// ```
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # fn main() -> Result<(), tetr_ch::client::error::ClientCreationError> {
+    /// // Create a new client with a session ID.
+    /// let client = Client::with_session_id(None)?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// - A [`ClientCreationError::InvalidHeaderValue`] is returned,
+    ///   if the session ID contains invalid characters.
+    ///   Only visible ASCII characters (32-127) are permitted.
+    /// - A [`ClientCreationError::BuildErr`] is returned,
+    ///   if failed to build the client.
+    pub fn with_session_id(session_id: Option<&str>) -> Result<Self, ClientCreationError> {
+        let session_id = if let Some(id) = session_id {
+            id.to_string()
+        } else {
+            Uuid::new_v4().to_string()
+        };
+        match header::HeaderValue::from_str(&session_id) {
+            Ok(hv) => {
+                let mut headers = header::HeaderMap::new();
+                headers.insert("X-Session-ID", hv);
+                match reqwest::Client::builder().default_headers(headers).build() {
+                    Ok(client) => Ok(Self {
+                        client,
+                        x_session_id: Some(session_id),
+                    }),
+                    Err(e) => Err(ClientCreationError::BuildErr(e)),
+                }
+            }
+            Err(_) => Err(ClientCreationError::InvalidHeaderValue(session_id)),
+        }
+    }
+
+    /// Returns the session ID.
+    pub fn session_id(&self) -> Option<&str> {
+        self.x_session_id.as_deref()
+    }
+
+    /// Gets the detailed information about the specified user.
+    ///
+    /// About the endpoint "User Info",
+    /// see the [API document](https://tetr.io/about/api/#usersuser).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
     ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
-    /// # use std::io;
+    /// use tetr_ch::prelude::*;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    /// // Get information for user `RINRIN-RS`.
+    /// // Get the information about the user "RINRIN-RS".
     /// let user = client.get_user("rinrin-rs").await?;
     /// # Ok(())
     /// # }
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user(self, user: &str) -> RspErr<UserResponse> {
-        let url = format!("{}users/{}", API_URL, user.to_lowercase());
+    pub async fn get_user(&self, user: &str) -> RspErr<UserResponse> {
+        dbg!(encode(user.to_lowercase()));
+        let url = format!("{}users/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
     }
 
-    /// Returns the server stats model.
+    /// Searches for a TETR.IO user account by the social connection.
     ///
-    /// # Examples
-    ///
-    /// Getting the server stats object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::Client;
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    /// // Get the server stats.
-    /// let user = client.get_server_stats().await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_server_stats(self) -> RspErr<ServerStatsResponse> {
-        let url = format!("{}general/stats", API_URL);
-        let res = self.client.get(url).send().await;
-        response(res).await
-    }
-
-    /// Returns the server activity model.
-    ///
-    /// # Examples
-    ///
-    /// Getting the server activity object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::Client;
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    /// // Get the server activity.
-    /// let user = client.get_server_activity().await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_server_activity(self) -> RspErr<ServerActivityResponse> {
-        let url = format!("{}general/activity", API_URL);
-        let res = self.client.get(url).send().await;
-        response(res).await
-    }
-
-    /// Returns the user records model.
-    ///
-    /// # Examples
-    ///
-    /// Getting the records object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::Client;
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    /// // Get the user records.
-    /// let user = client.get_user_records("621db46d1d638ea850be2aa0").await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_user_records(self, user: &str) -> RspErr<UserRecordsResponse> {
-        let url = format!("{}users/{}/records", API_URL, user.to_lowercase());
-        let res = self.client.get(url).send().await;
-        response(res).await
-    }
-
-    /// Returns the TETRA LEAGUE leaderboard model.
+    /// About the endpoint "User Search",
+    /// see the [API document](https://tetr.io/about/api/#userssearchquery).
     ///
     /// # Arguments
     ///
-    /// - `query`:
-    ///
-    /// The query parameters.
-    /// This argument requires a [`query::LeagueLeaderboardQuery`].
+    /// - `social_connection` - The social connection to look up.
     ///
     /// # Examples
     ///
-    /// Getting the TETRA LEAGUE leaderboard object:
+    /// Searches for an account by Discord ID `724976600873041940`.
     ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, query::LeagueLeaderboardQuery};
-    /// # use std::io;
+    /// use tetr_ch::prelude::*;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Set the query parameters.
-    /// let query = LeagueLeaderboardQuery::new()
-    ///     // 15200TR or less.
-    ///     .after(15200.)
-    ///     // 3 users.
+    /// // Search for an account.
+    /// let user = client.search_user(
+    ///     // By Discord ID `724976600873041940`
+    ///     SocialConnection::Discord("724976600873041940".to_string())
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    ///
+    /// # tokio_test::block_on(run());
+    /// ```
+    pub async fn search_user(
+        &self,
+        social_connection: SocialConnection,
+    ) -> RspErr<SearchedUserResponse> {
+        let url = format!(
+            "{}users/search/{}",
+            API_URL,
+            encode(social_connection.to_param())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets all the summaries of the specified user.
+    ///
+    /// ***Consider whether you really need to use this method.
+    /// If you only collect data for one or two game modes,
+    /// use the methods for the individual summaries instead.**
+    ///
+    /// About the endpoint "User Summaries",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummaries).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get all the summaries of the user "RINRIN-RS".
+    /// let user = client.get_user_all_summaries("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_all_summaries(&self, user: &str) -> RspErr<AllSummariesResponse> {
+        let url = format!("{}users/{}/summaries", API_URL, encode(user.to_lowercase()));
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the summary of the specified user's 40 LINES games.
+    ///
+    /// About the endpoint "User Summary: 40 LINES",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummaries40l).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the summary of the 40 LINES games of the user "RINRIN-RS".
+    /// let user = client.get_user_40l("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_40l(&self, user: &str) -> RspErr<FortyLinesResponse> {
+        let url = format!(
+            "{}users/{}/summaries/40l",
+            API_URL,
+            encode(user.to_lowercase())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the summary of the specified user's BLITZ games.
+    ///
+    /// About the endpoint "User Summary: BLITZ",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummariesblitz).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the summary of the BLITZ games of the user "RINRIN-RS".
+    /// let user = client.get_user_blitz("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_blitz(&self, user: &str) -> RspErr<BlitzResponse> {
+        let url = format!(
+            "{}users/{}/summaries/blitz",
+            API_URL,
+            encode(user.to_lowercase())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the summary of the specified user's QUICK PLAY games.
+    ///
+    /// About the endpoint "User Summary: QUICK PLAY",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummarieszenith).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the summary of the QUICK PLAY games of the user "RINRIN-RS".
+    /// let user = client.get_user_zenith("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_zenith(&self, user: &str) -> RspErr<ZenithResponse> {
+        let url = format!(
+            "{}users/{}/summaries/zenith",
+            API_URL,
+            encode(user.to_lowercase())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the summary of the specified user's EXPERT QUICK PLAY games.
+    ///
+    /// About the endpoint "User Summary: EXPERT QUICK PLAY",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummarieszenithex).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the summary of the EXPERT QUICK PLAY games of the user "RINRIN-RS".
+    /// let user = client.get_user_zenith_ex("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_zenith_ex(&self, user: &str) -> RspErr<ZenithExResponse> {
+        let url = format!(
+            "{}users/{}/summaries/zenithex",
+            API_URL,
+            encode(user.to_lowercase())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the summary of the specified user's TETRA LEAGUE standing.
+    ///
+    /// About the endpoint "User Summary: TETRA LEAGUE",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummariesleague).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the summary of the TETRA LEAGUE standing of the user "RINRIN-RS".
+    /// let user = client.get_user_league("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_league(&self, user: &str) -> RspErr<LeagueResponse> {
+        let url = format!(
+            "{}users/{}/summaries/league",
+            API_URL,
+            encode(user.to_lowercase())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the summary of the specified user's ZEN progress.
+    ///
+    /// About the endpoint "User Summary: ZEN",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummarieszen).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the summary of the ZEN progress of the user "RINRIN-RS".
+    /// let user = client.get_user_zen("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_zen(&self, user: &str) -> RspErr<ZenResponse> {
+        let url = format!(
+            "{}users/{}/summaries/zen",
+            API_URL,
+            encode(user.to_lowercase())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets all the achievements of the specified user.
+    ///
+    /// About the endpoint "User Summary: Achievements",
+    /// see the [API document](https://tetr.io/about/api/#usersusersummariesachievements).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get all the achievements of the user "RINRIN-RS".
+    /// let user = client.get_user_achievements("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_achievements(&self, user: &str) -> RspErr<AchievementsResponse> {
+        let url = format!(
+            "{}users/{}/summaries/achievements",
+            API_URL,
+            encode(user.to_lowercase())
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the user leaderboard fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](user_leaderboard::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
+    ///
+    /// About the endpoint "User Leaderboard",
+    /// see the [API document](https://tetr.io/about/api/#usersbyleaderboard).
+    ///
+    /// # Arguments
+    ///
+    /// - `leaderboard` - The user leaderboard type.
+    /// - `search_criteria` - The search criteria to filter users by.
+    ///
+    /// # Examples
+    ///
+    /// Gets the TETRA LEAGUE leaderboard with the following criteria:
+    ///
+    /// - Upper bound is `[15200, 0, 0]`
+    /// - Three entries
+    /// - Filter by Japan
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// let criteria = user_leaderboard::SearchCriteria::new()
+    ///     // Upper bound is `[15200, 0, 0]`
+    ///     .after([15200.,0.,0.])
+    ///     // Three entries
     ///     .limit(3)
-    ///     // Japan.
+    ///     // Filter by Japan
     ///     .country("jp");
     ///
-    /// // Get the TETRA LEAGUE leaderboard.
-    /// let user = client.get_league_leaderboard(query).await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// See [here](query::LeagueLeaderboardQuery) for details on setting query parameters.
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the query parameter`limit` is not between 0 and 100.
-    ///
-    /// ```should_panic,no_run
-    /// use tetr_ch::client::{
-    ///     Client,
-    ///     query::{LeagueLeaderboardQuery, Limit}
-    /// };
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// let query = LeagueLeaderboardQuery {
-    ///     // 101 users (not allowed).
-    ///     limit: Some(Limit::Limit(101)),
-    ///     ..LeagueLeaderboardQuery::new()
-    /// };
-    ///
-    /// let user = client.get_league_leaderboard(query).await?;
-    /// # Ok(())
-    /// # }
-    ///
-    /// # tokio_test::block_on(run());
-    /// ```
-    pub async fn get_league_leaderboard(
-        self,
-        query: query::LeagueLeaderboardQuery,
-    ) -> RspErr<LeagueLeaderboardResponse> {
-        if query.is_invalid_limit_range() {
-            panic!(
-                "The query parameter`limit` must be between 0 and 100.\n\
-                Received: {}",
-                query.limit.unwrap().to_string()
-            );
-        }
-        // Cloned the `query` here because the query parameters will be referenced later.
-        let (q, url) = if query.will_full_export() {
-            (
-                query.clone().build_as_full_export(),
-                format!("{}/users/lists/league/all", API_URL),
-            )
-        } else {
-            (
-                query.clone().build(),
-                format!("{}/users/lists/league", API_URL),
-            )
-        };
-        let r = self.client.get(url);
-        let res = match q.len() {
-            1 => r.query(&[&q[0]]),
-            2 => r.query(&[&q[0], &q[1]]),
-            3 => r.query(&[&q[0], &q[1], &q[2]]),
-            _ => r,
-        }
-        .send()
-        .await;
-        match response::<LeagueLeaderboardResponse>(res).await {
-            Ok(mut m) => {
-                let (before, after) = if let Some(b_a) = query.before_or_after {
-                    match b_a {
-                        query::BeforeAfter::Before(b) => (Some(b.to_string()), None),
-                        query::BeforeAfter::After(b) => (None, Some(b.to_string())),
-                    }
-                } else {
-                    (None, None)
-                };
-                let limit = query.limit.map(|l| l.to_string());
-                let country = query.country;
-                m.query = Some(league_leaderboard::QueryCache {
-                    before,
-                    after,
-                    limit,
-                    country,
-                });
-                Ok(m)
-            }
-            Err(e) => Err(e),
-        }
-    }
-
-    /// Returns the XP leaderboard model.
-    ///
-    /// # Arguments
-    ///
-    /// - `query`:
-    ///
-    /// The query parameters.
-    /// This argument requires a [`query::XPLeaderboardQuery`].
-    ///
-    /// # Examples
-    ///
-    /// Getting the XP leaderboard object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::{Client, query::XPLeaderboardQuery};
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// // Set the query parameters.
-    /// let query = XPLeaderboardQuery::new()
-    ///     // 50,000,000,000,000xp or less.
-    ///     .after(50_000_000_000_000.)
-    ///     // 10 users.
-    ///     .limit(10)
-    ///     // Serbia.
-    ///     .country("rs");
-    ///
-    /// // Get the XP leaderboard.
-    /// let user = client.get_xp_leaderboard(query).await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// See [here](query::XPLeaderboardQuery) for details on setting query parameters.
-    ///
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the query parameter`limit` is not between 1 and 100.
-    ///
-    /// ```should_panic,no_run
-    /// use tetr_ch::client::{Client, query::XPLeaderboardQuery};
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// let query = XPLeaderboardQuery {
-    ///     // 101 users(not allowed).
-    ///     limit: Some(std::num::NonZeroU8::new(101).unwrap()),
-    ///     ..XPLeaderboardQuery::new()
-    /// };
-    ///
-    /// let user = client.get_xp_leaderboard(query).await?;
-    /// # Ok(())
-    /// # }
-    ///
-    /// # tokio_test::block_on(run());
-    /// ```
-    pub async fn get_xp_leaderboard(
-        self,
-        query: query::XPLeaderboardQuery,
-    ) -> RspErr<XPLeaderboardResponse> {
-        if query.is_invalid_limit_range() {
-            panic!(
-                "The query parameter`limit` must be between 1 and 100.\n\
-                Received: {}",
-                query.limit.unwrap()
-            );
-        }
-        // Cloned the `query` here because the query parameters will be referenced later.
-        let q = query.clone().build();
-        let url = format!("{}users/lists/xp", API_URL);
-        let r = self.client.get(url);
-        let res = match q.len() {
-            1 => r.query(&[&q[0]]),
-            2 => r.query(&[&q[0], &q[1]]),
-            3 => r.query(&[&q[0], &q[1], &q[2]]),
-            _ => r,
-        }
-        .send()
-        .await;
-        match response::<XPLeaderboardResponse>(res).await {
-            Ok(mut m) => {
-                let (before, after) = if let Some(b_a) = query.before_or_after {
-                    match b_a {
-                        query::BeforeAfter::Before(b) => (Some(b.to_string()), None),
-                        query::BeforeAfter::After(b) => (None, Some(b.to_string())),
-                    }
-                } else {
-                    (None, None)
-                };
-                let limit = query.limit.map(|l| l.to_string());
-                let country = query.country;
-                m.query = Some(xp_leaderboard::QueryCache {
-                    before,
-                    after,
-                    limit,
-                    country,
-                });
-                Ok(m)
-            }
-            Err(e) => Err(e),
-        }
-    }
-
-    /// Returns the stream model.
-    ///
-    /// # Arguments
-    ///
-    /// - `stream_type`:
-    ///
-    /// The type of Stream.
-    /// Currently
-    /// [`StreamType::FortyLines`](stream::StreamType::FortyLines),
-    /// [`StreamType::Blitz`](stream::StreamType::Blitz),
-    /// [`StreamType::Any`](stream::StreamType::Any),
-    /// or [`StreamType::League`](stream::StreamType::League).
-    ///
-    /// - `stream_context`:
-    ///
-    /// The context of the Stream.
-    /// Currently
-    /// [`StreamContext::Global`](stream::StreamContext::Global),
-    /// [`StreamContext::UserBest`](stream::StreamContext::UserBest),
-    /// or [`StreamContext::UserRecent`](stream::StreamContext::UserRecent).
-    ///
-    /// - `stream_identifier` (Optional):
-    ///
-    /// If applicable.
-    /// For example, in the case of "userbest" or "userrecent", the user ID.
-    ///
-    /// # Examples
-    ///
-    /// Getting the stream object:
-    ///
-    /// ```no_run
-    /// use tetr_ch::client::{
-    ///     Client,
-    ///     stream::{StreamType, StreamContext}
-    /// };
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// // Get the stream.
-    /// let user = client.get_stream(
-    ///     // 40 LINES.
-    ///     StreamType::FortyLines,
-    ///     // User's best.
-    ///     StreamContext::UserBest,
-    ///     // User ID.
-    ///     Some("621db46d1d638ea850be2aa0"),
+    /// // Get the user leaderboard.
+    /// let user = client.get_leaderboard(
+    ///     UserLeaderboardType::League,
+    ///     Some(criteria)
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
     ///
-    /// Go to [`stream::StreamType`] | [`stream::StreamContext`].
+    /// # Panics
     ///
-    /// # Errors
+    /// Panics if the search criteria `limit` is not between 1 and 100.
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
+    /// ```should_panic,no_run
+    /// # use tetr_ch::prelude::*;
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = user_leaderboard::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
     ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn get_stream(
-        self,
-        stream_type: stream::StreamType,
-        stream_context: stream::StreamContext,
-        stream_identifier: Option<&str>,
-    ) -> RspErr<StreamResponse> {
-        let stream_id = format!(
-            "{}_{}{}",
-            stream_type.as_str(),
-            stream_context.as_str(),
-            if let Some(i) = stream_identifier {
-                format!("_{}", i)
-            } else {
-                String::new()
-            }
-        );
-        let url = format!("{}streams/{}", API_URL, stream_id.to_lowercase());
-        let res = self.client.get(url).send().await;
+    /// // Panics!
+    /// let user = client.get_leaderboard(
+    ///     UserLeaderboardType::League,
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_leaderboard(
+        &self,
+        leaderboard: LeaderboardType,
+        search_criteria: Option<user_leaderboard::SearchCriteria>,
+    ) -> RspErr<LeaderboardResponse> {
+        let mut query_params = Vec::new();
+        if let Some(criteria) = search_criteria {
+            criteria.validate_limit();
+            query_params = criteria.build();
+        }
+        let url = format!("{}users/by/{}", API_URL, encode(leaderboard.to_param()));
+        let res = self.client.get(url).query(&query_params).send().await;
         response(res).await
     }
 
-    /// Returns the latest news model.
+    /// Gets the array of the historical user blobs fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](user_leaderboard::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
+    ///
+    /// About the endpoint "Historical User Leaderboard",
+    /// see the [API document](https://tetr.io/about/api/#usershistoryleaderboardseason).
     ///
     /// # Arguments
     ///
-    /// - `subject`:
-    ///
-    /// The news subject.
-    /// This argument requires a [`stream::NewsSubject`].
-    ///
-    /// - `limit`:
-    ///
-    /// The amount of entries to return.
-    /// Between 1 and 100.
-    /// 25 by default.
+    /// - `season` - The season to look up. (e.g. `"1"`)
+    /// - `search_criteria` - The search criteria to filter users by.
     ///
     /// # Examples
     ///
-    /// Getting the latest news object:
+    /// Gets the array of the historical user blobs with the following criteria:
+    ///
+    /// - Season 1
+    /// - Upper bound is `[15200, 0, 0]`
+    /// - Three entries
+    /// - Filter by Japan
     ///
     /// ```no_run
-    /// use tetr_ch::client::{Client, stream::NewsSubject};
-    /// # use std::io;
+    /// use tetr_ch::prelude::*;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// let criteria = user_leaderboard::SearchCriteria::new()
+    ///     // Upper bound is `[15200, 0, 0]`
+    ///     .after([15200.,0.,0.])
+    ///     // Three entries
+    ///     .limit(3)
+    ///     // Filter by Japan
+    ///     .country("jp");
+    ///
+    /// // Get the array.
+    /// let user = client.get_historical_league_leaderboard(
+    ///     // Season 1
+    ///     "1",
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the search criteria `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::prelude::*;
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = user_leaderboard::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// // Panics!
+    /// let user = client.get_historical_league_leaderboard(
+    ///     "1",
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_historical_league_leaderboard(
+        &self,
+        season: &str,
+        search_criteria: Option<user_leaderboard::SearchCriteria>,
+    ) -> RspErr<HistoricalLeaderboardResponse> {
+        let mut query_params = Vec::new();
+        if let Some(criteria) = search_criteria {
+            criteria.validate_limit();
+            query_params = criteria.build();
+        }
+        let url = format!(
+            "{}users/history/{}/{}",
+            API_URL,
+            LeaderboardType::League.to_param(),
+            encode(season)
+        );
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
+    /// Gets the personal record leaderboard of the specified user,
+    /// fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](record::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
+    ///
+    /// About the endpoint "User Personal Records",
+    /// see the [API document](https://tetr.io/about/api/#usersuserrecordsgamemodeleaderboard).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    /// - `gamemode` - The game mode to look up.
+    /// - `leaderboard` - The personal leaderboard to look up.
+    /// - `search_criteria` - The search criteria to filter records by.
+    ///
+    /// # Examples
+    ///
+    /// Gets the personal top score leaderboard of the 40 LINES records of the user "RINRIN-RS" with the following criteria:
+    ///
+    /// - Upper bound is `[500000, 0, 0]`
+    /// - Three entries
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Set the search criteria.
+    /// let criteria = record::SearchCriteria::new()
+    ///     // Upper bound is `[500000, 0, 0]`
+    ///     .after([500000.,0.,0.])
+    ///     // Three entries
+    ///     .limit(3);
+    ///
+    /// // Get the leaderboard.
+    /// let user = client.get_user_records(
+    ///     // Record of the user "RINRIN-RS"
+    ///     "rinrin-rs",
+    ///     // 40 LINES
+    ///     record::Gamemode::FortyLines,
+    ///     // Top score leaderboard
+    ///     record::LeaderboardType::Top,
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the search criteria `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::prelude::*;
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = record::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// // Panics!
+    /// let user = client.get_user_records(
+    ///     "rinrin-rs",
+    ///     record::Gamemode::FortyLines,
+    ///     record::LeaderboardType::Top,
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_user_records(
+        &self,
+        user: &str,
+        gamemode: Gamemode,
+        leaderboard: record::LeaderboardType,
+        search_criteria: Option<record::SearchCriteria>,
+    ) -> RspErr<UserRecordsResponse> {
+        let mut query_params = Vec::new();
+        if let Some(criteria) = search_criteria {
+            criteria.validate_limit();
+            query_params = criteria.build();
+        }
+        let url = format!(
+            "{}users/{}/records/{}/{}",
+            API_URL,
+            encode(user.to_lowercase()),
+            gamemode.to_param(),
+            leaderboard.to_param()
+        );
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
+    /// Gets the record leaderboard fulfilling the search criteria.
+    ///
+    /// Want to paginate over this data using the [`SearchCriteria::bound`](record_leaderboard::SearchCriteria)?
+    /// Remember to pass an `X-Session-ID` header using the [`Client::with_session_id`] to ensure data consistency.  
+    /// For more details, see the example in
+    /// [`15_pagination-for-leaderboard.rs`](https://github.com/Rinrin0413/tetr-ch-rs/tree/master/examples/15_pagination-for-leaderboard.rs).
+    ///
+    /// About the endpoint "Records Leaderboard",
+    /// see the [API document](https://tetr.io/about/api/#recordsleaderboard).
+    ///
+    /// # Arguments
+    ///
+    /// - `leaderboard` - The record leaderboard ID to look up.
+    /// - `search_criteria` - The search criteria to filter records by.
+    ///
+    /// # Examples
+    ///
+    /// Gets the record leaderboard with the following criteria:
+    ///
+    /// - Upper bound is `[500000, 0, 0]`
+    /// - Three entries
+    /// - Game mode: `zenith` (QUICK PLAY)
+    /// - Scope: `JP` (Japan)
+    /// - Revolution ID: `@2024w31`
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Set the search criteria.
+    /// let criteria = record_leaderboard::SearchCriteria::new()
+    ///     // Upper bound is `[500000, 0, 0]`
+    ///     .after([500000.,0.,0.])
+    ///     // Three entries
+    ///     .limit(3);
+    ///
+    /// // Get the record leaderboard.
+    /// let user = client.get_records_leaderboard(
+    ///     // Record leaderboard ID: `zenith_country_JP@2024w31`
+    ///     RecordsLeaderboardId::new(
+    ///         // Game mode: `zenith` (QUICK PLAY)
+    ///         "zenith",
+    ///         // Scope: `JP` (Japan)
+    ///         Scope::Country("JP".to_string()),
+    ///         // Revolution ID: `@2024w31`
+    ///         Some("@2024w31")
+    ///     ),
+    ///    Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the search criteria `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::prelude::*;
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// let criteria = record_leaderboard::SearchCriteria {
+    ///     // 101 entries (out of bounds)
+    ///     limit: Some(101),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// // Panics!
+    /// let user = client.get_records_leaderboard(
+    ///     RecordsLeaderboardId::new(
+    ///         "zenith",
+    ///         Scope::Global,
+    ///         None
+    ///     ),
+    ///     Some(criteria)
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_records_leaderboard(
+        &self,
+        leaderboard: RecordsLeaderboardId,
+        search_criteria: Option<record_leaderboard::SearchCriteria>,
+    ) -> RspErr<RecordsLeaderboardResponse> {
+        let mut query_params = Vec::new();
+        if let Some(criteria) = search_criteria {
+            criteria.validate_limit();
+            query_params = criteria.build();
+        }
+        let url = format!("{}records/{}", API_URL, encode(leaderboard.to_param()));
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
+    /// Searches for a record of the specified user with the specified timestamp.
+    ///
+    /// Only one record is returned.
+    /// It is generally not possible for a player to play the same gamemode twice in a millisecond.
+    ///
+    /// About the endpoint "Record Search",
+    /// see the [API document](https://tetr.io/about/api/#recordsreverse).
+    ///
+    /// # Arguments
+    ///
+    /// - `user_id` - The user ID to look up.
+    /// - `gamemode` - The game mode to look up.
+    /// - `timestamp` - The timestamp of the record to find.
+    ///
+    /// # Examples
+    ///
+    /// Gets a record with the following criteria:
+    ///
+    /// - User ID: `621db46d1d638ea850be2aa0`
+    /// - Gamemode: `blitz` (BLITZ)
+    /// - Timestamp: `1680053762145` (`2023-03-29T01:36:02.145Z`)
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get a record.
+    /// let user = client.search_record(
+    ///     // User ID: `621db46d1d638ea850be2aa0`
+    ///     "621db46d1d638ea850be2aa0",
+    ///     // Gamemode: `blitz` (BLITZ)
+    ///     RecordGamemode::Blitz,
+    ///     // Timestamp: `1680053762145` (`2023-03-29T01:36:02.145Z`)
+    ///     1680053762145
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn search_record(
+        &self,
+        user_id: &str,
+        gamemode: Gamemode,
+        timestamp: i64,
+    ) -> RspErr<SearchedRecordResponse> {
+        let query_params = [
+            ("user", user_id.to_string()),
+            ("gamemode", gamemode.to_param()),
+            ("ts", timestamp.to_string()),
+        ];
+        let url = format!("{}records/reverse", API_URL);
+        let res = self.client.get(url).query(&query_params).send().await;
+        response(res).await
+    }
+
+    /// Gets the latest news items in any stream.
+    ///
+    /// About the endpoint "All Latest News",
+    /// see the [API document](https://tetr.io/about/api/#newsall).
+    ///
+    /// # Arguments
+    ///
+    /// - `limit` - The amount of entries to return, between 1 and 100.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get three latest news.
+    /// let user = client.get_news_all(3).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the argument `limit` is not between 1 and 100.
+    ///
+    /// ```should_panic,no_run
+    /// # use tetr_ch::prelude::*;
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// // Panics!
+    /// // Because the limit is 101 (out of bounds)
+    /// let user = client.get_news_all(101).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_news_all(&self, limit: u8) -> RspErr<NewsAllResponse> {
+        validate_limit(limit);
+        let url = format!("{}news/", API_URL);
+        let res = self
+            .client
+            .get(url)
+            .query(&[("limit", limit.to_string())])
+            .send()
+            .await;
+        response(res).await
+    }
+
+    /// Gets the latest news items in the specified stream.
+    ///
+    /// About the endpoint "Latest News",
+    /// see the [API document](https://tetr.io/about/api/#newsstream).
+    ///
+    /// # Arguments
+    ///
+    /// - `stream` - The news stream to look up.
+    /// - `limit` - The amount of entries to return, between 1 and 100.
+    ///
+    /// # Examples
+    ///
+    /// Gets three latest news of the user `621db46d1d638ea850be2aa0`.
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
     /// // Get the latest news.
-    /// let user = client.get_latest_news(
-    ///     // News of the user `621db46d1d638ea850be2aa0`.
-    ///     NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
-    ///     // three news.
+    /// let user = client.get_news_latest(
+    ///     // News of the user `621db46d1d638ea850be2aa0`
+    ///     NewsStreamParam::User("621db46d1d638ea850be2aa0".to_string()),
+    ///     // Three news
     ///     3,
     /// ).await?;
     /// # Ok(())
     /// # }
     /// ```
     ///
-    /// Go to [`stream::StreamType`] | [`stream::StreamContext`].
-    ///
-    /// # Errors
-    ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
-    ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
-    ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    ///
     /// # Panics
     ///
-    /// Panics if the query parameter`limit` is not between 1 and 100.
+    /// Panics if the argument `limit` is not between 1 and 100.
     ///
     /// ```should_panic,no_run
-    /// use tetr_ch::client::{Client, stream::NewsSubject};
-    /// # use std::io;
-    ///
-    /// # async fn run() -> io::Result<()> {
-    /// let client = Client::new();
-    ///
-    /// let user = client.get_latest_news(
-    ///     NewsSubject::User("621db46d1d638ea850be2aa0".to_string()),
-    ///     // 101 news.
+    /// # use tetr_ch::prelude::*;
+    /// # async fn run() -> std::io::Result<()> {
+    /// # let client = Client::new();
+    /// // Panics!
+    /// let user = client.get_news_latest(
+    ///     NewsStreamParam::Global,
+    ///     // 101 news (out of bounds)
     ///     101,
     /// ).await?;
     /// # Ok(())
     /// # }
-    ///
-    /// # tokio_test::block_on(run());
     /// ```
-    pub async fn get_latest_news(
-        self,
-        subject: stream::NewsSubject,
+    pub async fn get_news_latest<S: ToNewsStreamParam>(
+        &self,
+        stream: S,
         limit: u8,
-    ) -> RspErr<LatestNewsResponse> {
-        if !(1..=100).contains(&limit) {
-            // !(1 <= limit && limit <= 100)
-            panic!(
-                "The query parameter`limit` must be between 1 and 100.\n\
-                Received: {}",
-                limit
-            );
-        }
-        use stream::NewsSubject;
-        let url = format!(
-            "{}/news/{}",
-            API_URL,
-            match subject {
-                NewsSubject::Any => String::new(),
-                NewsSubject::Global => "global".to_string(),
-                NewsSubject::User(id) => format!("user_{}", id),
-            }
-        );
+    ) -> RspErr<NewsLatestResponse> {
+        validate_limit(limit);
+        let url = format!("{}news/{}", API_URL, encode(stream.to_param()));
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
         response(res).await
     }
 
-    /// Search a TETR.IO user account by Discord account.
+    /// Gets some statistics about the TETR.IO.
     ///
-    /// # Arguments
-    ///
-    /// - `discord_user`:
-    ///
-    /// The Discord username or Discord ID to look up.
+    /// About the endpoint "Server Statistics",
+    /// see the [API document](https://tetr.io/about/api/#generalstats).
     ///
     /// # Examples
     ///
-    /// Search a user by Discord account:
-    ///
     /// ```no_run
-    /// use tetr_ch::client::Client;
-    /// # use std::io;
+    /// use tetr_ch::prelude::*;
     ///
-    /// # async fn run() -> io::Result<()> {
+    /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
-    ///
-    /// // Search a user by Discord ID.
-    /// let user = client.search_user("724976600873041940").await?;
+    /// // Get the statistics.
+    /// let user = client.get_server_stats().await?;
     /// # Ok(())
     /// # }
-    ///
-    /// # tokio_test::block_on(run());
     /// ```
+    pub async fn get_server_stats(&self) -> RspErr<ServerStatsResponse> {
+        let url = format!("{}general/stats", API_URL);
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the array of the user activity over the last 2 days.
     ///
-    /// # Errors
+    /// About the endpoint "Server Activity",
+    /// see the [API document](https://tetr.io/about/api/#generalactivity).
     ///
-    /// Returns a [`ResponseError::DeserializeErr`] if there are some mismatches in the API docs,
-    /// or when this library is defective.
+    /// # Examples
     ///
-    /// Returns a [`ResponseError::RequestErr`] redirect loop was detected or redirect limit was exhausted.
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
     ///
-    /// Returns a [`ResponseError::HttpErr`] if the HTTP request fails.
-    pub async fn search_user(self, discord_user: &str) -> RspErr<SearchedUserResponse> {
-        let url = format!("{}users/search/{}", API_URL, discord_user);
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    /// // Get the activity.
+    /// let user = client.get_server_activity().await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_server_activity(&self) -> RspErr<ServerActivityResponse> {
+        let url = format!("{}general/activity", API_URL);
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the condensed graph of all of the specified user's records in the specified gamemode.
+    ///
+    /// About the endpoint "Labs Scoreflow",
+    /// see the [API document](https://tetr.io/about/api/#labsscoreflowusergamemode).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    /// - `gamemode` - The game mode to look up.
+    ///
+    /// # Examples
+    ///
+    /// Gets the graph of the 40 LINES records of the user `RINRIN-RS`.
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the graph of the records.
+    /// let user = client.get_labs_scoreflow(
+    ///     // Records of the user "RINRIN-RS"
+    ///     "rinrin-rs",
+    ///     // 40 LINES records
+    ///     RecordGamemode::FortyLines
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_labs_scoreflow(
+        &self,
+        user: &str,
+        gamemode: Gamemode,
+    ) -> RspErr<LabsScoreflowResponse> {
+        let url = format!(
+            "{}labs/scoreflow/{}/{}",
+            API_URL,
+            encode(user.to_lowercase()),
+            gamemode.to_param()
+        );
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the condensed graph of all of the specified user's matches in TETRA LEAGUE.
+    ///
+    /// About the endpoint "Labs Leagueflow,
+    /// see the [API document](https://tetr.io/about/api/#labsleagueflowuser).
+    ///
+    /// # Arguments
+    ///
+    /// - `user` - The username or user ID to look up.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the graph of the matches of the user `RINRIN-RS` in TETRA LEAGUE.
+    /// let user = client.get_labs_leagueflow("rinrin-rs").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_labs_leagueflow(&self, user: &str) -> RspErr<LabsLeagueflowResponse> {
+        let url = format!("{}labs/leagueflow/{}", API_URL, encode(user.to_lowercase()));
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the view over all TETRA LEAGUE ranks and their metadata.
+    ///
+    /// About the endpoint "Labs League Ranks",
+    /// see the [API document](https://tetr.io/about/api/#labsleagueranks).
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the view over all TETRA LEAGUE ranks and their metadata.
+    /// let user = client.get_labs_league_ranks().await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_labs_league_ranks(&self) -> RspErr<LabsLeagueRanksResponse> {
+        let url = format!("{}labs/league_ranks", API_URL);
+        let res = self.client.get(url).send().await;
+        response(res).await
+    }
+
+    /// Gets the data about the specified achievement itself, its cutoffs, and its leaderboard.
+    ///
+    /// About the endpoint "Achievement Info",
+    /// see the [API document](https://tetr.io/about/api/#achievementsk).
+    ///
+    /// # Arguments
+    ///
+    /// - `achievement_id` - The achievement ID to look up. (e.g. `"15"`)
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use tetr_ch::prelude::*;
+    ///
+    /// # async fn run() -> std::io::Result<()> {
+    /// let client = Client::new();
+    ///
+    /// // Get the data about the achievement "15".
+    /// let user = client.get_achievement_info("15").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_achievement_info(
+        &self,
+        achievement_id: &str,
+    ) -> RspErr<AchievementInfoResponse> {
+        let url = format!("{}achievements/{}", API_URL, encode(achievement_id));
         let res = self.client.get(url).send().await;
         response(res).await
     }
 }
 
-/// Receives `Result<Response, Error>` and returns `Result<T, ResponseError>`.
-///
-/// # Examples
-///
-/// ```ignore
-/// let res = self.client.get(url).send().await;
-/// response(res).await
-/// ```
-async fn response<T>(response: Result<Response, Error>) -> RspErr<T>
-where
-    for<'de> T: Deserialize<'de>,
-{
-    match response {
-        Ok(r) => {
-            if !r.status().is_success() {
-                match StatusCode::from_u16(r.status().as_u16()) {
-                    Ok(c) => return Err(ResponseError::HttpErr(Status::Valid(c))),
-                    Err(e) => return Err(ResponseError::HttpErr(Status::Invalid(e))),
-                }
-            }
-            match r.json().await {
-                Ok(m) => Ok(m),
-                Err(e) => Err(ResponseError::DeserializeErr(e.to_string())),
-            }
-        }
-        Err(e) => Err(ResponseError::RequestErr(e.to_string())),
-    }
-}
-
-pub mod query {
-    //! Structs for query parameters.
-
-    use std::num::NonZeroU8;
-
-    /// A struct for query parameters for the TETRA LEAGUE leaderboard.
-    ///
-    /// `None` means default value.
-    ///
-    /// This structure manages the following four query parameters:
-    ///
-    /// - `before`(f64): The lower bound in TR.
-    /// Use this to paginate upwards.
-    /// Take the highest seen TR and pass that back through this field to continue scrolling.
-    /// If set, the search order is reversed (returning the lowest items that match the query)
-    /// This parameter is ignored if specified to get the full leaderboard.
-    ///
-    /// - `after`(f64): The upper bound in TR.
-    /// Use this to paginate downwards.
-    /// Take the lowest seen TR and pass that back through this field to continue scrolling.
-    /// This parameter is ignored if specified to get the full leaderboard.
-    ///
-    /// - `limit`(u8): The amount of entries to return, Between `0` and `100`.
-    /// 50 by default.
-    /// You can specify to get the full leaderboard by passing `0`.
-    /// In this case the `before` and `after` parameters are ignored.
-    ///
-    /// - `country`(String): The ISO 3166-1 country code to filter to.
-    /// Leave unset to not filter by country.
-    ///
-    /// ***The `before` and `after` parameters may not be combined.**
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use tetr_ch::client::query::LeagueLeaderboardQuery;
-    ///
-    /// // Default(25000TR or less, 50 entries) query.
-    /// let q1 = LeagueLeaderboardQuery::new();
-    ///
-    /// // 15200TR or less, three entries, filter by Japan.
-    /// let q2 = LeagueLeaderboardQuery::new()
-    ///     .after(15200.)
-    ///     .limit(3)
-    ///     .country("jp");
-    ///
-    /// // 15200TR or higher.
-    /// // Also sort by TR ascending.
-    /// let q3 = LeagueLeaderboardQuery::new()
-    ///     .before(15200.);
-    ///
-    /// // Full leaderboard.
-    /// let q4 = LeagueLeaderboardQuery::new()
-    ///     .limit(0);
-    ///
-    /// // You can restore the query parameters to default as follows:
-    /// let mut q5 = LeagueLeaderboardQuery::new().country("us");
-    /// q5.init();
-    /// ```
-    #[derive(Clone, Debug, Default)]
-    pub struct LeagueLeaderboardQuery {
-        /// The bound in TR.
-        ///
-        /// The `before` and `after` parameters may not be combined,
-        /// so either set the parameter with an enum or set it to default(after) by passing `None`.
-        pub before_or_after: Option<BeforeAfter>,
-        /// The amount of entries to return.
-        pub limit: Option<Limit>,
-        /// The ISO 3166-1 country code to filter to. Leave unset to not filter by country.
-        /// But some vanity flags exist.
-        pub country: Option<String>,
-    }
-
-    impl LeagueLeaderboardQuery {
-        /// Creates a new[`LeagueLeaderboardQuery`].
-        /// Values are set to default.
-        ///
-        /// # Examples
-        ///
-        /// Creates a new[`LeagueLeaderboardQuery`] with default parameters.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new();
-        /// ```
-        pub fn new() -> Self {
-            Self::default()
-        }
-
-        /// Initializes the [`LeagueLeaderboardQuery`].
-        ///
-        /// # Examples
-        ///
-        /// Initializes the [`LeagueLeaderboardQuery`] with default parameters.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let mut query = LeagueLeaderboardQuery::new().country("us");
-        /// query.init();
-        /// ```
-        pub fn init(self) -> Self {
-            Self::default()
-        }
-
-        /// Set the query parameter`before`.
-        ///
-        /// Disabled by default.
-        ///
-        /// The `before` and `after` parameters may not be combined,
-        /// so even if there is an `after` parameter, the `before` parameter takes precedence and overrides it.
-        /// Disabled by default.
-        ///
-        /// This parameter is ignored if specified to get the full leaderboard.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`before` to `15200`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new().before(15200.);
-        /// ```
-        pub fn before(self, bound: f64) -> Self {
-            Self {
-                before_or_after: Some(BeforeAfter::Before(bound)),
-                ..self
-            }
-        }
-
-        /// Set the query parameter`after`.
-        ///
-        /// 25000 by default.
-        ///
-        /// The `before` and `after` parameters may not be combined,
-        /// so even if there is a `before` parameter, the `after` parameter takes precedence and overrides it.
-        ///
-        /// This parameter is ignored if specified to get the full leaderboard.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`after` to `15200`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new().after(15200.);
-        /// ```
-        pub fn after(self, bound: f64) -> Self {
-            Self {
-                before_or_after: Some(BeforeAfter::After(bound)),
-                ..self
-            }
-        }
-
-        /// Set the query parameter`limit`
-        /// The amount of entries to return, Between `0` and `100`.
-        /// 50 by default.
-        ///
-        /// You can specify to get the full leaderboard by passing `0`.
-        /// In this case the `before` and `after` parameters are ignored.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`limit` to `3`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new().limit(3);
-        /// ```
-        ///
-        /// # Panics
-        ///
-        /// Panics if argument`limit` is not between `0` and `100`.
-        ///
-        /// ```should_panic
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new().limit(101);
-        /// ```
-        pub fn limit(self, limit: u8) -> Self {
-            if
-            /*0 <= limit && */
-            limit <= 100 {
-                Self {
-                    limit: Some(if limit == 0 {
-                        Limit::Full
-                    } else {
-                        Limit::Limit(limit)
-                    }),
-                    ..self
-                }
-            } else {
-                panic!(
-                    "The argument`limit` must be between  and 100.\n\
-                    Received: {}",
-                    limit
-                );
-            }
-        }
-
-        /// Set the query parameter`country`.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`country` to `jp`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new().country("jp");
-        /// ```
-        pub fn country(self, country: &str) -> Self {
-            Self {
-                country: Some(country.to_owned().to_uppercase()),
-                ..self
-            }
-        }
-
-        /// Whether the query parameters`limit` is out of bounds.
-        ///
-        /// # Examples
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::{LeagueLeaderboardQuery, Limit};
-        /// let invalid_query = LeagueLeaderboardQuery{
-        ///    limit: Some(Limit::Limit(101)),
-        ///   ..LeagueLeaderboardQuery::new()
-        /// };
-        /// assert!(invalid_query.is_invalid_limit_range());
-        /// ```
-        #[allow(clippy::nonminimal_bool)]
-        pub fn is_invalid_limit_range(&self) -> bool {
-            if let Some(l) = self.limit.clone() {
-                match l {
-                    Limit::Limit(l) => !(l <= 100),
-                    Limit::Full => false,
-                }
-            } else {
-                false
-            }
-        }
-
-        /// Whether the query parameters`limit` specifies to get the full leaderboard.
-        ///
-        /// # Examples
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new().limit(0);
-        /// assert!(query.will_full_export());
-        /// ```
-        pub fn will_full_export(&self) -> bool {
-            if let Some(l) = self.limit.clone() {
-                match l {
-                    Limit::Limit(l) => l == 0,
-                    Limit::Full => true,
-                }
-            } else {
-                false
-            }
-        }
-
-        /// Builds the query parameters to `Vec<(String, String)>`.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new();
-        /// let query_params = query.build();
-        /// ```
-        pub(crate) fn build(mut self) -> Vec<(String, String)> {
-            // For not pass "Full" to puery parameters.
-            if self.will_full_export() {
-                self.limit = Some(Limit::Full);
-            }
-            let mut result = Vec::new();
-            if let Some(b_a) = self.before_or_after.clone() {
-                match b_a {
-                    BeforeAfter::Before(b) => result.push(("before".to_string(), b.to_string())),
-                    BeforeAfter::After(b) => result.push(("after".to_string(), b.to_string())),
-                }
-            }
-            if let Some(l) = self.limit.clone() {
-                if !self.will_full_export() {
-                    result.push(("limit".to_string(), l.to_string()));
-                }
-            }
-            if let Some(c) = self.country {
-                result.push(("country".to_string(), c));
-            }
-            result
-        }
-
-        /// Builds the query parameters to `Vec<(String, String)>` as full export.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let query = LeagueLeaderboardQuery::new().limit(0);
-        /// let query_params = query.build_full_export();
-        /// ```
-        pub(crate) fn build_as_full_export(mut self) -> Vec<(String, String)> {
-            // For not pass "Full" to puery parameters.
-            if self.will_full_export() {
-                self.limit = Some(Limit::Full);
-            }
-            let mut result = Vec::new();
-            result.push(("limit".to_string(), "0".to_string()));
-            if let Some(c) = self.country {
-                result.push(("country".to_string(), c));
-            }
-            result
-        }
-
-        /// Initializes the [`LeagueLeaderboardQuery`].
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::query::LeagueLeaderboardQuery;
-        /// let default_query = LeagueLeaderboardQuery::default();
-        /// ```
-        fn default() -> Self {
-            Self {
-                before_or_after: None,
-                limit: None,
-                country: None,
-            }
-        }
-    }
-
-    /// Amount of entries to return.
-    #[derive(Clone, Debug)]
-    pub enum Limit {
-        /// Between 1 and 100. 50 by default.
-        Limit(u8),
-        Full,
-    }
-
-    impl ToString for Limit {
-        fn to_string(&self) -> String {
-            match self {
-                Limit::Limit(l) => {
-                    if l == &0 {
-                        "Full".to_string()
-                    } else {
-                        l.to_string()
-                    }
-                }
-                Limit::Full => "Full".to_string(),
-            }
-        }
-    }
-
-    /// A struct for query parameters for the XP leaderboard.
-    ///
-    /// `None` means default value.
-    ///
-    /// This structure manages the following four query parameters:
-    ///
-    /// - `before`(f64):  The lower bound in XP.
-    /// Use this to paginate upwards.
-    /// Take the highest seen XP and pass that back through this field to continue scrolling.
-    /// If set, the search order is reversed (returning the lowest items that match the query)
-    ///
-    /// - `after`(f64): The upper bound in XP.
-    /// Use this to paginate downwards.
-    /// Take the lowest seen XP and pass that back through this field to continue scrolling.
-    /// Infinite([`f64::INFINITY`]) by default.
-    ///
-    /// - `limit`([NonZeroU8]): The amount of entries to return.
-    /// Between 1 and 100.
-    /// 50 by default.
-    ///
-    /// - `country`(String): The ISO 3166-1 country code to filter to.
-    /// Leave unset to not filter by country.
-    ///
-    /// ***The `before` and `after` parameters may not be combined.**
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use tetr_ch::client::query::XPLeaderboardQuery;
-    ///
-    /// // Default(descending, fifty entries) query.
-    /// let q1 = XPLeaderboardQuery::new();
-    ///
-    /// // 50,000,000,000,000xp or less, thirty entries, filter by Japan.
-    /// let q2 = XPLeaderboardQuery::new()
-    ///     .after(50_000_000_000_000.)
-    ///     .limit(3)
-    ///     .country("jp");
-    ///
-    /// // 50,000,000,000,000xp or higher.
-    /// // Also sort by XP ascending.
-    /// let q3 = XPLeaderboardQuery::new()
-    ///     .before(50_000_000_000_000.);
-    ///
-    /// // You can restore the query parameters to default as follows:
-    /// let mut q4 = XPLeaderboardQuery::new().country("us");
-    /// q4.init();
-    /// ```
-    #[derive(Clone, Debug, Default)]
-    pub struct XPLeaderboardQuery {
-        /// The bound in XP.
-        ///
-        /// The `before` and `after` parameters may not be combined,
-        /// so either set the parameter with an enum or set it to default(after) by passing `None`.
-        pub before_or_after: Option<BeforeAfter>,
-        /// The amount of entries to return.
-        /// Between 1 and 100. 50 by default.
-        pub limit: Option<NonZeroU8>,
-        /// The ISO 3166-1 country code to filter to. Leave unset to not filter by country.
-        /// But some vanity flags exist.
-        pub country: Option<String>,
-    }
-
-    impl XPLeaderboardQuery {
-        /// Creates a new[`XPLeaderboardQuery`].
-        /// Values are set to default.
-        ///
-        /// # Examples
-        ///
-        /// Creates a new[`XPLeaderboardQuery`] with default parameters.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let query = XPLeaderboardQuery::new();
-        /// ```
-        pub fn new() -> Self {
-            Self::default()
-        }
-
-        /// Initializes the [`XPLeaderboardQuery`].
-        ///
-        /// # Examples
-        ///
-        /// Initializes the [`XPLeaderboardQuery`] with default parameters.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let mut query = XPLeaderboardQuery::new();
-        /// query.init();
-        /// ```
-        pub fn init(self) -> Self {
-            Self::default()
-        }
-
-        /// Set the query parameter`before`.
-        ///
-        /// The `before` and `after` parameters may not be combined,
-        /// so even if there is an `after` parameter, the `before` parameter takes precedence and overrides it.
-        /// Disabled by default.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`before` to `50,000,000,000,000`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let mut query = XPLeaderboardQuery::new()
-        ///     .before(50_000_000_000_000.);
-        /// ```
-        pub fn before(self, bound: f64) -> Self {
-            Self {
-                before_or_after: if bound.is_infinite() {
-                    Some(BeforeAfter::Before(bound))
-                } else {
-                    None
-                },
-                ..self
-            }
-        }
-
-        /// Set the query parameter`after`.
-        ///
-        /// The `before` and `after` parameters may not be combined,
-        /// so even if there is a `before` parameter, the `after` parameter takes precedence and overrides it.
-        /// Infinite([`f64::INFINITY`]) by default.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`after` to `50,000,000,000,000`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let mut query = XPLeaderboardQuery::new()
-        ///     .after(50_000_000_000_000.);
-        /// ```
-        pub fn after(self, bound: f64) -> Self {
-            Self {
-                before_or_after: Some(BeforeAfter::After(bound)),
-                ..self
-            }
-        }
-
-        /// Set the query parameter`limit`
-        /// The amount of entries to return, Between `1` and `100`.
-        /// 50 by default.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`limit` to `5`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let mut query = XPLeaderboardQuery::new().limit(5);
-        /// ```
-        ///
-        /// # Panics
-        ///
-        /// Panics if argument`limit` is not between `1` and `100`.
-        ///
-        /// ```should_panic
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let mut query = XPLeaderboardQuery::new().limit(0);
-        /// ```
-        ///
-        /// ```should_panic
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let mut query = XPLeaderboardQuery::new().limit(101);
-        /// ```
-        pub fn limit(self, limit: u8) -> Self {
-            if (1..=100).contains(&limit) {
-                // 1 <= limit && limit <= 100
-                Self {
-                    limit: Some(NonZeroU8::new(limit).unwrap()),
-                    ..self
-                }
-            } else {
-                panic!(
-                    "The argument`limit` must be between 1 and 100.\n\
-                    Received: {}",
-                    limit
-                );
-            }
-        }
-
-        /// Set the query parameter`country`.
-        ///
-        /// # Examples
-        ///
-        /// Sets the query parameter`country` to `ca`.
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let mut query = XPLeaderboardQuery::new().country("ca");
-        /// ```
-        pub fn country(self, country: &str) -> Self {
-            Self {
-                country: Some(country.to_owned().to_uppercase()),
-                ..self
-            }
-        }
-
-        /// Whether the query parameters`limit` is out of bounds.
-        ///
-        /// # Examples
-        ///
-        /// ```
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// use std::num::NonZeroU8;
-        ///
-        /// let invalid_query = XPLeaderboardQuery{
-        ///     limit: Some(NonZeroU8::new(101).unwrap()),
-        ///     ..XPLeaderboardQuery::new()
-        /// };
-        /// assert!(invalid_query.is_invalid_limit_range());
-        /// ```
-        #[allow(clippy::nonminimal_bool)]
-        pub fn is_invalid_limit_range(&self) -> bool {
-            if let Some(l) = self.limit {
-                !(l <= NonZeroU8::new(100).unwrap())
-            } else {
-                false
-            }
-        }
-
-        /// Builds the query parameters to `Vec<(String, String)>`.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let query = XPLeaderboardQuery::new();
-        /// let query_params = query.build();
-        /// ```
-        pub(crate) fn build(mut self) -> Vec<(String, String)> {
-            // For not pass "inf" to puery parameters.
-            if let Some(BeforeAfter::After(b)) = self.before_or_after {
-                if b.is_infinite() {
-                    self.before_or_after = None;
-                }
-            }
-            let mut result = Vec::new();
-            if let Some(b_a) = self.before_or_after.clone() {
-                match b_a {
-                    BeforeAfter::Before(b) => result.push(("before".to_string(), b.to_string())),
-                    BeforeAfter::After(b) => result.push(("after".to_string(), b.to_string())),
-                }
-            }
-            if let Some(l) = self.limit {
-                result.push(("limit".to_string(), l.to_string()));
-            }
-            if let Some(c) = self.country {
-                result.push(("country".to_string(), c));
-            }
-            result
-        }
-
-        /// Returns the default [`XPLeaderboardQuery`].
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::query::XPLeaderboardQuery;
-        /// let query = XPLeaderboardQuery::default();
-        /// ```
-        fn default() -> Self {
-            Self {
-                before_or_after: None,
-                limit: None,
-                country: None,
-            }
-        }
-    }
-
-    /// The bound.
-    ///
-    /// The `before` and `after` parameters may not be combined,
-    /// so need to either set the parameter.
-    #[derive(Clone, Debug)]
-    pub enum BeforeAfter {
-        /// The lower bound.
-        /// Use this to paginate upwards.
-        /// Take the highest seen value and pass that back through this field to continue scrolling.
-        /// If set, the search order is reversed (returning the lowest items that match the query)
-        Before(f64),
-        /// Use this to paginate downwards.
-        /// Take the lowest seen value and pass that back through this field to continue scrolling.
-        After(f64),
-    }
-}
-
-pub mod stream {
-    //! Features for streams.
-
-    /// Enum for the stream type.
-    pub enum StreamType {
-        /// 40 LINES
-        FortyLines,
-        /// BLITZ
-        Blitz,
-        /// Any
-        Any,
-        /// TETRA LEAGUE
-        League,
-    }
-
-    impl StreamType {
-        /// Converts to a `&str`.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::stream::StreamType;
-        /// let forty_lines = StreamType::FortyLines;
-        /// let blitz = StreamType::Blitz;
-        /// let any = StreamType::Any;
-        /// let league = StreamType::League;
-        /// assert_eq!(forty_lines.as_str(), "40l");
-        /// assert_eq!(blitz.as_str(), "blitz");
-        /// assert_eq!(any.as_str(), "any");
-        /// assert_eq!(league.as_str(), "league");
-        /// ```
-        pub(crate) fn as_str(&self) -> &str {
-            match self {
-                StreamType::FortyLines => "40l",
-                StreamType::Blitz => "blitz",
-                StreamType::Any => "any",
-                StreamType::League => "league",
-            }
-        }
-    }
-
-    /// Enum for the stream context.
-    pub enum StreamContext {
-        Global,
-        UserBest,
-        UserRecent,
-    }
-
-    impl StreamContext {
-        /// Converts to a `&str`.
-        ///
-        /// # Examples
-        ///
-        /// ```ignore
-        /// # use tetr_ch::client::stream::StreamContext;
-        /// let global = StreamContext::Global;
-        /// let user_best = StreamContext::UserBest;
-        /// let user_recent = StreamContext::UserRecent;
-        /// assert_eq!(global.as_str(), "global");
-        /// assert_eq!(user_best.as_str(), "user_best");
-        /// assert_eq!(user_recent.as_str(), "user_recent");
-        pub(crate) fn as_str(&self) -> &str {
-            match self {
-                StreamContext::Global => "global",
-                StreamContext::UserBest => "userbest",
-                StreamContext::UserRecent => "userrecent",
-            }
-        }
-    }
-
-    /// The news subject.
-    pub enum NewsSubject {
-        /// News of all users
-        Any,
-        /// Global news.
-        Global,
-        /// The news of the user.
-        /// Enter the user's **ID** to `String`.
-        User(String),
-    }
-}
+pub mod error;
+pub mod param;
+mod response;
 
 #[cfg(test)]
 mod tests {
@@ -1420,73 +1192,5 @@ mod tests {
     #[test]
     fn create_a_new_client() {
         let _ = Client::new();
-    }
-
-    #[test]
-    fn init_league_query() {
-        let mut _query = query::LeagueLeaderboardQuery::new();
-        _query.init();
-    }
-
-    #[test]
-    #[should_panic]
-    fn panic_invalid_limit_range_in_league_query() {
-        let mut _query = query::LeagueLeaderboardQuery::new();
-        _query.limit(101);
-    }
-
-    #[test]
-    fn init_xp_query() {
-        let mut _query = query::XPLeaderboardQuery::new();
-        _query.init();
-    }
-
-    #[test]
-    #[should_panic]
-    fn panic_invalid_limit_range_in_xp_query_with101() {
-        let mut _query = query::XPLeaderboardQuery::new();
-        _query.limit(101);
-    }
-
-    #[test]
-    #[should_panic]
-    fn panic_invalid_limit_range_in_xp_query_with0() {
-        let mut _query = query::XPLeaderboardQuery::new();
-        _query.limit(101);
-    }
-
-    #[test]
-    fn fortylines_as_str() {
-        assert_eq!(stream::StreamType::FortyLines.as_str(), "40l");
-    }
-
-    #[test]
-    fn blitz_as_str() {
-        assert_eq!(stream::StreamType::Blitz.as_str(), "blitz");
-    }
-
-    #[test]
-    fn any_as_str() {
-        assert_eq!(stream::StreamType::Any.as_str(), "any");
-    }
-
-    #[test]
-    fn league_as_str() {
-        assert_eq!(stream::StreamType::League.as_str(), "league");
-    }
-
-    #[test]
-    fn global_as_str() {
-        assert_eq!(stream::StreamContext::Global.as_str(), "global");
-    }
-
-    #[test]
-    fn userbest_as_str() {
-        assert_eq!(stream::StreamContext::UserBest.as_str(), "userbest");
-    }
-
-    #[test]
-    fn userrecent_as_str() {
-        assert_eq!(stream::StreamContext::UserRecent.as_str(), "userrecent");
     }
 }
