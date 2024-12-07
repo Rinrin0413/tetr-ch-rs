@@ -62,7 +62,7 @@ impl fmt::Display for NewsStream {
 }
 
 impl ToNewsStreamParam for NewsStream {
-    fn to_param(self) -> String {
-        self.0
+    fn to_param(&self) -> String {
+        self.0.clone()
     }
 }
