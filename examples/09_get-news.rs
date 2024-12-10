@@ -13,7 +13,7 @@ async fn main() {
     let client = Client::new();
 
     // Get three latest news items in any stream.
-    let _ = client.get_news_all(3).await;
+    let _ = client.get_news_all(3).await.unwrap();
 
     // Gets the latest news items in the global news stream.
     let _ = client
@@ -23,7 +23,8 @@ async fn main() {
             // Three news
             3,
         )
-        .await;
+        .await
+        .unwrap();
 
     // Gets the latest news items in the specified user's news stream.
     let _ = client
@@ -32,7 +33,8 @@ async fn main() {
             NewsStreamParam::User("621db46d1d638ea850be2aa0".to_string()),
             3,
         )
-        .await;
+        .await
+        .unwrap();
 
     // For more information about the data structure, see:
     // https://docs.rs/tetr_ch/latest/tetr_ch/model/news/struct.NewsItems.html
