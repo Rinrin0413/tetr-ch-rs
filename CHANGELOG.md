@@ -11,7 +11,7 @@
 
 - ✨ The [`Client`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html) struct now supports `X-Session-ID` header. [#97]
 	- Use [`Client::with_session_id`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html#method.with_session_id).
-- ✨ Added two prelude modules [`tetr_ch::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/prelude/index.html) and [`tetr_ch::model::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/model/util/index.html).
+- ✨ Added two prelude modules [`tetr_ch::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/prelude/index.html) and [`tetr_ch::model::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/model/prelude/index.html).
 - ✨ Added [`xp_to_level`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/util/fn.xp_to_level.html) function.
 
 ## Improvements
