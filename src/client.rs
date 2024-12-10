@@ -178,7 +178,6 @@ impl Client {
     /// # }
     /// ```
     pub async fn get_user(&self, user: &str) -> RspErr<UserResponse> {
-        dbg!(encode(user.to_lowercase()));
         let url = format!("{}users/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
