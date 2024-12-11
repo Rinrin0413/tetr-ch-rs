@@ -22,10 +22,11 @@ async fn main() {
             // 40 LINES
             RecordGamemode::FortyLines,
         )
-        .await;
+        .await
+        .unwrap();
 
     // Get the condensed graph of the user's matches in TETRA LEAGUE.
-    let _ = client.get_labs_leagueflow(user).await;
+    let _ = client.get_labs_leagueflow(user).await.unwrap();
 
     // For more information about the data structures, see:
     // - Scoreflow: https://docs.rs/tetr_ch/latest/tetr_ch/model/labs/scoreflow/struct.LabsScoreflow.html

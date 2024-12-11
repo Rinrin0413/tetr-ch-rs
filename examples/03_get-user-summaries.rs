@@ -16,32 +16,32 @@ async fn main() {
     let user = "rinrin-rs";
 
     // Get the summary of the user's 40 LINES games.
-    let _ = client.get_user_40l(user).await;
+    let _ = client.get_user_40l(user).await.unwrap();
 
     // Get the summary of the user's BLITZ games.
-    let _ = client.get_user_blitz(user).await;
+    let _ = client.get_user_blitz(user).await.unwrap();
 
     // Get the summary of the user's QUICK PLAY games.
-    let _ = client.get_user_zenith(user).await;
+    let _ = client.get_user_zenith(user).await.unwrap();
 
     // Get the summary of the user's EXPERT QUICK PLAY games.
-    let _ = client.get_user_zenith_ex(user).await;
+    let _ = client.get_user_zenith_ex(user).await.unwrap();
 
     // Get the summary of the user's TETRA LEAGUE standing.
-    let _ = client.get_user_league(user).await;
+    let _ = client.get_user_league(user).await.unwrap();
 
     // Get the summary of the user's ZEN progress.
-    let _ = client.get_user_zen(user).await;
+    let _ = client.get_user_zen(user).await.unwrap();
 
     // Get all the achievements of the user.
-    let _ = client.get_user_achievements(user).await;
+    let _ = client.get_user_achievements(user).await.unwrap();
 
     // Get all the summaries of the user.
     //
     // WARNING: Consider whether you really need to use this method.
     //          If you only collect data for one or two game modes,
     //          use the methods for the individual summaries instead.
-    let _ = client.get_user_all_summaries(user).await;
+    let _ = client.get_user_all_summaries(user); // .await.unwrap();
 
     // For more information about the data structures, see:
     // - 40 LINES: https://docs.rs/tetr_ch/latest/tetr_ch/model/summary/forty_lines/struct.FortyLines.html

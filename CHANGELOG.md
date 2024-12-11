@@ -1,3 +1,22 @@
+# v0.6.1 2024-12-11
+
+## Features
+
+- ✨ Re-exported the [`Client`](https://docs.rs/tetr_ch/0.6.1/tetr_ch/client/struct.Client.html) struct to the [crate root](https://docs.rs/tetr_ch/0.6.1/tetr_ch/index.html#reexports). [#106]
+
+## Bug Fixes
+
+- 🐛 Fixed deserialization errors when using the [`Client::get_user_league`](https://docs.rs/tetr_ch/0.6.1/tetr_ch/client/struct.Client.html#method.get_user_league) method. [#102 #107]
+    - 🛠️ The [`LeagueData`](https://docs.rs/tetr_ch/0.6.1/tetr_ch/model/summary/league/struct.LeagueData.html) struct is now wrapped in new enum [`LeagueDataWrap`](https://docs.rs/tetr_ch/0.6.1/tetr_ch/model/summary/league/enum.LeagueDataWrap.html). [f2e0f232c239f85b1bbe5162f41a938c3057dbfc]
+- ⚰️ Removed an unnecessary `dbg` macro call in the [`Client::get_user`](https://docs.rs/tetr_ch/0.6.1/tetr_ch/client/struct.Client.html#method.get_user) method implementation. [#104]
+
+## Other Changes
+
+- 📚 Fixed an incorrect link in the `CHANGELOG.md`. [#103]
+- 🛠️ Adjusted the examples. [c63f5137e0596fcb05ba2dc9897a3d6521f75599]
+
+---
+
 # v0.6.0 2024-12-07
 
 ## Breaking Changes
@@ -11,7 +30,7 @@
 
 - ✨ The [`Client`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html) struct now supports `X-Session-ID` header. [#97]
 	- Use [`Client::with_session_id`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html#method.with_session_id).
-- ✨ Added two prelude modules [`tetr_ch::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/prelude/index.html) and [`tetr_ch::model::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/model/util/index.html).
+- ✨ Added two prelude modules [`tetr_ch::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/prelude/index.html) and [`tetr_ch::model::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/model/prelude/index.html).
 - ✨ Added [`xp_to_level`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/util/fn.xp_to_level.html) function.
 
 ## Improvements
