@@ -103,6 +103,8 @@
 //!
 //! [![MIT](https://img.shields.io/github/license/Rinrin0413/tetr-ch-rs?color=%23A11D32&style=for-the-badge)](https://docs.rs/crate/tetr_ch/latest/source/LICENSE)
 
+pub use crate::client::Client;
+
 pub mod client;
 pub mod constants;
 pub mod model;
