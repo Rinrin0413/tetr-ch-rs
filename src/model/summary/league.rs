@@ -18,12 +18,87 @@ pub struct LeagueResponse {
     /// Data about how this request was cached.
     pub cache: Option<CacheData>,
     /// The requested data.
-    pub data: Option<LeagueData>,
+    pub data: Option<LeagueDataWrap>,
 }
 
 impl AsRef<LeagueResponse> for LeagueResponse {
     fn as_ref(&self) -> &Self {
         self
+    }
+}
+
+/// A league data wrapper.
+///
+/// The [`LeagueDataWrap`] struct is wrapped in this enum.
+/// Because the API returns an empty object when the user is banned.  
+/// For more information, see the [GitHub issue #107](https://github.com/Rinrin0413/tetr-ch-rs/issues/107).
+#[derive(Clone, Debug, Deserialize)]
+#[serde(untagged)]
+#[non_exhaustive]
+pub enum LeagueDataWrap {
+    /// A user's TETRA LEAGUE data.
+    Some(LeagueData),
+    /// An empty object if the user is banned. (maybe)
+    Empty {},
+}
+
+impl LeagueDataWrap {
+    /// Returns `true` if this is a [`LeagueDataWrap::Some`] value.
+    pub fn is_some(&self) -> bool {
+        matches!(self, LeagueDataWrap::Some(_))
+    }
+
+    /// Returns `true` if this is a [`LeagueDataWrap::Empty`] value.
+    pub fn is_empty(&self) -> bool {
+        matches!(self, LeagueDataWrap::Empty {})
+    }
+
+    /// Returns the contained [`LeagueDataWrap::Some`] value, consuming the `self` value.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the value is a [`LeagueDataWrap::Empty`] with a custom panic message provided by
+    /// `msg`.
+    pub fn expect(self, msg: &str) -> LeagueData {
+        match self {
+            LeagueDataWrap::Some(val) => val,
+            LeagueDataWrap::Empty {} => panic!("{}", msg),
+        }
+    }
+
+    /// Returns the contained [`LeagueDataWrap::Some`] value, consuming the `self` value.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the self value equals [`LeagueDataWrap::Empty`].
+    pub fn unwrap(self) -> LeagueData {
+        match self {
+            LeagueDataWrap::Some(val) => val,
+            LeagueDataWrap::Empty {} => {
+                panic!("called `LeagueDataWrap::unwrap()` on an `LeagueDataWrap::Empty` value")
+            }
+        }
+    }
+}
+
+impl AsRef<LeagueDataWrap> for LeagueDataWrap {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+impl Default for LeagueDataWrap {
+    /// Returns [`LeagueDataWrap::Empty`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use tetr_ch::model::summary::league::LeagueDataWrap;
+    /// let wrap: LeagueDataWrap = LeagueDataWrap::default();
+    /// assert!(wrap.is_empty());
+    /// ```
+    fn default() -> LeagueDataWrap {
+        LeagueDataWrap::Empty {}
     }
 }
 
