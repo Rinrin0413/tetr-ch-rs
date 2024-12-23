@@ -1,7 +1,7 @@
 //! Models for responses.
 
-use crate::model::prelude::*;
 use super::cache::CacheData;
+use crate::model::prelude::*;
 use std::fmt;
 
 /// A struct for responses.
