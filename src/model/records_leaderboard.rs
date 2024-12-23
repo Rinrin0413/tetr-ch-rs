@@ -12,3 +12,9 @@ pub struct RecordsLeaderboard {
     /// The matched records.
     pub entries: Vec<Record>,
 }
+
+impl AsRef<RecordsLeaderboard> for RecordsLeaderboard {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}

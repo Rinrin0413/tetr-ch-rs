@@ -30,3 +30,9 @@ pub struct AllSummaries {
     /// The user's achievements.
     pub achievements: Vec<Achievement>,
 }
+
+impl AsRef<AllSummaries> for AllSummaries {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
