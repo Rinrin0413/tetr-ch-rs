@@ -2,11 +2,12 @@
 
 use crate::model::prelude::*;
 use super::cache::CacheData;
+use std::fmt;
 
 /// A struct for responses.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
-pub struct Response<T> {
+pub struct Response<T: Clone + fmt::Debug + AsRef<T>> {
     /// Whether the request was successful.
     #[serde(rename = "success")]
     pub is_success: bool,
@@ -18,7 +19,7 @@ pub struct Response<T> {
     pub data: Option<T>,
 }
 
-impl<T> AsRef<Response<T>> for Response<T> {
+impl<T: Clone + fmt::Debug + AsRef<T>> AsRef<Response<T>> for Response<T> {
     fn as_ref(&self) -> &Self {
         self
     }
