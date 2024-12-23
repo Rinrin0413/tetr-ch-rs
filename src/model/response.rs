@@ -1,6 +1,7 @@
 //! Models for responses.
 
 use crate::model::prelude::*;
+use super::cache::CacheData;
 
 /// A struct for responses.
 #[derive(Clone, Debug, Deserialize)]

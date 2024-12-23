@@ -41,9 +41,7 @@ pub mod prelude {
         },
     };
 
-    pub(crate) use super::{
-        cache::CacheData, summary::record::Record,
-    };
+    pub(crate) use super::summary::record::Record;
     pub(crate) use crate::client::param::pagination::Prisecter;
     pub(crate) use serde::Deserialize;
     pub(crate) use std::fmt;
