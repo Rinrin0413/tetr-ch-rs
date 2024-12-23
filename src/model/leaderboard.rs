@@ -7,27 +7,6 @@
 
 use crate::model::{prelude::*, user::AchievementRatingCounts};
 
-/// A struct for the response for the endpoint "User Leaderboard".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct LeaderboardResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<Leaderboard>,
-}
-
-impl AsRef<LeaderboardResponse> for LeaderboardResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// An array of users. (user leaderboard)
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
@@ -156,27 +135,6 @@ pub struct PartialLeagueData {
 }
 
 impl AsRef<PartialLeagueData> for PartialLeagueData {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-/// A struct for the response for the endpoint "Historical User Leaderboard".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct HistoricalLeaderboardResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<HistoricalLeaderboard>,
-}
-
-impl AsRef<HistoricalLeaderboardResponse> for HistoricalLeaderboardResponse {
     fn as_ref(&self) -> &Self {
         self
     }

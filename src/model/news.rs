@@ -7,27 +7,6 @@
 
 use crate::model::prelude::*;
 
-/// A struct for the response for the endpoint "All Latest News".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct NewsAllResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<NewsItems>,
-}
-
-impl AsRef<NewsAllResponse> for NewsAllResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// Latest news items.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
@@ -275,25 +254,4 @@ pub struct SupporterGiftNews {
 impl SupporterGiftNews {
     impl_get_user!(username);
     impl_for_username!();
-}
-
-/// A struct for the response for the endpoint "Latest News".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct NewsLatestResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<NewsItems>,
-}
-
-impl AsRef<NewsLatestResponse> for NewsLatestResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
 }

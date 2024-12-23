@@ -7,27 +7,6 @@
 
 use crate::model::prelude::*;
 
-/// A struct for the response for the endpoint "User Summary: QUICK PLAY".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct ZenithResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<Zenith>,
-}
-
-impl AsRef<ZenithResponse> for ZenithResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// A struct that describes a summary of a user's QUICK PLAY or EXPERT QUICK PLAY games.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
@@ -72,27 +51,6 @@ pub struct ZenithBest {
 }
 
 impl AsRef<ZenithBest> for ZenithBest {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-/// A struct for the response for the endpoint "User Summary: EXPERT QUICK PLAY".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct ZenithExResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<Zenith>,
-}
-
-impl AsRef<ZenithExResponse> for ZenithExResponse {
     fn as_ref(&self) -> &Self {
         self
     }
