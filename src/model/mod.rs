@@ -16,6 +16,7 @@ pub mod labs;
 pub mod leaderboard;
 pub mod news;
 pub mod records_leaderboard;
+pub mod response;
 pub mod searched_record;
 pub mod searched_user;
 pub mod server_activity;
