@@ -84,3 +84,45 @@ impl Bound {
         }
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn prisecter_to_array_converts_to_array() {
+        let prisecter = Prisecter {
+            pri: 1.0,
+            sec: 2.0,
+            ter: 3.0,
+        };
+        assert_eq!(prisecter.to_array(), [1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn prisecter_as_ref_converts_to_ref() {
+        let prisecter = Prisecter {
+            pri: 1.0,
+            sec: 2.0,
+            ter: 3.0,
+        };
+        let _ref_prisecter: &Prisecter = prisecter.as_ref();
+    }
+
+    #[test]
+    fn bound_after_to_query_param_converts_into_query_param() {
+        let bound = Bound::After([12345.678, 0.0, 0.0]);
+        assert_eq!(
+            bound.to_query_param(),
+            ("after".to_string(), "12345.678:0:0".to_string())
+        );
+    }
+
+    #[test]
+    fn bound_before_to_query_param_converts_into_query_param() {
+        let bound = Bound::Before([12345.678, 0.0, 0.0]);
+        assert_eq!(
+            bound.to_query_param(),
+            ("before".to_string(), "12345.678:0:0".to_string())
+        );
+    }
+}
