@@ -9,7 +9,7 @@ use self::{
         search_user::SocialConnection,
         user_leaderboard::{self, LeaderboardType},
     },
-    response::response,
+    response::process_response,
 };
 use crate::{
     model::{
@@ -175,7 +175,7 @@ impl Client {
     pub async fn get_user(&self, user: &str) -> RspErr<Response<User>> {
         let url = format!("{}users/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Searches for a TETR.IO user account by the social connection.
@@ -217,7 +217,7 @@ impl Client {
             encode(social_connection.to_param())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets all the summaries of the specified user.
@@ -248,7 +248,7 @@ impl Client {
     pub async fn get_user_all_summaries(&self, user: &str) -> RspErr<Response<AllSummaries>> {
         let url = format!("{}users/{}/summaries", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the summary of the specified user's 40 LINES games.
@@ -279,7 +279,7 @@ impl Client {
             encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the summary of the specified user's BLITZ games.
@@ -310,7 +310,7 @@ impl Client {
             encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the summary of the specified user's QUICK PLAY games.
@@ -341,7 +341,7 @@ impl Client {
             encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the summary of the specified user's EXPERT QUICK PLAY games.
@@ -372,7 +372,7 @@ impl Client {
             encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the summary of the specified user's TETRA LEAGUE standing.
@@ -403,7 +403,7 @@ impl Client {
             encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the summary of the specified user's ZEN progress.
@@ -434,7 +434,7 @@ impl Client {
             encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets all the achievements of the specified user.
@@ -465,7 +465,7 @@ impl Client {
             encode(user.to_lowercase())
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the user leaderboard fulfilling the search criteria.
@@ -548,7 +548,7 @@ impl Client {
         }
         let url = format!("{}users/by/{}", API_URL, encode(leaderboard.to_param()));
         let res = self.client.get(url).query(&query_params).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the array of the historical user blobs fulfilling the search criteria.
@@ -638,7 +638,7 @@ impl Client {
             encode(season)
         );
         let res = self.client.get(url).query(&query_params).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the personal record leaderboard of the specified user,
@@ -737,7 +737,7 @@ impl Client {
             leaderboard.to_param()
         );
         let res = self.client.get(url).query(&query_params).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the record leaderboard fulfilling the search criteria.
@@ -833,7 +833,7 @@ impl Client {
         }
         let url = format!("{}records/{}", API_URL, encode(leaderboard.to_param()));
         let res = self.client.get(url).query(&query_params).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Searches for a record of the specified user with the specified timestamp.
@@ -889,7 +889,7 @@ impl Client {
         ];
         let url = format!("{}records/reverse", API_URL);
         let res = self.client.get(url).query(&query_params).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the latest news items in any stream.
@@ -938,7 +938,7 @@ impl Client {
             .query(&[("limit", limit.to_string())])
             .send()
             .await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the latest news items in the specified stream.
@@ -997,7 +997,7 @@ impl Client {
         validate_limit(limit);
         let url = format!("{}news/{}", API_URL, encode(stream.to_param()));
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets some statistics about the TETR.IO.
@@ -1020,7 +1020,7 @@ impl Client {
     pub async fn get_server_stats(&self) -> RspErr<Response<ServerStats>> {
         let url = format!("{}general/stats", API_URL);
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the array of the user activity over the last 2 days.
@@ -1043,7 +1043,7 @@ impl Client {
     pub async fn get_server_activity(&self) -> RspErr<Response<ServerActivity>> {
         let url = format!("{}general/activity", API_URL);
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the condensed graph of all of the specified user's records in the specified gamemode.
@@ -1088,7 +1088,7 @@ impl Client {
             gamemode.to_param()
         );
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the condensed graph of all of the specified user's matches in TETRA LEAGUE.
@@ -1116,7 +1116,7 @@ impl Client {
     pub async fn get_labs_leagueflow(&self, user: &str) -> RspErr<Response<LabsLeagueflow>> {
         let url = format!("{}labs/leagueflow/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the view over all TETRA LEAGUE ranks and their metadata.
@@ -1140,7 +1140,7 @@ impl Client {
     pub async fn get_labs_league_ranks(&self) -> RspErr<Response<LabsLeagueRanks>> {
         let url = format!("{}labs/league_ranks", API_URL);
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 
     /// Gets the data about the specified achievement itself, its cutoffs, and its leaderboard.
@@ -1171,7 +1171,7 @@ impl Client {
     ) -> RspErr<Response<AchievementInfo>> {
         let url = format!("{}achievements/{}", API_URL, encode(achievement_id));
         let res = self.client.get(url).send().await;
-        response(res).await
+        process_response(res).await
     }
 }
 
