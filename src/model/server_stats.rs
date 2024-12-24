@@ -5,27 +5,6 @@
 
 use crate::model::prelude::*;
 
-/// A struct for the response for the endpoint "Server Statistics".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct ServerStatsResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<ServerStats>,
-}
-
-impl AsRef<ServerStatsResponse> for ServerStatsResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// Server Statistics about the TETR.IO.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]

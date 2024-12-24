@@ -2,7 +2,7 @@
 
 use crate::{
     client::{error::RspErr, param::news_stream::ToNewsStreamParam, Client},
-    model::{news::NewsLatestResponse, prelude::*},
+    model::{news::NewsItems, prelude::*, response::Response},
 };
 
 /// A news stream.
@@ -34,7 +34,7 @@ impl NewsStream {
     ///   Even if the HTTP request failed,
     ///   it may be possible to deserialize the response containing an error message,
     ///   so the deserialization will be tried before returning this error.
-    pub async fn get_news_items(self, limit: u8) -> RspErr<NewsLatestResponse> {
+    pub async fn get_news_items(self, limit: u8) -> RspErr<Response<NewsItems>> {
         Client::new().get_news_latest(self, limit).await
     }
 

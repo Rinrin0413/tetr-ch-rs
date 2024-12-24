@@ -5,27 +5,6 @@
 
 use crate::model::prelude::*;
 
-/// A struct for the response for the endpoint "Server Activity".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct ServerActivityResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<ServerActivity>,
-}
-
-impl AsRef<ServerActivityResponse> for ServerActivityResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// An array of user activity over the last 2 days.
 /// A user is seen as active if they logged in or received XP within the last 30 minutes.
 #[derive(Clone, Debug, Deserialize)]

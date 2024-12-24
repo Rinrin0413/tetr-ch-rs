@@ -6,27 +6,6 @@
 use crate::model::prelude::*;
 use std::collections::HashMap;
 
-/// A struct for the response for the endpoint "User Summary: TETRA LEAGUE".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct LeagueResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<LeagueDataWrap>,
-}
-
-impl AsRef<LeagueResponse> for LeagueResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// A league data wrapper.
 ///
 /// The [`LeagueDataWrap`] struct is wrapped in this enum.

@@ -13,29 +13,24 @@ use self::{
 };
 use crate::{
     model::{
-        achievement_info::AchievementInfoResponse,
+        achievement_info::AchievementInfo,
         labs::{
-            league_ranks::LabsLeagueRanksResponse, leagueflow::LabsLeagueflowResponse,
-            scoreflow::LabsScoreflowResponse,
+            league_ranks::LabsLeagueRanks, leagueflow::LabsLeagueflow, scoreflow::LabsScoreflow,
         },
-        leaderboard::{HistoricalLeaderboardResponse, LeaderboardResponse},
-        news::{NewsAllResponse, NewsLatestResponse},
-        records_leaderboard::RecordsLeaderboardResponse,
-        searched_record::SearchedRecordResponse,
-        searched_user::SearchedUserResponse,
-        server_activity::ServerActivityResponse,
-        server_stats::ServerStatsResponse,
+        leaderboard::{HistoricalLeaderboard, Leaderboard},
+        news::NewsItems,
+        records_leaderboard::RecordsLeaderboard,
+        response::Response,
+        searched_user::UserData,
+        server_activity::ServerActivity,
+        server_stats::ServerStats,
         summary::{
-            achievements::AchievementsResponse,
-            blitz::BlitzResponse,
-            forty_lines::FortyLinesResponse,
-            league::LeagueResponse,
-            zen::ZenResponse,
-            zenith::{ZenithExResponse, ZenithResponse},
-            AllSummariesResponse,
+            blitz::Blitz, forty_lines::FortyLines, league::LeagueDataWrap, record::Record,
+            zen::Zen, zenith::Zenith, AllSummaries,
         },
-        user::UserResponse,
-        user_records::UserRecordsResponse,
+        user::User,
+        user_records::UserRecords,
+        util::Achievement,
     },
     util::{encode, validate_limit},
 };
@@ -177,7 +172,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user(&self, user: &str) -> RspErr<UserResponse> {
+    pub async fn get_user(&self, user: &str) -> RspErr<Response<User>> {
         let url = format!("{}users/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
@@ -215,7 +210,7 @@ impl Client {
     pub async fn search_user(
         &self,
         social_connection: SocialConnection,
-    ) -> RspErr<SearchedUserResponse> {
+    ) -> RspErr<Response<UserData>> {
         let url = format!(
             "{}users/search/{}",
             API_URL,
@@ -250,7 +245,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_all_summaries(&self, user: &str) -> RspErr<AllSummariesResponse> {
+    pub async fn get_user_all_summaries(&self, user: &str) -> RspErr<Response<AllSummaries>> {
         let url = format!("{}users/{}/summaries", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
@@ -277,7 +272,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_40l(&self, user: &str) -> RspErr<FortyLinesResponse> {
+    pub async fn get_user_40l(&self, user: &str) -> RspErr<Response<FortyLines>> {
         let url = format!(
             "{}users/{}/summaries/40l",
             API_URL,
@@ -308,7 +303,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_blitz(&self, user: &str) -> RspErr<BlitzResponse> {
+    pub async fn get_user_blitz(&self, user: &str) -> RspErr<Response<Blitz>> {
         let url = format!(
             "{}users/{}/summaries/blitz",
             API_URL,
@@ -339,7 +334,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zenith(&self, user: &str) -> RspErr<ZenithResponse> {
+    pub async fn get_user_zenith(&self, user: &str) -> RspErr<Response<Zenith>> {
         let url = format!(
             "{}users/{}/summaries/zenith",
             API_URL,
@@ -370,7 +365,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zenith_ex(&self, user: &str) -> RspErr<ZenithExResponse> {
+    pub async fn get_user_zenith_ex(&self, user: &str) -> RspErr<Response<Zenith>> {
         let url = format!(
             "{}users/{}/summaries/zenithex",
             API_URL,
@@ -401,7 +396,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_league(&self, user: &str) -> RspErr<LeagueResponse> {
+    pub async fn get_user_league(&self, user: &str) -> RspErr<Response<LeagueDataWrap>> {
         let url = format!(
             "{}users/{}/summaries/league",
             API_URL,
@@ -432,7 +427,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_zen(&self, user: &str) -> RspErr<ZenResponse> {
+    pub async fn get_user_zen(&self, user: &str) -> RspErr<Response<Zen>> {
         let url = format!(
             "{}users/{}/summaries/zen",
             API_URL,
@@ -463,7 +458,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_user_achievements(&self, user: &str) -> RspErr<AchievementsResponse> {
+    pub async fn get_user_achievements(&self, user: &str) -> RspErr<Response<Vec<Achievement>>> {
         let url = format!(
             "{}users/{}/summaries/achievements",
             API_URL,
@@ -545,7 +540,7 @@ impl Client {
         &self,
         leaderboard: LeaderboardType,
         search_criteria: Option<user_leaderboard::SearchCriteria>,
-    ) -> RspErr<LeaderboardResponse> {
+    ) -> RspErr<Response<Leaderboard>> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
             criteria.validate_limit();
@@ -630,7 +625,7 @@ impl Client {
         &self,
         season: &str,
         search_criteria: Option<user_leaderboard::SearchCriteria>,
-    ) -> RspErr<HistoricalLeaderboardResponse> {
+    ) -> RspErr<Response<HistoricalLeaderboard>> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
             criteria.validate_limit();
@@ -728,7 +723,7 @@ impl Client {
         gamemode: Gamemode,
         leaderboard: record::LeaderboardType,
         search_criteria: Option<record::SearchCriteria>,
-    ) -> RspErr<UserRecordsResponse> {
+    ) -> RspErr<Response<UserRecords>> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
             criteria.validate_limit();
@@ -830,7 +825,7 @@ impl Client {
         &self,
         leaderboard: RecordsLeaderboardId,
         search_criteria: Option<record_leaderboard::SearchCriteria>,
-    ) -> RspErr<RecordsLeaderboardResponse> {
+    ) -> RspErr<Response<RecordsLeaderboard>> {
         let mut query_params = Vec::new();
         if let Some(criteria) = search_criteria {
             criteria.validate_limit();
@@ -886,7 +881,7 @@ impl Client {
         user_id: &str,
         gamemode: Gamemode,
         timestamp: i64,
-    ) -> RspErr<SearchedRecordResponse> {
+    ) -> RspErr<Response<Record>> {
         let query_params = [
             ("user", user_id.to_string()),
             ("gamemode", gamemode.to_param()),
@@ -934,7 +929,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_news_all(&self, limit: u8) -> RspErr<NewsAllResponse> {
+    pub async fn get_news_all(&self, limit: u8) -> RspErr<Response<NewsItems>> {
         validate_limit(limit);
         let url = format!("{}news/", API_URL);
         let res = self
@@ -998,7 +993,7 @@ impl Client {
         &self,
         stream: S,
         limit: u8,
-    ) -> RspErr<NewsLatestResponse> {
+    ) -> RspErr<Response<NewsItems>> {
         validate_limit(limit);
         let url = format!("{}news/{}", API_URL, encode(stream.to_param()));
         let res = self.client.get(url).query(&[("limit", limit)]).send().await;
@@ -1022,7 +1017,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_server_stats(&self) -> RspErr<ServerStatsResponse> {
+    pub async fn get_server_stats(&self) -> RspErr<Response<ServerStats>> {
         let url = format!("{}general/stats", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1045,7 +1040,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_server_activity(&self) -> RspErr<ServerActivityResponse> {
+    pub async fn get_server_activity(&self) -> RspErr<Response<ServerActivity>> {
         let url = format!("{}general/activity", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1085,7 +1080,7 @@ impl Client {
         &self,
         user: &str,
         gamemode: Gamemode,
-    ) -> RspErr<LabsScoreflowResponse> {
+    ) -> RspErr<Response<LabsScoreflow>> {
         let url = format!(
             "{}labs/scoreflow/{}/{}",
             API_URL,
@@ -1118,7 +1113,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_labs_leagueflow(&self, user: &str) -> RspErr<LabsLeagueflowResponse> {
+    pub async fn get_labs_leagueflow(&self, user: &str) -> RspErr<Response<LabsLeagueflow>> {
         let url = format!("{}labs/leagueflow/{}", API_URL, encode(user.to_lowercase()));
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1142,7 +1137,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn get_labs_league_ranks(&self) -> RspErr<LabsLeagueRanksResponse> {
+    pub async fn get_labs_league_ranks(&self) -> RspErr<Response<LabsLeagueRanks>> {
         let url = format!("{}labs/league_ranks", API_URL);
         let res = self.client.get(url).send().await;
         response(res).await
@@ -1173,7 +1168,7 @@ impl Client {
     pub async fn get_achievement_info(
         &self,
         achievement_id: &str,
-    ) -> RspErr<AchievementInfoResponse> {
+    ) -> RspErr<Response<AchievementInfo>> {
         let url = format!("{}achievements/{}", API_URL, encode(achievement_id));
         let res = self.client.get(url).send().await;
         response(res).await
