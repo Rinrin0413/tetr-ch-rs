@@ -71,31 +71,75 @@ pub(crate) fn encode(input: impl ToString) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::json;
 
     #[test]
-    fn rfc3339_to_unix_ts() {
-        let ts = "2022-07-26T17:35:23.988Z";
-        assert_eq!(to_unix_ts(ts), 1658856923);
+    fn xp_to_level_converts_xp_to_level() {
+        assert_eq!(xp_to_level(0.), 1);
+        assert_eq!(xp_to_level(4096.), 5);
+        assert_eq!(xp_to_level(32768.), 19);
+        assert_eq!(xp_to_level(262144.), 96);
+        assert_eq!(xp_to_level(8388608.), 1770);
     }
 
     #[test]
-    #[should_panic]
-    fn panics_invalid_rfc3339() {
-        let invalid_ts = "qawsedrftgyhujikolp";
-        to_unix_ts(invalid_ts);
-    }
-
-    #[test]
-    fn compare_and_return_maximum_of_two_f64_v1() {
+    fn max_f64_returns_v1_if_v1_is_max() {
         let v1 = -2.;
         let v2 = 2.;
         assert_eq!(max_f64(v1, v2), 2.0);
     }
 
     #[test]
-    fn compare_and_return_maximum_of_two_f64_v2() {
+    fn max_f64_returns_v2_if_v2_is_max() {
         let v1 = 16.2;
         let v2 = 8.;
         assert_eq!(max_f64(v1, v2), 16.2);
+    }
+
+    #[test]
+    fn to_unix_ts_parses_string_into_unix_ts() {
+        let ts = "2022-07-26T17:35:23.988Z";
+        assert_eq!(to_unix_ts(ts), 1658856923);
+    }
+
+    #[test]
+    #[should_panic(expected = "Failed to parse the given string.")]
+    fn to_unix_ts_panics_if_invalid_ts() {
+        let invalid_ts = "qawsedrftgyhujikolp";
+        to_unix_ts(invalid_ts);
+    }
+
+    #[test]
+    fn deserialize_from_non_str_to_none_deserializes_str_to_timestamp() {
+        let value: Value = json!("2022-07-26T17:35:23.988Z");
+        let result = deserialize_from_non_str_to_none(value).unwrap();
+        assert_eq!(result, Some(Timestamp::new("2022-07-26T17:35:23.988Z".to_string())));
+    }
+
+    #[test]
+    fn deserialize_from_non_str_to_none_deserializes_false_to_none() {
+        let value: Value = json!(false);
+        let result = deserialize_from_non_str_to_none(value).unwrap();
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn validate_limit_allows_valid_values() {
+        for i in 1..=100 {
+            validate_limit(i);
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn validate_limit_panics_if_out_of_range() {
+        validate_limit(0);
+        validate_limit(101);
+    }
+
+    #[test]
+    fn encode_encodes_str() {
+        assert_eq!(encode("Hello, world!"), "Hello%2C%20world%21");
+        assert_eq!(encode("."), "%20");
     }
 }
