@@ -113,7 +113,10 @@ mod tests {
     fn deserialize_from_non_str_to_none_deserializes_str_to_timestamp() {
         let value: Value = json!("2022-07-26T17:35:23.988Z");
         let result = deserialize_from_non_str_to_none(value).unwrap();
-        assert_eq!(result, Some(Timestamp::new("2022-07-26T17:35:23.988Z".to_string())));
+        assert_eq!(
+            result,
+            Some(Timestamp::new("2022-07-26T17:35:23.988Z".to_string()))
+        );
     }
 
     #[test]
