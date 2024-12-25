@@ -5,27 +5,6 @@
 
 use crate::model::prelude::*;
 
-/// A struct for the response for the endpoint "Labs Scoreflow".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct LabsScoreflowResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<LabsScoreflow>,
-}
-
-impl AsRef<LabsScoreflowResponse> for LabsScoreflowResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// A condensed graph of all of a user's records in a gamemode.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]

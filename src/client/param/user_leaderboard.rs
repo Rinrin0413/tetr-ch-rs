@@ -116,8 +116,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.after([10000.0, 0.0, 0.0]);
+    /// let criteria = SearchCriteria::new().after([10000.0, 0.0, 0.0]);
     /// ```
     pub fn after(self, bound: [f64; 3]) -> Self {
         Self {
@@ -144,8 +143,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.before([10000.0, 0.0, 0.0]);
+    /// let criteria = SearchCriteria::new().before([10000.0, 0.0, 0.0]);
     /// ```
     pub fn before(self, bound: [f64; 3]) -> Self {
         Self {
@@ -167,8 +165,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.limit(10);
+    /// let criteria = SearchCriteria::new().limit(10);
     /// ```
     ///
     /// # Panics
@@ -177,12 +174,12 @@ impl SearchCriteria {
     ///
     /// ```should_panic
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new().limit(0);
+    /// let criteria = SearchCriteria::new().limit(0);
     /// ```
     ///
     /// ```should_panic
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new().limit(101);
+    /// let criteria = SearchCriteria::new().limit(101);
     /// ```
     pub fn limit(self, limit: u8) -> Self {
         validate_limit(limit);
@@ -204,8 +201,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.country("jp");
+    /// let mut criteria = SearchCriteria::new().country("jp");
     /// ```
     pub fn country(self, country: &str) -> Self {
         Self {
@@ -244,5 +240,115 @@ impl SearchCriteria {
             result.push(("country".to_string(), encode(c.to_uppercase())));
         }
         result
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn leaderboard_type_to_param_converts_into_param_str() {
+        assert_eq!(LeaderboardType::League.to_param(), "league");
+        assert_eq!(LeaderboardType::Xp.to_param(), "xp");
+        assert_eq!(LeaderboardType::Ar.to_param(), "ar");
+    }
+
+    #[test]
+    fn search_criteria_new_creates_default() {
+        let criteria = SearchCriteria::new();
+        assert!(criteria.bound.is_none());
+        assert!(criteria.limit.is_none());
+        assert!(criteria.country.is_none());
+    }
+
+    #[test]
+    fn search_criteria_init_initializes() {
+        let mut criteria = SearchCriteria::new()
+            .after([15200.0, 0.0, 0.0])
+            .limit(3)
+            .country("jp");
+        criteria.init();
+        assert!(criteria.bound.is_none());
+        assert!(criteria.limit.is_none());
+        assert!(criteria.country.is_none());
+    }
+
+    #[test]
+    fn search_criteria_after_sets_upper_bound() {
+        let criteria = SearchCriteria::new().after([15200.0, 0.0, 0.0]);
+        assert!(matches!(
+            criteria.bound,
+            Some(Bound::After([15200.0, 0.0, 0.0]))
+        ));
+    }
+
+    #[test]
+    fn search_criteria_before_sets_lower_bound() {
+        let criteria = SearchCriteria::new().before([15200.0, 0.0, 0.0]);
+        assert!(matches!(
+            criteria.bound,
+            Some(Bound::Before([15200.0, 0.0, 0.0]))
+        ));
+    }
+
+    #[test]
+    fn search_criteria_limit_sets_valid_limit() {
+        for i in 1..=100 {
+            let criteria = SearchCriteria::new().limit(i);
+            assert_eq!(criteria.limit, Some(i));
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn search_criteria_limit_panics_if_out_of_range() {
+        SearchCriteria::new().limit(0);
+        SearchCriteria::new().limit(101);
+    }
+
+    #[test]
+    fn search_criteria_country_sets_country() {
+        let criteria = SearchCriteria::new().country("jp");
+        assert_eq!(criteria.country, Some("jp".to_string()));
+    }
+
+    #[test]
+    #[should_panic]
+    fn search_criteria_validate_limit_panics_if_out_of_range() {
+        SearchCriteria {
+            limit: Some(0),
+            ..SearchCriteria::default()
+        }
+        .validate_limit();
+        SearchCriteria {
+            limit: Some(101),
+            ..SearchCriteria::default()
+        }
+        .validate_limit();
+    }
+
+    #[test]
+    fn search_criteria_build_creates_query_params() {
+        let criteria = SearchCriteria::new()
+            .after([15200.0, 0.0, 0.0])
+            .limit(3)
+            .country("JP");
+        let query_params = criteria.build();
+        assert_eq!(
+            query_params,
+            vec![
+                ("after".to_string(), "15200:0:0".to_string()),
+                ("limit".to_string(), "3".to_string()),
+                ("country".to_string(), "JP".to_string())
+            ]
+        );
+    }
+
+    #[test]
+    fn search_criteria_build_returns_empty_vec_if_no_params() {
+        let criteria = SearchCriteria::new();
+        let query_params = criteria.build();
+        assert!(query_params.is_empty());
     }
 }

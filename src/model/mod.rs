@@ -11,12 +11,11 @@ mod macros;
 
 pub mod achievement_info;
 pub mod cache;
-pub mod error_response;
 pub mod labs;
 pub mod leaderboard;
 pub mod news;
 pub mod records_leaderboard;
-pub mod searched_record;
+pub mod response;
 pub mod searched_user;
 pub mod server_activity;
 pub mod server_stats;
@@ -42,9 +41,7 @@ pub mod prelude {
         },
     };
 
-    pub(crate) use super::{
-        cache::CacheData, error_response::ErrorResponse, summary::record::Record,
-    };
+    pub(crate) use super::summary::record::Record;
     pub(crate) use crate::client::param::pagination::Prisecter;
     pub(crate) use serde::Deserialize;
     pub(crate) use std::fmt;

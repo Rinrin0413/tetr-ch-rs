@@ -25,3 +25,14 @@ impl SocialConnection {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn social_connection_to_param_converts_into_param_str() {
+        let connection = SocialConnection::Discord("724976600873041940".to_string());
+        assert_eq!(connection.to_param(), "discord:724976600873041940");
+    }
+}

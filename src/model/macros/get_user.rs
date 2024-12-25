@@ -3,7 +3,7 @@
 /// # Methods
 ///
 /// ```ignore
-/// pub async fn get_user(&self) -> RspErr<UserResponse>
+/// pub async fn get_user(&self) -> RspErr<Response<User>>
 /// ```
 ///
 /// # Dependencies
@@ -65,7 +65,7 @@ macro_rules! impl_get_user {
         ///   so the deserialization will be tried before returning this error.
         pub async fn get_user(
             &self,
-        ) -> crate::client::error::RspErr<crate::model::user::UserResponse> {
+        ) -> crate::client::error::RspErr<crate::model::response::Response<crate::model::user::User>> {
             crate::client::Client::new()
                 .get_user(&self.to_string())
                 .await
@@ -88,7 +88,7 @@ macro_rules! impl_get_user {
         ///   so the deserialization will be tried before returning this error.
         pub async fn get_user(
             &self,
-        ) -> crate::client::error::RspErr<crate::model::user::UserResponse> {
+        ) -> crate::client::error::RspErr<crate::model::response::Response<crate::model::user::User>> {
             crate::client::Client::new()
                 .get_user(&self.$field.to_string())
                 .await

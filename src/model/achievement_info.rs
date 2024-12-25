@@ -5,27 +5,6 @@
 
 use crate::model::prelude::*;
 
-/// A struct for the response for the endpoint "Achievement Info".
-#[derive(Clone, Debug, Deserialize)]
-#[non_exhaustive]
-pub struct AchievementInfoResponse {
-    /// Whether the request was successful.
-    #[serde(rename = "success")]
-    pub is_success: bool,
-    /// The reason the request failed.
-    pub error: Option<ErrorResponse>,
-    /// Data about how this request was cached.
-    pub cache: Option<CacheData>,
-    /// The requested data.
-    pub data: Option<AchievementInfo>,
-}
-
-impl AsRef<AchievementInfoResponse> for AchievementInfoResponse {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
 /// Data about an achievement itself, its cutoffs, and its leaderboard.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
