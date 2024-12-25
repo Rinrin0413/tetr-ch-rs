@@ -250,3 +250,109 @@ impl SearchCriteria {
         result
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn records_leaderboard_id_new_creates_default() {
+        let id = RecordsLeaderboardId::new("40l", Scope::Global, None);
+        assert_eq!(id.gamemode, "40l");
+        assert!(matches!(id.scope, Scope::Global));
+        assert!(id.revolution_id.is_none());
+    }
+
+    #[test]
+    fn records_leaderboard_id_to_param_converts_to_param() {
+        let id1 = RecordsLeaderboardId::new("40l", Scope::Global, None);
+        let id2 = RecordsLeaderboardId::new("blitz", Scope::Country("jp".to_string()), None);
+        let id3 = RecordsLeaderboardId::new("zenith", Scope::Global, Some("@2024w31"));
+        assert_eq!(id1.to_param(), "40l_global");
+        assert_eq!(id2.to_param(), "blitz_country_JP");
+        assert_eq!(id3.to_param(), "zenith_global@2024w31");
+    }
+
+    #[test]
+    fn search_criteria_new_creates_default() {
+        let criteria: SearchCriteria = SearchCriteria::new();
+        assert!(criteria.bound.is_none());
+        assert!(criteria.limit.is_none());
+    }
+
+    #[test]
+    fn search_criteria_init_initializes() {
+        let mut criteria = SearchCriteria::new().after([500000., 0., 0.]).limit(3);
+        criteria.init();
+        assert!(criteria.bound.is_none());
+        assert!(criteria.limit.is_none());
+    }
+
+    #[test]
+    fn search_criteria_after_sets_upper_bound() {
+        let criteria = SearchCriteria::new().after([500000.0, 0.0, 0.0]);
+        assert!(matches!(
+            criteria.bound,
+            Some(Bound::After([500000.0, 0.0, 0.0]))
+        ));
+    }
+
+    #[test]
+    fn search_criteria_before_sets_lower_bound() {
+        let criteria = SearchCriteria::new().before([500000.0, 0.0, 0.0]);
+        assert!(matches!(
+            criteria.bound,
+            Some(Bound::Before([500000.0, 0.0, 0.0]))
+        ));
+    }
+
+    #[test]
+    fn search_criteria_limit_sets_valid_limit() {
+        for i in 1..=100 {
+            let criteria = SearchCriteria::new().limit(i);
+            assert_eq!(criteria.limit, Some(i));
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn search_criteria_limit_panics_if_out_of_range() {
+        SearchCriteria::new().limit(0);
+        SearchCriteria::new().limit(101);
+    }
+
+    #[test]
+    #[should_panic]
+    fn search_criteria_validate_limit_panics_if_out_of_range() {
+        SearchCriteria {
+            limit: Some(0),
+            ..SearchCriteria::default()
+        }
+        .validate_limit();
+        SearchCriteria {
+            limit: Some(101),
+            ..SearchCriteria::default()
+        }
+        .validate_limit();
+    }
+
+    #[test]
+    fn search_criteria_build_returns_query_params() {
+        let criteria = SearchCriteria::new().after([500000., 0., 0.]).limit(3);
+        let query_params: Vec<(String, String)> = criteria.build();
+        assert_eq!(
+            query_params,
+            vec![
+                ("after".to_string(), "500000:0:0".to_string()),
+                ("limit".to_string(), "3".to_string())
+            ]
+        );
+    }
+
+    #[test]
+    fn search_criteria_build_returns_empty_vec_if_no_params() {
+        let criteria = SearchCriteria::new();
+        let query_params: Vec<(String, String)> = criteria.build();
+        assert!(query_params.is_empty());
+    }
+}
