@@ -1,3 +1,33 @@
+# v0.7.0 2024-12-26
+
+## Breaking Changes
+
+- ✨ New struct [`Response<T>`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/model/response/struct.Response.html) has been introduced to wrap the response data instead of the [`*Response`](https://docs.rs/tetr_ch/0.6.1/tetr_ch/client/index.html?search=model%20Response) structs. [#114]
+    - ⚰️ As a result, the [`*Response`](https://docs.rs/tetr_ch/0.6.1/tetr_ch/client/index.html?search=model%20Response) structs were removed [fac6708f84d1c6d500531035c1537fa85ce61857]
+
+## Bug Fixes
+
+- 🐛 The [`record_leaderboard::SearchCriteria::init`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/client/param/record_leaderboard/struct.SearchCriteria.html#method.init) method was incorrectly setting the [`limit`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/client/param/record_leaderboard/struct.SearchCriteria.html#structfield.limit) field to `Some(25)` instead of initializing to `None`. [79b3dd95a8675fada7aeb043226904edee07f9d7]
+- 🩹 Three models had not satisfied the trait bound [`AsRef<T>`](https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html). [c9911b68f99a6ed38b648625e246ffd1aaa0ee43]
+    - [`RecordsLeaderboard`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/model/records_leaderboard/struct.RecordsLeaderboard.html) struct
+    - [`AllSummaries`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/model/summary/struct.AllSummaries.html) struct
+    - [`UserRecords`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/model/user_records/struct.UserRecords.html) struct
+
+## Improvements
+
+- 📚 Fixed some incorrect examples in the documentation. [78d851cbcb2e6e36fedf1dcb8bdfef97ae0d5b61]
+
+## Other Changes
+
+- 🚚 Moved the [`ErrorResponse`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/model/response/struct.ErrorResponse.html) struct to [`crate::model::response`](https://docs.rs/tetr_ch/0.7.0/tetr_ch/model/response/index.html) module. [3c86e6d1299d1d42243eb52b7c8702eec9123099]
+
+## Internal Changes
+
+- ✅ Wrote new unit and integration tests.
+- ✅ Removed the unnecessary integration tests.
+
+---
+
 # v0.6.1 2024-12-11
 
 ## Features
@@ -22,14 +52,14 @@
 ## Breaking Changes
 
 - 💥 [TETR.IO BETA 1.2.0](https://tetr.io/about/patchnotes/#chlog_BETA_1_2_0)+ are now supported. [#15]
-	- ✨ Added new methods of the [`Client`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html) struct for the new API endpoints.
-		- 🔥 Removed the methods and elements for the discontinued endpoints. [#64]
-	- ✨ Added support for the new rank X+. [#61]
+    - ✨ Added new methods of the [`Client`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html) struct for the new API endpoints.
+        - 🔥 Removed the methods and elements for the discontinued endpoints. [#64]
+    - ✨ Added support for the new rank X+. [#61]
 
 ## Features
 
 - ✨ The [`Client`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html) struct now supports `X-Session-ID` header. [#97]
-	- Use [`Client::with_session_id`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html#method.with_session_id).
+    - Use [`Client::with_session_id`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/client/struct.Client.html#method.with_session_id).
 - ✨ Added two prelude modules [`tetr_ch::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/prelude/index.html) and [`tetr_ch::model::prelude`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/model/prelude/index.html).
 - ✨ Added [`xp_to_level`](https://docs.rs/tetr_ch/0.6.0/tetr_ch/util/fn.xp_to_level.html) function.
 
