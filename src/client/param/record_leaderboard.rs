@@ -129,7 +129,7 @@ impl SearchCriteria {
     /// ```
     pub fn init(&mut self) {
         self.bound = None;
-        self.limit = Some(25);
+        self.limit = None;
     }
 
     /// Sets the upper bound.
