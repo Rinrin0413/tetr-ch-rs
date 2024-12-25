@@ -1184,7 +1184,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn create_a_new_client() {
-        let _ = Client::new();
+    fn client_new_creates_default() {
+        let client: Client = Client::new();
+        assert!(client.session_id().is_none());
+    }
+
+    #[test]
+    fn client_with_session_id_creates_client_with_specified_session_id() {
+        let client = Client::with_session_id(Some("5a54d74d-41ed-4715-718d-dbef9ab43318")).unwrap();
+        assert_eq!(
+            client.x_session_id,
+            Some("5a54d74d-41ed-4715-718d-dbef9ab43318".to_string())
+        );
+    }
+
+    #[test]
+    fn client_with_session_id_creates_client_with_generated_session_id_if_not_specified() {
+        let client = Client::with_session_id(None).unwrap();
+        assert!(client.x_session_id.is_some());
+    }
+
+    #[test]
+    fn client_with_session_id_returns_error_if_invalid_session_id() {
+        let invalid_session_id = "\n";
+        let result = Client::with_session_id(Some(invalid_session_id));
+        assert!(matches!(
+            result,
+            Err(ClientCreationError::InvalidHeaderValue(_))
+        ));
     }
 }
