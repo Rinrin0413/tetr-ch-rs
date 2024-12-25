@@ -148,8 +148,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::record::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.after([500000.0, 0.0, 0.0]);
+    /// let criteria = SearchCriteria::new().after([500000.0, 0.0, 0.0]);
     /// ```
     pub fn after(self, bound: [f64; 3]) -> Self {
         Self {
@@ -176,8 +175,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::record::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.before([500000.0, 0.0, 0.0]);
+    /// let criteria = SearchCriteria::new().before([500000.0, 0.0, 0.0]);
     /// ```
     pub fn before(self, bound: [f64; 3]) -> Self {
         Self {
@@ -199,8 +197,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::record::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.limit(10);
+    /// let criteria = SearchCriteria::new().limit(10);
     /// ```
     ///
     /// # Panics

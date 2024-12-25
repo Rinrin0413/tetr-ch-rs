@@ -116,8 +116,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.after([10000.0, 0.0, 0.0]);
+    /// let criteria = SearchCriteria::new().after([10000.0, 0.0, 0.0]);
     /// ```
     pub fn after(self, bound: [f64; 3]) -> Self {
         Self {
@@ -144,8 +143,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.before([10000.0, 0.0, 0.0]);
+    /// let criteria = SearchCriteria::new().before([10000.0, 0.0, 0.0]);
     /// ```
     pub fn before(self, bound: [f64; 3]) -> Self {
         Self {
@@ -167,8 +165,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.limit(10);
+    /// let criteria = SearchCriteria::new().limit(10);
     /// ```
     ///
     /// # Panics
@@ -177,12 +174,12 @@ impl SearchCriteria {
     ///
     /// ```should_panic
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new().limit(0);
+    /// let criteria = SearchCriteria::new().limit(0);
     /// ```
     ///
     /// ```should_panic
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new().limit(101);
+    /// let criteria = SearchCriteria::new().limit(101);
     /// ```
     pub fn limit(self, limit: u8) -> Self {
         validate_limit(limit);
@@ -204,8 +201,7 @@ impl SearchCriteria {
     ///
     /// ```
     /// # use tetr_ch::client::param::user_leaderboard::SearchCriteria;
-    /// let mut criteria = SearchCriteria::new();
-    /// criteria.country("jp");
+    /// let mut criteria = SearchCriteria::new().country("jp");
     /// ```
     pub fn country(self, country: &str) -> Self {
         Self {
