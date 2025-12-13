@@ -49,19 +49,23 @@ impl SocialConnection {
     pub(crate) fn to_param(&self) -> String {
         match self {
             SocialConnection::DiscordId(id) => format!("discord:id:{}", id),
-            SocialConnection::DiscordUsername(name)     => format!("discord:username:{}", name),
-            SocialConnection::TwitchId(id)            => format!("twitch:id:{}", id),
-            SocialConnection::TwitchUsername(name)      => format!("twitch:username:{}", name),
-            SocialConnection::TwitchDisplayName(name)   => format!("twitch:display_username:{}", name),
-            SocialConnection::TwitterId(id)           => format!("twitter:id:{}", id),
-            SocialConnection::TwitterUsername(name)     => format!("twitter:username:{}", name),
-            SocialConnection::TwitterDisplayName(name)  => format!("twitter:display_username:{}", name),
-            SocialConnection::RedditId(id)            => format!("reddit:id:{}", id),
-            SocialConnection::RedditUsername(name)      => format!("reddit:username:{}", name),
-            SocialConnection::YoutubeId(id)           => format!("youtube:id:{}", id),
-            SocialConnection::YoutubeUsername(name)     => format!("youtube:username:{}", name),
-            SocialConnection::SteamId(id)             => format!("steam:id:{}", id),
-            SocialConnection::SteamUsername(name)       => format!("steam:username:{}", name),
+            SocialConnection::DiscordUsername(name) => format!("discord:username:{}", name),
+            SocialConnection::TwitchId(id) => format!("twitch:id:{}", id),
+            SocialConnection::TwitchUsername(name) => format!("twitch:username:{}", name),
+            SocialConnection::TwitchDisplayName(name) => {
+                format!("twitch:display_username:{}", name)
+            }
+            SocialConnection::TwitterId(id) => format!("twitter:id:{}", id),
+            SocialConnection::TwitterUsername(name) => format!("twitter:username:{}", name),
+            SocialConnection::TwitterDisplayName(name) => {
+                format!("twitter:display_username:{}", name)
+            }
+            SocialConnection::RedditId(id) => format!("reddit:id:{}", id),
+            SocialConnection::RedditUsername(name) => format!("reddit:username:{}", name),
+            SocialConnection::YoutubeId(id) => format!("youtube:id:{}", id),
+            SocialConnection::YoutubeUsername(name) => format!("youtube:username:{}", name),
+            SocialConnection::SteamId(id) => format!("steam:id:{}", id),
+            SocialConnection::SteamUsername(name) => format!("steam:username:{}", name),
         }
     }
 }
