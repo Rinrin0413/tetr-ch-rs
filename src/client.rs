@@ -200,7 +200,7 @@ impl Client {
     /// // Search for an account.
     /// let user = client.search_user(
     ///     // By Discord ID `724976600873041940`
-    ///     SocialConnection::Discord("724976600873041940".to_string())
+    ///     SocialConnection::DiscordId("724976600873041940".to_string())
     /// ).await?;
     /// # Ok(())
     /// # }

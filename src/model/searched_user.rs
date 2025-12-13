@@ -6,15 +6,11 @@
 use crate::model::prelude::*;
 
 /// A searched user.
-///
-/// Only one user is contained.
-/// Generally, you won't see two users with the same social linked, though,
-/// as it would be against TETR.IO multiaccounting policies.
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserData {
-    /// The user information (TETRA.IO user account).
-    pub user: Option<UserInfo>,
+    /// The user information (TETRA.IO user accounts).
+    pub users: Vec<UserInfo>,
 }
 
 impl AsRef<UserData> for UserData {
