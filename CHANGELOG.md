@@ -9,6 +9,10 @@
 
 - ♻️ Improved the conversion process of the `ResponseError` enum into the `std::io::Error` struct. [02fa290961370f5b38e7691884c04150717c962b]
 
+## Other Changes
+
+- 📚 Fixed typos in the documentation. [7759686a9af18486808fb4303d62297d87241a64]
+
 # v0.7.0 2024-12-26
 
 ## Breaking Changes

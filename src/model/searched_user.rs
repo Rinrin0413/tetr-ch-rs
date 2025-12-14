@@ -9,7 +9,7 @@ use crate::model::prelude::*;
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserData {
-    /// The user information (TETRA.IO user accounts).
+    /// The user information (TETR.IO user accounts).
     pub users: Vec<UserInfo>,
 }
 
@@ -19,7 +19,7 @@ impl AsRef<UserData> for UserData {
     }
 }
 
-/// A user information (TETRA.IO user account).
+/// A user information (TETR.IO user account).
 #[derive(Clone, Debug, Deserialize)]
 #[non_exhaustive]
 pub struct UserInfo {
