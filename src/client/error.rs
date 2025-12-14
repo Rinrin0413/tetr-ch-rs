@@ -34,7 +34,12 @@ impl fmt::Display for ResponseError {
 
 impl From<ResponseError> for std::io::Error {
     fn from(err: ResponseError) -> Self {
-        std::io::Error::new(std::io::ErrorKind::Other, err.to_string())
+        let kind = if let ResponseError::DeserializeErr(_) = err {
+            std::io::ErrorKind::InvalidData
+        } else {
+            std::io::ErrorKind::Other
+        };
+        std::io::Error::new(kind, err.to_string())
     }
 }
 

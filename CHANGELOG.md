@@ -1,3 +1,18 @@
+# v0.8.0 2025-12-15
+
+## Breaking Changes
+
+- ✨ [TETR.IO BETA 1.7.4](https://tetr.io/about/patchnotes/#chlog_BETA_1_7_4) now supports searching for users with all linked connections (e.g., Twitch, YouTube). Consequently, these new social connections have been added to the `SocialConnection` enum by @x-gkm in #119. [#118, 21ac93e0bb59990918a3cc43dea7a88299301435 1b409821e7c12d05a0956daefa7a0cf3d1453711 0b698251c4610afe981ef3aad2a1a5a4a8c93873]
+    - The enumerators for the `SocialConnection` enum have been updated accordingly.
+
+## Improvements
+
+- ♻️ Improved the conversion process of the `ResponseError` enum into the `std::io::Error` struct. [02fa290961370f5b38e7691884c04150717c962b]
+
+## Other Changes
+
+- 📚 Fixed typos in the documentation. [c994d6780789bf784fb873873fb4c9612f61f375]
+
 # v0.7.0 2024-12-26
 
 ## Breaking Changes
