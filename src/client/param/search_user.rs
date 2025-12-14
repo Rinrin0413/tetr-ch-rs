@@ -76,7 +76,66 @@ mod tests {
 
     #[test]
     fn social_connection_to_param_converts_into_param_str() {
-        let connection = SocialConnection::DiscordId("724976600873041940".to_string());
-        assert_eq!(connection.to_param(), "discord:id:724976600873041940");
+        let test_cases = vec![
+            (
+                SocialConnection::DiscordId("724976600873041940".to_string()),
+                "discord:id:724976600873041940",
+            ),
+            (
+                SocialConnection::DiscordUsername("rinrin0413".to_string()),
+                "discord:username:rinrin0413",
+            ),
+            (
+                SocialConnection::TwitchId("870732519".to_string()),
+                "twitch:id:870732519",
+            ),
+            (
+                SocialConnection::TwitchUsername("rinrin0413".to_string()),
+                "twitch:username:rinrin0413",
+            ),
+            (
+                SocialConnection::TwitchDisplayName("Rinrin0413".to_string()),
+                "twitch:display_username:Rinrin0413",
+            ),
+            (
+                SocialConnection::TwitterId("1310065980723228673".to_string()),
+                "twitter:id:1310065980723228673",
+            ),
+            (
+                SocialConnection::TwitterUsername("Rinrin_2nd".to_string()),
+                "twitter:username:Rinrin_2nd",
+            ),
+            (
+                SocialConnection::TwitterDisplayName("Rinrin.rs".to_string()),
+                "twitter:display_username:Rinrin.rs",
+            ),
+            (
+                SocialConnection::RedditId("p0fdyyi2".to_string()),
+                "reddit:id:p0fdyyi2",
+            ),
+            (
+                SocialConnection::RedditUsername("Rinrin0413".to_string()),
+                "reddit:username:Rinrin0413",
+            ),
+            (
+                SocialConnection::YoutubeId("@rinrin-rs".to_string()),
+                "youtube:id:@rinrin-rs",
+            ),
+            (
+                SocialConnection::YoutubeUsername("Rinrin".to_string()),
+                "youtube:username:Rinrin",
+            ),
+            (
+                SocialConnection::SteamId("76561199372502008".to_string()),
+                "steam:id:76561199372502008",
+            ),
+            (
+                SocialConnection::SteamUsername("Rinrin.rs".to_string()),
+                "steam:username:Rinrin.rs",
+            ),
+        ];
+        for (connection, expected) in test_cases {
+            assert_eq!(connection.to_param(), expected);
+        }
     }
 }
