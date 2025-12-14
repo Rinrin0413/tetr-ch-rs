@@ -21,7 +21,7 @@
 //!
 //! Also you can:
 //!
-//! - Search for TETR.IO account by social connections.
+//! - Search for TETR.IO accounts by social connections.
 //! - Search for record by user ID and timestamp.
 //!
 //! # Warning

@@ -15,7 +15,7 @@ async fn main() {
     // Set the social connection to search for.
     let social_connection = SocialConnection::RedditUsername("Rinrin0413".to_string());
 
-    // Search for the account.
+    // Search for the accounts.
     let response = match client.search_user(social_connection).await {
         Ok(res) => res,
         Err(err) => panic!("Response error: {}\n", err),

@@ -178,7 +178,7 @@ impl Client {
         process_response(res).await
     }
 
-    /// Searches for a TETR.IO user account by the social connection.
+    /// Searches for TETR.IO user accounts by the social connection.
     ///
     /// About the endpoint "User Search",
     /// see the [API document](https://tetr.io/about/api/#userssearchquery).
@@ -189,7 +189,7 @@ impl Client {
     ///
     /// # Examples
     ///
-    /// Searches for an account by Discord ID `724976600873041940`.
+    /// Searches for accounts by Discord ID `724976600873041940`.
     ///
     /// ```no_run
     /// use tetr_ch::prelude::*;
@@ -197,7 +197,7 @@ impl Client {
     /// # async fn run() -> std::io::Result<()> {
     /// let client = Client::new();
     ///
-    /// // Search for an account.
+    /// // Search for accounts.
     /// let user = client.search_user(
     ///     // By Discord ID `724976600873041940`
     ///     SocialConnection::DiscordId("724976600873041940".to_string())

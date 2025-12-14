@@ -9,7 +9,7 @@ cargo run --example <example-name>
 ---
 
 1. [Get user info](./01_get-user-info.rs) `01_get-user-info`
-1. [Search for account](./02_search-for-accounts.rs) `02_search-for-accounts`
+1. [Search for accounts](./02_search-for-accounts.rs) `02_search-for-accounts`
 1. [Get user summaries](./03_get-user-summaries.rs) `03_get-user-summaries`
 	- 40 LINES
 	- BLITZ
