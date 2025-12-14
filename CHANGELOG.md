@@ -11,7 +11,7 @@
 
 ## Other Changes
 
-- 📚 Fixed typos in the documentation. [7759686a9af18486808fb4303d62297d87241a64]
+- 📚 Fixed typos in the documentation. [c994d6780789bf784fb873873fb4c9612f61f375]
 
 # v0.7.0 2024-12-26
 
